@@ -1,0 +1,13 @@
+DB  |            v------------DB-----------v
+Col |    Estabelecimentos-v              Clientes-v
+Doc |      v----<Estabelecimento>---v          <Cliente>
+Col |   Cardápio--v            v--Posts
+Doc |         <Produto>     <Post>
+
+
+
+Cliente:
+    nome: str
+    email: str
+    senha: str
+    following: list
