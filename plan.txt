@@ -5,9 +5,24 @@ Col |   Cardápio--v            v--Posts
 Doc |         <Produto>     <Post>
 
 
-
 Cliente:
     nome: str
-    email: str
+    email: str (pk)
     senha: str
     following: list
+
+Estab:
+    nome: str
+    email: str (pk)
+    senha: str
+    contato: str
+    decrição: str
+    foto: None/str
+    Cardápio: col of Item
+    Posts: col of Post
+
+Post:
+    title: str
+    text: str
+    image: None/str
+    post_date: datetime
