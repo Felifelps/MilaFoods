@@ -25,3 +25,4 @@ def delete_client(email):
 def get_client(email):
     """Gets all the data of a client object of the database"""
     return CLIENTS.document(email).get().to_dict()
+

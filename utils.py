@@ -24,3 +24,8 @@ def decode_image(string, image_name, dir):
     """
     with open(os.path.join(dir, image_name), "wb") as file:
         file.write(base64.b64decode(string))
+
+
+from gmail import AuthenticationMail
+
+AuthenticationMail().send_code_email("felipefelipe23456@gmail.com")

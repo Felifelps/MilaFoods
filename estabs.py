@@ -1,5 +1,5 @@
 from db import DB
-import os, datetime
+import os
 from post import *
 from utils import encode_image, decode_image
 
