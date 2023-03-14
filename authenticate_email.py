@@ -1,8 +1,13 @@
-from db import *
-from estabs import *
-from gmail import AuthenticationMail
-from post import *
+from "C:\Users\ALUNO.DESKTOP-PC2N668\Desktop\Nova pasta\LabSoft\gmail.py" import AuthenticationMail
 
-class AccountManager:
-    def create_account
-
+authenticator = AuthenticationMail()
+sender = input("Digite seu e-mail: ")
+if "@gmail.com" not in sender:
+    input("Email inválido")
+    quit()
+authenticator.send_code_email(sender)
+code = input("Email enviado, não feche o programa!.\nDigite o código de acesso: ")
+if code == str(authenticator.code):
+    input("Felipe info 3 ;)")
+else:
+    input("Código errado")
