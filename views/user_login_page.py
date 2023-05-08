@@ -11,7 +11,13 @@ Builder.load_string(
     
 <BasicButton@MDRaisedButton>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
-    
+
+<BasicTextInput@TextInput>:
+    background_color: .9, .9, .9, 1
+    size_hint: .8, 0.06
+    multiline: False
+    font_size: '18sp'
+
 <UserLoginPage>:
     Image:
         source: join('views', 'data', 'background.png')
@@ -23,28 +29,26 @@ Builder.load_string(
         BasicLabel:
             text: 'Email'
             pos_hint: {'center_x': .175, 'center_y': .525}
-        TextInput:
+        BasicTextInput:
             hint_text: 'exemplo@email.com'
-            background_color: .9, .9, .9, 1
-            size_hint: .8, 0.06
             pos_hint: {'center_x': .5, 'center_y': .475}
-            multiline: False
         BasicLabel:
             text: 'Senha'
             pos_hint: {'center_x': .175, 'center_y': .41}
-        TextInput:
-            background_color: .9, .9, .9, 1
+        BasicTextInput:
+            id: password
             password: True
             password_mask: '*'
-            size_hint: .8, 0.06
             pos_hint: {'center_x': .5, 'center_y': .36}
-            multiline: False
         MDIconButton:
             size_hint: 0.06, 0.06
             pos_hint: {'right': .875, 'center_y': .36}
             icon: "eye"
             theme_icon_color: "Custom"
             icon_color: .05, .05, .05, 1
+            on_release:
+                password.password = not password.password
+                self.icon = 'eye' if password.password else 'eye-off'
         BasicButton:
             text: 'Inscreva-se aqui!'
             size_hint_x: .8
