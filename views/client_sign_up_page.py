@@ -7,32 +7,38 @@ Builder.load_string(
 #:import BasicLabel views.utils
 #:import BasicTextInput views.utils
 
-<ClientLoginPage>:
+<ClientSignUpPage>:
     Image:
         source: join('views', 'data', 'background.png')
     RelativeLayout:
         BasicLabel:
-            text: 'Login de cliente'
+            text: 'Criar conta de cliente'
             pos_hint: {'center_x': .5, 'center_y': .6}
             font_size: '25sp'
         BasicLabel:
+            text: 'Nome'
+            pos_hint: {'center_x': .175, 'center_y': .55}
+        BasicTextInput:
+            hint_text: 'Digite seu nome'
+            pos_hint: {'center_x': .5, 'center_y': .5}
+        BasicLabel:
             text: 'Email'
-            pos_hint: {'center_x': .175, 'center_y': .525}
+            pos_hint: {'center_x': .175, 'center_y': .45}
         BasicTextInput:
             hint_text: 'exemplo@email.com'
-            pos_hint: {'center_x': .5, 'center_y': .475}
+            pos_hint: {'center_x': .5, 'center_y': .4}
         BasicLabel:
             text: 'Senha'
-            pos_hint: {'center_x': .175, 'center_y': .41}
+            pos_hint: {'center_x': .175, 'center_y': .35}
         BasicTextInput:
             id: password
             hint_text: "minhaSenha1!"
             password: True
             password_mask: '*'
-            pos_hint: {'center_x': .5, 'center_y': .36}
+            pos_hint: {'center_x': .5, 'center_y': .3}
         MDIconButton:
             size_hint: 0.06, 0.06
-            pos_hint: {'right': .875, 'center_y': .36}
+            pos_hint: {'right': .875, 'center_y': .3}
             icon: "eye"
             theme_icon_color: "Custom"
             icon_color: .05, .05, .05, 1
@@ -40,28 +46,23 @@ Builder.load_string(
                 password.password = not password.password
                 self.icon = 'eye' if password.password else 'eye-off'
         BasicButton:
-            text: 'Entrar'
+            text: 'Criar conta'
             size_hint_x: .8
-            pos_hint: {'center_x': .5, 'center_y': .26}
+            pos_hint: {'center_x': .5, 'center_y': .2175}
         BasicLabel:
             text: 'Ou use suas redes sociais'
-            pos_hint: {'center_x': .5, 'center_y': .21}
+            pos_hint: {'center_x': .5, 'center_y': .16}
         BasicButton:
             text: 'Instagram'
             size_hint_x: .3
-            pos_hint: {'right': .9, 'center_y': .145}
+            pos_hint: {'right': .9, 'center_y': .1}
         BasicButton:
             text: 'Facebook'
             size_hint_x: .3
-            pos_hint: {'x': .1, 'center_y': .145}
-        BasicLabel:
-            text: 'Esqueceu a senha?'
-            pos_hint: {'center_x': .5, 'center_y': .075}
-        BasicLabel:
-            text: 'Não tem uma conta? Crie aqui!!'
-            pos_hint: {'center_x': .5, 'center_y': .025}
+            pos_hint: {'x': .1, 'center_y': .1}
+        
 '''
 )
 
-class ClientLoginPage(MDScreen):
-    name = 'client_login_page'
+class ClientSignUpPage(MDScreen):
+    name = 'client_sign_up_page'

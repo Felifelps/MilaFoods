@@ -4,13 +4,8 @@ from os.path import join
 
 Builder.load_string(
 '''
-#:import join os.path.join
-<BasicLabel@Label>:
-    font_name: join('views', 'data', 'Graduate-Regular.ttf')
-    font_size: '12.5sp'
-    
-<BasicButton@MDRaisedButton>:
-    font_name: join('views', 'data', 'Graduate-Regular.ttf')
+#:import BasicButton views.utils
+#:import BasicLabel views.utils
 
 <ClientOrEstabPage>:
     Image:
@@ -18,22 +13,22 @@ Builder.load_string(
     RelativeLayout:
         BasicLabel:
             text: 'Entrar como: '
-            pos_hint: {'center_x': .5, 'center_y': .6}
+            pos_hint: {'center_x': .5, 'center_y': .575}
             font_size: '25sp'
         BasicLabel:
             text: 'Empresa'
-            pos_hint: {'center_x': .175, 'center_y': .525}
+            pos_hint: {'center_x': .175, 'center_y': .5}
         BasicButton:
             text: 'Entrar como empresa'
             size_hint_x: .8
-            pos_hint: {'center_x': .5, 'center_y': .5}
+            pos_hint: {'center_x': .5, 'center_y': .425}
         BasicLabel:
             text: 'Cliente'
-            pos_hint: {'center_x': .175, 'center_y': .41}
+            pos_hint: {'center_x': .175, 'center_y': .35}
         BasicButton:
             text: 'Entrar como cliente'
             size_hint_x: .8
-            pos_hint: {'center_x': .5, 'center_y': .38}
+            pos_hint: {'center_x': .5, 'center_y': .275}
 '''
 )
 

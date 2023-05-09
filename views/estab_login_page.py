@@ -7,17 +7,17 @@ Builder.load_string(
 #:import BasicLabel views.utils
 #:import BasicTextInput views.utils
 
-<ClientLoginPage>:
+<EstabLoginPage>:
     Image:
         source: join('views', 'data', 'background.png')
     RelativeLayout:
         BasicLabel:
-            text: 'Login de cliente'
+            text: 'Login de Empresa'
             pos_hint: {'center_x': .5, 'center_y': .6}
             font_size: '25sp'
         BasicLabel:
-            text: 'Email'
-            pos_hint: {'center_x': .175, 'center_y': .525}
+            text: 'Email/CPF/CNPJ'
+            pos_hint: {'center_x': .25, 'center_y': .525}
         BasicTextInput:
             hint_text: 'exemplo@email.com'
             pos_hint: {'center_x': .5, 'center_y': .475}
@@ -42,6 +42,7 @@ Builder.load_string(
         BasicButton:
             text: 'Entrar'
             size_hint_x: .8
+            on_press: print(self.height)
             pos_hint: {'center_x': .5, 'center_y': .26}
         BasicLabel:
             text: 'Ou use suas redes sociais'
@@ -63,5 +64,5 @@ Builder.load_string(
 '''
 )
 
-class ClientLoginPage(MDScreen):
-    name = 'client_login_page'
+class EstabLoginPage(MDScreen):
+    name = 'estab_login_page'
