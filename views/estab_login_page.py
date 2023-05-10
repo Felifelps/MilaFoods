@@ -9,14 +9,14 @@ Builder.load_string(
 
 <EstabLoginPage>:
     Image:
-        source: join('views', 'data', 'background.png')
+        source: join('views', 'data', 'background_logo_Red.png')
     RelativeLayout:
         BasicLabel:
             text: 'Login de Empresa'
             pos_hint: {'center_x': .5, 'center_y': .6}
             font_size: '25sp'
         BasicLabel:
-            text: 'Email/CPF/CNPJ'
+            text: 'CPF ou CNPJ'
             pos_hint: {'center_x': .25, 'center_y': .525}
         BasicTextInput:
             hint_text: 'exemplo@email.com'

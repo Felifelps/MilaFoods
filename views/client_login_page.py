@@ -9,7 +9,7 @@ Builder.load_string(
 
 <ClientLoginPage>:
     Image:
-        source: join('views', 'data', 'background.png')
+        source: join('views', 'data', 'background_logo_Red.png')
     RelativeLayout:
         BasicLabel:
             text: 'Login de cliente'
