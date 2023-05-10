@@ -6,10 +6,10 @@ Builder.load_string(
 '''
 #:import BasicButton views.utils
 #:import BasicLabel views.utils
+#:import Background views.utils
 
 <ClientOrEstabPage>:
-    Image:
-        source: join('views', 'data', 'background_logo_Red.png')
+    BackgroundLogo:
     RelativeLayout:
         BasicLabel:
             text: 'Entrar como: '
