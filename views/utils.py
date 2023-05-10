@@ -23,11 +23,11 @@ Builder.load_string('''
         Color:
             rgba: .9, .9, .9, 1
         Line:
-            rounded_rectangle: (self.x, self.y, self.width, self.height, 7)
+            rounded_rectangle: (self.x, self.y, self.width, self.height, 10)
             width: 2
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
-    theme_text_color: 'Custom'
-    secondary_text_color: colors[app.theme_cls.primary_palette]["900"]
+    secondary_theme_text_color: 'Custom'
+    secondary_text_color: colors['Amber']['300']
 
 ''')
 
