@@ -73,12 +73,13 @@ class BasicDropDownItem(MDFillRoundFlatIconButton):
         self.menu = MDDropdownMenu(
             caller=self,
             items=[
-                {'viewclass': 'OneLineListItem', 'text': t, 'on_release': lambda text=t: set_text(text) == self.menu.dismiss()} for t in self.types
+                {'viewclass': 'OneLineListItem', 'text': t, 'on_release': lambda text=t: set_text(text) == self.menu.dismiss(), 'text_color': (0, 0, 0, 1), 'theme_text_color': 'Custom'} for t in self.types
             ],
             ver_growth='down',
             position='auto',
             width_mult=4,
-            max_height=dp(112)
+            max_height=dp(112),
+            background_color=(0.75, 0.75, 0.75, 1)
         )
         
     def on_release(self):
