@@ -1,5 +1,8 @@
 from kivymd.uix.list import TwoLineAvatarListItem, ImageLeftWidget
+from kivymd.uix.menu import MDDropdownMenu
+from kivymd.uix.button import MDFillRoundFlatIconButton
 from kivy.properties import StringProperty
+from kivy.metrics import dp
 from kivy.lang import Builder
 
 Builder.load_string('''
@@ -31,10 +34,25 @@ Builder.load_string('''
     secondary_text_color: colors['Amber']['300']
     
 <Background@Image>:
+    allow_stretch: True
+    keep_ratio: False
     source: join('views', 'data', 'background_Red.png')
 
 <BackgroundLogo@Image>:
+    allow_stretch: True
+    keep_ratio: False
     source: join('views', 'data', 'background_logo_Red.png')
+    
+<BasicDropDownItem>:
+    text: "Escolha seu serviço"
+    font_size: "18sp"
+    icon: 'menu-swap'
+    theme_text_color: 'Custom'
+    line_color: 0, 0, 0, .8
+    text_color: 'black'
+    md_bg_color: .75, .75, .75, 1
+    icon_color: 0, 0, 0, 1
+    radius: [5, 5, 5, 5]
 
 ''')
 
@@ -42,3 +60,26 @@ class BasicListItem(TwoLineAvatarListItem):
     src = StringProperty('')
     def on_src(self, a, b):
         if self.src != "": self.add_widget(ImageLeftWidget(source=self.src))
+
+class BasicDropDownItem(MDFillRoundFlatIconButton):
+    types = [
+        'Lanches',
+        'Salgados',
+        'Pizzaria'
+    ]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        def set_text(text): self.text = text
+        self.menu = MDDropdownMenu(
+            caller=self,
+            items=[
+                {'viewclass': 'OneLineListItem', 'text': t, 'on_release': lambda text=t: set_text(text) == self.menu.dismiss()} for t in self.types
+            ],
+            ver_growth='down',
+            position='auto',
+            width_mult=4,
+            max_height=dp(112)
+        )
+        
+    def on_release(self):
+        self.menu.open()
