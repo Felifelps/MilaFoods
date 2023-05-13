@@ -8,5 +8,6 @@ class MilaFoods(MDApp):
         self.theme_cls.theme_style = 'Dark'
         self.theme_cls.primary_palette = 'Red'
         return ScreenManager()
+
     
 MilaFoods().run()

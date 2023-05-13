@@ -3,55 +3,54 @@ from kivy.lang import Builder
 
 Builder.load_string(
 '''
-#:import BasicButton views.utils
 #:import BasicLabel views.utils
-#:import BasicTextInput views.utils
 #:import Background views.utils
-            
+#:import join os.path.join
+
+<ThemeButton@RelativeLayout>:
+    color: 'Red'
+    size_hint: .5, .25
+    bg: None
+    MDTextButton:
+        theme_text_color: 'Custom'
+        text_color: 0, 0, 0, 0
+        size_hint: 1, 1
+        on_press:
+            app.theme_cls.primary_palette = root.color
+            root.bg.theme = root.color
+    Image:
+        size_hint: .5, 1
+        source: join('views', 'data', f'background_{root.color}.png')
+        size_hint_x: .5
+    BasicLabel:
+        size_hint: .5, 1
+        pos_hint: {'x': .5}
+        text: {'Red': 'Vermelho', 'Purple': 'Roxo', 'Green': 'Verde', 'Gray': 'Preto'}[root.color]
+        
 <ThemeConfigPage>:
-    BackgroundLogo:
-    RelativeLayout:
-        BasicLabel:
-            text: 'Criar conta de empresa'
-            pos_hint: {'center_x': .5, 'center_y': .6}
-            font_size: '23sp'
-        BasicLabel:
-            text: 'Email'
-            pos_hint: {'center_x': .175, 'center_y': .55}
-        BasicTextInput:
-            hint_text: 'exemplo@email.com'
-            pos_hint: {'center_x': .5, 'center_y': .5}
-        BasicLabel:
-            text: 'Senha'
-            pos_hint: {'center_x': .175, 'center_y': .45}
-        BasicTextInput:
-            id: password
-            password: True
-            password_mask: '*'
-            pos_hint: {'center_x': .5, 'center_y': .4}
-        MDIconButton:
-            size_hint: 0.06, 0.06
-            pos_hint: {'right': .875, 'center_y': .4}
-            icon: "eye"
-            theme_icon_color: "Custom"
-            icon_color: .05, .05, .05, 1
-            on_release:
-                password.password = not password.password
-                self.icon = 'eye' if password.password else 'eye-off'
-        BasicLabel:
-            text: 'Nome da empresa'
-            pos_hint: {'center_x': .275, 'center_y': .35}
-        BasicTextInput:
-            pos_hint: {'center_x': .5, 'center_y': .3}
-        BasicLabel:
-            text: 'CPF ou CNPJ'
-            pos_hint: {'center_x': .225, 'center_y': .25}
-        BasicTextInput:
-            pos_hint: {'center_x': .5, 'center_y': .2}
-        BasicButton:
-            text: 'Criar conta'
-            size_hint_x: .8
-            pos_hint: {'center_x': .5, 'center_y': .1}
+    Background:
+        id: _bg
+    BoxLayout:
+        orientation: 'vertical'
+        MDTopAppBar:
+            title: "Background"
+            font_name: join('views', 'data', 'Graduate-Regular.ttf')
+            left_action_items: [['arrow-left', lambda x: print('opa')]]
+        StackLayout:
+            size_hint: .84, .8
+            pos_hint: {'x': .1, 'y': 0}
+            ThemeButton:
+                bg: _bg
+            ThemeButton:
+                bg: _bg
+                color: 'Green'
+            ThemeButton:
+                bg: _bg
+                color: 'Purple'
+            ThemeButton:
+                bg: _bg
+                color: 'Gray'
+                
 '''
 )
 

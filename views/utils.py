@@ -1,5 +1,6 @@
 from kivymd.uix.list import TwoLineAvatarListItem, ImageLeftWidget
 from kivymd.uix.menu import MDDropdownMenu
+from kivy.uix.image import Image
 from kivymd.uix.button import MDFillRoundFlatIconButton
 from kivy.properties import StringProperty
 from kivy.metrics import dp
@@ -33,15 +34,17 @@ Builder.load_string('''
     secondary_theme_text_color: 'Custom'
     secondary_text_color: colors['Amber']['300']
     
-<Background@Image>:
+<Background>:
     allow_stretch: True
     keep_ratio: False
-    source: join('views', 'data', 'background_Red.png')
+    source: join('views', 'data', f'background_{self.theme}.png')
 
 <BackgroundLogo@Image>:
-    allow_stretch: True
-    keep_ratio: False
-    source: join('views', 'data', 'background_logo_Red.png')
+    Background:
+    Image:
+        source: join('views', 'data', 'logo.png')
+        pos: root.pos[0] + root.width*0.5 - dp(137.5), root.pos[1] + root.height*0.775 - dp(137.5)
+        size: dp(275), dp(275)
     
 <BasicDropDownItem>:
     text: "Escolha seu serviço"
@@ -60,6 +63,12 @@ class BasicListItem(TwoLineAvatarListItem):
     src = StringProperty('')
     def on_src(self, a, b):
         if self.src != "": self.add_widget(ImageLeftWidget(source=self.src))
+    
+class Background(Image):
+    theme = StringProperty('Red')
+    def on_theme(self, a, b):
+        self.source = f'background_{self.theme}.png'
+        self.reload()
 
 class BasicDropDownItem(MDFillRoundFlatIconButton):
     types = [
