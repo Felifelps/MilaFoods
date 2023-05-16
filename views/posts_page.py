@@ -10,55 +10,67 @@ Builder.load_string(
 #:import join os.path.join
 
 <Post@RelativeLayout>:
-    username: ''
+    username: 'Username'
+    post_title: 'title'
+    description: 'description'
     image: _img
     size_hint: 1, None
-    height: dp(250)
+    height: dp(275)
     canvas.before:
         Color:
-            rgba: .9, .9, .9, 1
+            rgba: .98, .98, .7, 1
         Rectangle:
             size: self.width, self.height
             pos: 0, 0
     MDIconButton:
-        pos_hint: {'center_x': .085, 'center_y': .9}
-        icon_size: '40sp'
+        pos_hint: {'center_x': .085, 'center_y': .925}
+        icon_size: '35sp'
         theme_icon_color: 'Custom'
         icon_color: .1, .1, .1, 1
         icon: "account-circle"
     MDIconButton:
-        pos_hint: {'right': 1, 'center_y': .9}
+        pos_hint: {'right': 1, 'center_y': .925}
         icon_size: '30sp'
         theme_icon_color: 'Custom'
         icon_color: .1, .1, .1, 1
         icon: "dots-horizontal"
-    MDIconButton:
-        pos_hint: {'x': 0, 'center_y': .9}
-        icon_size: '30sp'
-        theme_icon_color: 'Custom'
-        icon_color: .9, .9, .9, 1
-        icon: "star"
-        on_release:
-            self.icon_color = (.1, .1, .1, 1) if self.icon_color == (.9, .9, .9, 1) else (.9, .9, .9, 1)
     Label:
-        text: f'{root.username}'
+        text: root.username
         color: .1, .1, .1, 1
         size_hint: None, None
         size: self.texture_size
         font_size: '12sp'
-        pos_hint: {'x': .16, 'center_y': .9}
-    Label:
-        text: ''
-        color: .1, .1, .1, 1
-        size_hint: None, None
-        size: self.texture_size
-        font_size: '12sp'
-        markup: True
-        pos_hint: {'x': .15, 'center_y': .95}
+        pos_hint: {'x': .16, 'center_y': .915}
     Image:
         id: _img
-        pos_hint: {'top': .8}
+        pos_hint: {'top': .85}
         size_hint: 1, .55
+    MDIconButton:
+        pos_hint: {'center_x': .08255, 'center_y': .78}
+        icon_size: '35sp'
+        theme_icon_color: 'Custom'
+        icon_color: .75, .75, .75, 1
+        icon: "star"
+        clicked: False
+        on_release:
+            self.icon_color = (.75, .75, .75, 1) if self.clicked else (.2, .2, .2, 1)
+            self.clicked = not self.clicked
+    Label:
+        text: root.post_title
+        color: .1, .1, .1, 1
+        size_hint: None, None
+        size: self.texture_size
+        font_size: '14sp'
+        markup: True
+        pos_hint: {'x': .025, 'top': .28}
+    Label:
+        text: root.description
+        color: .1, .1, .1, 1
+        size_hint: None, None
+        size: self.texture_size
+        font_size: '11sp'
+        markup: True
+        pos_hint: {'x': .025, 'top': .19}
     
             
 <PostsPage>:
@@ -74,7 +86,7 @@ Builder.load_string(
                 adaptive_height: True
                 spacing: 10, 20
                 Post:
-                    username: "Jorginho lanches"
+                    post_title: "Jorginho lanches"
                 Post:
                 Post:
                 Post:
