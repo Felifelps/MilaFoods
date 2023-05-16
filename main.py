@@ -9,5 +9,5 @@ class MilaFoods(MDApp):
         self.theme_cls.primary_palette = 'Red'
         return ScreenManager()
 
-    
-MilaFoods().run()
+if __name__ == '__main__':
+    MilaFoods().run()
