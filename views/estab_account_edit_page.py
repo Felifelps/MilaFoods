@@ -41,24 +41,21 @@ Builder.load_string(
             pos_hint: {'center_x': .09, 'center_y': .48}
             font_size: '17.5sp'
         BasicTextField:
-            size_hint: .96, .12
-            hint_text: 'Nome'
+            size_hint: .96, .12 
             pos_hint: {'center_x': .5, 'center_y': .42} 
         BasicLabel:
             text: 'Biografia'
             pos_hint: {'center_x': .15, 'center_y': .35}
             font_size: '17.5sp'
         BasicTextField:
-            size_hint: .96, .12
-            hint_text: 'Biografia'
+            size_hint: .96, .12 
             pos_hint: {'center_x': .5, 'center_y': .29} 
         BasicLabel:
             text: 'Número'
             pos_hint: {'center_x': .125, 'center_y': .22}
             font_size: '17.5sp'
         BasicTextField:
-            size_hint: .96, .12
-            hint_text: 'Número'
+            size_hint: .96, .12 
             pos_hint: {'center_x': .5, 'center_y': .16} 
         
 

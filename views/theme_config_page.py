@@ -30,15 +30,16 @@ Builder.load_string(
 <ThemeConfigPage>:
     Background:
         id: _bg
-    BoxLayout:
-        orientation: 'vertical'
+    RelativeLayout:
         MDTopAppBar:
             title: "Background"
             font_name: join('views', 'data', 'Graduate-Regular.ttf')
             left_action_items: [['arrow-left', lambda x: print('opa')]]
-        StackLayout:
-            size_hint: .84, .8
+            pos_hint: {'top': 1}
+        MDStackLayout:
+            size_hint: .84, .88
             pos_hint: {'x': .1, 'y': 0}
+            #md_bg_color: 'white'
             ThemeButton:
                 bg: _bg
             ThemeButton:

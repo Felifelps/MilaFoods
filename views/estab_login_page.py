@@ -19,7 +19,7 @@ Builder.load_string(
             text: 'CPF ou CNPJ'
             pos_hint: {'center_x': .25, 'center_y': .525}
         BasicTextInput:
-            hint_text: 'exemplo@email.com'
+            type: 'cpf'
             pos_hint: {'center_x': .5, 'center_y': .475}
         BasicLabel:
             text: 'Senha'

@@ -47,7 +47,9 @@ Builder.load_string(
             text: 'CPF ou CNPJ'
             pos_hint: {'center_x': .225, 'center_y': .25}
         BasicTextInput:
+            type: 'cpf'
             pos_hint: {'center_x': .5, 'center_y': .2}
+            max_text_length: 11
         BasicButton:
             text: 'Criar conta'
             size_hint_x: .8
@@ -57,3 +59,4 @@ Builder.load_string(
 
 class EstabSignUpPage(MDScreen):
     name = 'estab_sign_up_page'
+    print('Ajeitar o cpf e cnpj pra escolher')

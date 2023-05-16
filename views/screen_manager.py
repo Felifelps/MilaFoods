@@ -14,14 +14,14 @@ from kivymd.uix.screenmanager import MDScreenManager
 class ScreenManager(MDScreenManager):
     def on_kv_post(self, base_widget):
         for i in [
-            PostsPage(),
-            SavedPage(),
-            EstabAccountEditPage(),
-            ThemeConfigPage(),
-            EstabAccountConfigurationPage(),
-            FollowEstabsPage(),
-            EstabSignUpPage(),
             EstabLoginPage(),
+            EstabSignUpPage(),
+            FollowEstabsPage(),
+            EstabAccountConfigurationPage(),
+            EstabAccountEditPage(),
+            SavedPage(),
+            ThemeConfigPage(),
+            PostsPage(),
             ClientSignUpPage(),
             ClientOrEstabPage(),
             ClientLoginPage(),

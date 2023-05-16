@@ -26,6 +26,16 @@ Builder.load_string(
         font_size: '20sp'
         pos_hint: {'center_x': .25, 'center_y': .5}
 
+<EstabAccount@BasicListItem>:
+    size_hint: 1, None
+    height: dp(80)
+    source: join('views', 'data', 'background_Red.png')
+    estab_name: 'Username'
+    estab_place: 'Rua do seu andré'
+    text: root.estab_name
+    secondary_text: root.estab_place
+    src: root.source
+
 <FollowEstabsPage>:
     Background:
     BasicLabel:
@@ -41,50 +51,15 @@ Builder.load_string(
         bar_color: 0, 0, 0, 0
         MDList:
             id: estabs
-            #pos_hint: {'center_x': .5, 'center_y': .5}
-            BasicListItem:
-                text: 'Teste'
-                secondary_text: 'hehehe'
-            BasicListItem:
-                text: 'Teste'
-                secondary_text: 'hehehe'
-                src: join('views', 'data', 'background_Red.png')
-            BasicListItem:
-                text: 'Teste'
-                secondary_text: 'hehehe'
-                src: join('views', 'data', 'background_Red.png')
-            BasicListItem:
-                text: 'Teste'
-                secondary_text: 'hehehe'
-                src: join('views', 'data', 'background_Red.png')
-            BasicListItem:
-                text: 'Teste'
-                secondary_text: 'hehehe'
-                src: join('views', 'data', 'background_Red.png')
-            BasicListItem:
-                text: 'Teste'
-                secondary_text: 'hehehe'
-                src: join('views', 'data', 'background_Red.png')
-            BasicListItem:
-                text: 'Teste'
-                secondary_text: 'hehehe'
-                src: join('views', 'data', 'background_Red.png')
-            BasicListItem:
-                text: 'Teste'
-                secondary_text: 'hehehe'
-                src: join('views', 'data', 'background_Red.png')
-            BasicListItem:
-                text: 'Teste'
-                secondary_text: 'hehehe'
-                src: join('views', 'data', 'background_Red.png')
-            BasicListItem:
-                text: 'Teste'
-                secondary_text: 'hehehe'
-                src: join('views', 'data', 'background_Red.png')
-            BasicListItem:
-                text: 'Teste'
-                secondary_text: 'hehehe'
-                src: join('views', 'data', 'background_Red.png')
+            EstabAccount:
+            EstabAccount:
+            EstabAccount:
+            EstabAccount:
+            EstabAccount:
+            EstabAccount:
+            EstabAccount:
+            EstabAccount:
+            EstabAccount:
     BottomAnimalBar:
         size_hint: 1, .15
         pos_hint: {'center_x': .5, 'y': 0} 

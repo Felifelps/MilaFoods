@@ -71,6 +71,14 @@ Builder.load_string(
         font_size: '11sp'
         markup: True
         pos_hint: {'x': .025, 'top': .19}
+    MDRectangleFlatIconButton:
+        text: "Comentar"
+        icon: "account-circle"
+        line_color: 0, 0, 0, 0
+        icon_size: '20sp'
+        font_size: '11sp'
+        size_hint: .025, .1
+        pos_hint: {"x": 0, "center_y": .075}
     
             
 <PostsPage>:
