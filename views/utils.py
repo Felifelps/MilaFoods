@@ -13,6 +13,8 @@ Builder.load_string('''
 <BasicLabel@Label>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
     font_size: '12.5sp'
+    size_hint: None, None
+    size: self.texture_size
     
 <BasicButton@MDRaisedButton>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
@@ -58,6 +60,7 @@ Builder.load_string('''
     radius: [5, 5, 5, 5]
 
 <BasicTextField@MDTextField>:
+    color_mode: 'custom'
     line_color_focus: .8, .8, .8, 1
     text_color_normal: .8, .8, .8, 1
     text_color_focus: .8, .8, .8, 1
@@ -65,16 +68,17 @@ Builder.load_string('''
     hint_text_color_focus: 0, 0, 0, 0
     hint_text_color_normal: 0, 0, 0, 0
 
-<TopBar@MDRelativeLayout>:
+<TopTitleBar@MDRelativeLayout>:
+    title: ''
     canvas.before:
         Color: 
             rgba: 0, 0, 0, .4
-        Rectangle: 
+        RoundedRectangle: 
             size: self.width, self.height + dp(4)
             pos: 0, -dp(4)
         Color: 
             rgba: 0, 0, 0, .2
-        Rectangle: 
+        RoundedRectangle: 
             size: self.width, self.height + dp(7)
             pos: 0, -dp(7)
     pos_hint: {'top': 1}
@@ -85,7 +89,7 @@ Builder.load_string('''
         icon_size: '40sp'
         icon: "account-circle"
     Label:
-        text: '[b]username[/b]'
+        text: f'[b]{root.title}[/b]'
         markup: True
         size_hint: None, None
         size: self.texture_size
@@ -95,17 +99,54 @@ Builder.load_string('''
         pos_hint: {'right': .975, 'center_y': .5}
         icon_size: '25sp'
         icon: "menu"
+    
+<TopSearchBar@MDRelativeLayout>:
+    canvas.before:
+        Color: 
+            rgba: 0, 0, 0, .4
+        RoundedRectangle: 
+            size: self.width, self.height + dp(4)
+            pos: 0, -dp(4)
+        Color: 
+            rgba: 0, 0, 0, .2
+        RoundedRectangle: 
+            size: self.width, self.height + dp(7)
+            pos: 0, -dp(7)
+    pos_hint: {'top': 1}
+    size_hint: 1, .1
+    md_bg_color: app.theme_cls.primary_dark
+    MDIconButton:
+        pos_hint: {'x': .025, 'center_y': .5}
+        icon_size: '40sp'
+        icon: "account-circle"
+    MDTextField:
+        color_mode: 'custom'
+        line_color_focus: .8, .8, .8, 1
+        text_color_normal: .8, .8, .8, 1
+        text_color_focus: .8, .8, .8, 1
+        font_size: "13sp"
+        hint_text_color_focus: 0, 0, 0, 0
+        hint_text_color_normal: 0, 0, 0, 0
+        size_hint: .6, 1
+        pos_hint: {'center_x': .5, 'center_y': .5}
+    MDIconButton:
+        pos_hint: {'x': .7, 'center_y': .5}
+        icon: "magnify"
+    MDIconButton:
+        pos_hint: {'right': .975, 'center_y': .5}
+        icon_size: '25sp'
+        icon: "menu"
 
 <BottomBar@MDRelativeLayout>:
     canvas.before:
         Color: 
             rgba: 0, 0, 0, .4
-        Rectangle: 
+        RoundedRectangle: 
             size: self.width, self.height + dp(4)
             pos: 0, 0
         Color: 
             rgba: 0, 0, 0, .2
-        Rectangle: 
+        RoundedRectangle: 
             size: self.width, self.height + dp(7)
             pos: 0, 0
     pos_hint: {'y': 0}

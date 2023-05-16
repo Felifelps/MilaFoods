@@ -3,13 +3,13 @@ from kivy.lang import Builder
 
 Builder.load_string(
 '''
-#:import TopBar views.utils
+#:import TopTitleBar views.utils
 #:import BottomBar views.utils
 #:import BasicLabel views.utils
 #:import Background views.utils
 #:import join os.path.join
 
-<Post@RelativeLayout>:
+<SavedPost@RelativeLayout>:
     image: _img
     size_hint: None, None
     size: dp(130), dp(150)
@@ -42,11 +42,9 @@ Builder.load_string(
 <SavedPage>:
     Background:
     FloatLayout:
-        TopBar:
+        TopTitleBar:
             id: bar
             title: "[Username]"
-            right_action_items: [['menu', lambda x: print('opa')]]
-            left_action_items: [['account-circle', lambda x: print('opa')]]
             icon_size: '25sp'
         MDIconButton:
             icon: 'star'
@@ -68,14 +66,14 @@ Builder.load_string(
                 id: _stack
                 adaptive_height: True
                 spacing: 10, 20
-                Post:
-                Post:
-                Post:
-                Post:
-                Post:
-                Post:
-                Post:
-                Post:
+                SavedPost:
+                SavedPost:
+                SavedPost:
+                SavedPost:
+                SavedPost:
+                SavedPost:
+                SavedPost:
+                SavedPost:
             
         BottomBar:
         

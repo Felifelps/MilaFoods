@@ -6,22 +6,29 @@ from .estab_account_edit_page import EstabAccountEditPage
 from .estab_login_page import EstabLoginPage
 from .estab_sign_up_page import EstabSignUpPage
 from .follow_estabs_page import FollowEstabsPage
+from .posts_page import PostsPage
 from .theme_config_page import ThemeConfigPage
 from .saved_page import SavedPage
 from kivymd.uix.screenmanager import MDScreenManager
 
 class ScreenManager(MDScreenManager):
     def on_kv_post(self, base_widget):
-        self.add_widget(SavedPage())
-        self.add_widget(EstabAccountEditPage())
-        self.add_widget(ThemeConfigPage())
-        self.add_widget(EstabAccountConfigurationPage())
-        self.add_widget(FollowEstabsPage())
-        self.add_widget(EstabSignUpPage())
-        self.add_widget(EstabLoginPage())
-        self.add_widget(ClientSignUpPage())
-        self.add_widget(ClientOrEstabPage())
-        self.add_widget(ClientLoginPage())
+        for i in [
+            PostsPage(),
+            SavedPage(),
+            EstabAccountEditPage(),
+            ThemeConfigPage(),
+            EstabAccountConfigurationPage(),
+            FollowEstabsPage(),
+            EstabSignUpPage(),
+            EstabLoginPage(),
+            ClientSignUpPage(),
+            ClientOrEstabPage(),
+            ClientLoginPage(),
+        ]: 
+            self.add_widget(i)
+            
         return super().on_kv_post(base_widget)
     
+#briefcase dev
     
