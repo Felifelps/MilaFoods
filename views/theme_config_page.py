@@ -1,8 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 
-Builder.load_string(
-'''
+Builder.load_string('''
 #:import BasicLabel views.utils
 #:import Background views.utils
 #:import join os.path.join

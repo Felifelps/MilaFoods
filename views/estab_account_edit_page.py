@@ -7,22 +7,14 @@ Builder.load_string(
 #:import BasicLabel views.utils
 #:import BasicTextField views.utils
 #:import BasicDropDownItem views.utils
-#:import TopBar views.utils
+#:import TopImageBar views.utils
 #:import Background views.utils
 #:import join os.path.join
             
 <EstabAccountEditPage>:
     Background:
     FloatLayout:
-        MDTopAppBar:
-            title: ""
-            pos_hint: {'top': 1}
-            font_name: join('views', 'data', 'Graduate-Regular.ttf')
-            right_action_items: [['close', lambda x: print('opa')]]
-        Image:
-            source: join('views', 'data', 'label.png')
-            pos_hint: {'x': .03, 'center_y': .9425}
-            size_hint: .4, .3
+        TopImageBar:
         BasicButton:
             text: 'Editar\\nCardápio'
             font_size: '12sp'

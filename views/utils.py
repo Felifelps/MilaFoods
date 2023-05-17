@@ -3,7 +3,7 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivy.uix.textinput import TextInput
 from kivy.uix.image import Image
 from kivymd.uix.button import MDFillRoundFlatIconButton
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, ListProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
 
@@ -22,7 +22,6 @@ Builder.load_string('''
 
 <BasicTextInput>:
     type: ''
-    limit: 11
     background_color: .9, .9, .9, 1
     size_hint: .8, 0.06
     multiline: False
@@ -55,6 +54,7 @@ Builder.load_string('''
         size: dp(250), dp(250)
     
 <BasicDropDownItem>:
+    items: ['Lanches','Salgados','Pizzaria']
     text: "Escolha seu serviço"
     font_size: "18sp"
     icon: 'menu-swap'
@@ -105,7 +105,30 @@ Builder.load_string('''
         pos_hint: {'right': .975, 'center_y': .5}
         icon_size: '25sp'
         icon: "menu"
-    
+
+<TopImageBar@MDRelativeLayout>:
+    canvas.before:
+        Color: 
+            rgba: 0, 0, 0, .4
+        RoundedRectangle: 
+            size: self.width, self.height + dp(4)
+            pos: 0, -dp(4)
+        Color: 
+            rgba: 0, 0, 0, .2
+        RoundedRectangle: 
+            size: self.width, self.height + dp(7)
+            pos: 0, -dp(7)
+    pos_hint: {'top': 1}
+    size_hint: 1, .1
+    md_bg_color: app.theme_cls.primary_dark
+    Image:
+        source: join('views', 'data', 'label.png')
+        pos_hint: {'center_x': .3, 'center_y': .5}
+    MDIconButton:
+        pos_hint: {'right': .975, 'center_y': .5}
+        icon_size: '25sp'
+        icon: "menu"
+
 <TopSearchBar@MDRelativeLayout>:
     canvas.before:
         Color: 
@@ -175,6 +198,96 @@ Builder.load_string('''
         pos_hint: {'center_x': .75, 'center_y': .3}
         font_size: '15sp'
 
+<Post@RelativeLayout>:
+    username: 'Username'
+    post_title: 'title'
+    description: 'description'
+    image: _img
+    size_hint: 1, None
+    height: dp(275)
+    canvas.before:
+        Color:
+            rgba: .98, .98, .98, 1
+        Rectangle:
+            size: self.width, self.height
+            pos: 0, 0
+    MDIconButton:
+        pos_hint: {'center_x': .085, 'center_y': .925}
+        icon_size: '35sp'
+        theme_icon_color: 'Custom'
+        icon_color: .1, .1, .1, 1
+        icon: "account-circle"
+    MDIconButton:
+        pos_hint: {'right': 1, 'center_y': .925}
+        icon_size: '30sp'
+        theme_icon_color: 'Custom'
+        icon_color: .1, .1, .1, 1
+        icon: "dots-horizontal"
+    Label:
+        text: root.username
+        color: .1, .1, .1, 1
+        size_hint: None, None
+        size: self.texture_size
+        font_size: '12sp'
+        pos_hint: {'x': .16, 'center_y': .915}
+    Image:
+        id: _img
+        pos_hint: {'top': .85}
+        size_hint: 1, .55
+        source: 'close'
+    MDIconButton:
+        pos_hint: {'center_x': .08, 'center_y': .78}
+        theme_icon_color: 'Custom'
+        icon_color: .75, .75, .75, 1
+        icon: "star"
+        clicked: False
+        on_release:
+            self.icon_color = (.75, .75, .75, 1) if self.clicked else (.2, .2, .2, 1)
+            self.clicked = not self.clicked
+    MDIconButton:
+        pos_hint: {'right': .9, 'top': .28}
+        theme_icon_color: 'Custom'
+        icon: "heart"
+        icon_color: .75, .75, .75, 1
+        clicked: False
+        on_release:
+            self.icon_color = (.75, .75, .75, 1) if self.clicked else (.2, .2, .2, 1)
+            self.clicked = not self.clicked
+    MDIconButton:
+        pos_hint: {'right': 1, 'top': .28}
+        theme_icon_color: 'Custom'
+        icon: "message-outline"
+        icon_color: .1, .1, .1, 1
+    Label:
+        text: root.post_title
+        color: .1, .1, .1, 1
+        size_hint: None, None
+        size: self.texture_size
+        font_size: '14sp'
+        markup: True
+        pos_hint: {'x': .025, 'top': .28}
+    Label:
+        text: root.description
+        color: .1, .1, .1, 1
+        size_hint: None, None
+        size: self.texture_size
+        font_size: '11sp'
+        markup: True
+        pos_hint: {'x': .03, 'top': .19}
+    MDRectangleFlatIconButton:
+        text: "Comentar"
+        halign: 'left'
+        icon: "account-circle"
+        line_color: 0, 0, 0, 0
+        theme_text_color: 'Custom'
+        text_color: .1, .1, .1, 1
+        theme_icon_color: 'Custom'
+        icon_color: .6, .6, .6, 1
+        icon_size: '20sp'
+        font_size: '11sp'
+        size_hint: .05, .1
+        pos_hint: {"center_x": .14, "center_y": .075}
+
 ''')
 
 class BasicListItem(TwoLineAvatarListItem):
@@ -189,18 +302,13 @@ class Background(Image):
         self.reload()
 
 class BasicDropDownItem(MDFillRoundFlatIconButton):
-    types = [
-        'Lanches',
-        'Salgados',
-        'Pizzaria'
-    ]
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    items = ListProperty([])
+    def on_items(self, a, b):
         def set_text(text): self.text = text
         self.menu = MDDropdownMenu(
             caller=self,
             items=[
-                {'viewclass': 'OneLineListItem', 'text': t, 'on_release': lambda text=t: set_text(text) == self.menu.dismiss(), 'text_color': (0, 0, 0, 1), 'theme_text_color': 'Custom'} for t in self.types
+                {'viewclass': 'OneLineListItem', 'text': t, 'on_release': lambda text=t: set_text(text) == self.menu.dismiss(), 'text_color': (0, 0, 0, 1), 'theme_text_color': 'Custom'} for t in self.items
             ],
             ver_growth='down',
             position='auto',
@@ -214,6 +322,8 @@ class BasicDropDownItem(MDFillRoundFlatIconButton):
 
 class BasicTextInput(TextInput):
     def insert_text(self, substring, from_undo=False):
-        if self.type == 'cpf' and (len(self.text) >= self.limit or not substring.isdigit()): 
+        if self.type == 'cpf' and (len(self.text) >= 11 or not substring.isdigit()): 
+            return False
+        elif self.type == 'cnpj' and (len(self.text) >= 14 or not substring.isdigit()): 
             return False
         return super().insert_text(substring, from_undo)

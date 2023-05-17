@@ -1,13 +1,38 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 
-Builder.load_string(
-'''
+Builder.load_string('''
+#:import join os.path.join
 #:import BasicButton views.utils
 #:import BasicLabel views.utils
 #:import BasicTextInput views.utils
+#:import BasicDropDownItem views.utils
 #:import Background views.utils
 
+<CpfCnpjTextInput@FloatLayout>:
+    cpf: True
+    BasicDropDownItem:
+        size_hint: .3, .1
+        text: 'CPF'
+        font_size: '12.5sp'
+        pos_hint: {'x': .1, 'center_y': .75}
+        items: ['CPF','CNPJ']
+        on_text:
+            root.cpf = not root.cpf
+            print(root.cpf)
+    BasicTextInput:
+        id: _cpf 
+        type: 'cpf'
+        opacity: (1 if root.cpf else 0)
+        size_hint: .8, .25
+        pos_hint: {'x': .1, 'center_y': .35}
+    BasicTextInput:
+        id: _cnpj
+        type: 'cnpj'
+        opacity: (0 if root.cpf else 1)
+        size_hint: .8, .25
+        pos_hint: {'x': .1, 'center_y': .25}
+            
 <EstabLoginPage>:
     BackgroundLogo:
     RelativeLayout:
@@ -15,12 +40,9 @@ Builder.load_string(
             text: 'Login de Empresa'
             pos_hint: {'center_x': .5, 'center_y': .6}
             font_size: '25sp'
-        BasicLabel:
-            text: 'CPF ou CNPJ'
-            pos_hint: {'center_x': .25, 'center_y': .525}
-        BasicTextInput:
-            type: 'cpf'
+        CpfCnpjTextInput:
             pos_hint: {'center_x': .5, 'center_y': .475}
+            size_hint: 1, .2
         BasicLabel:
             text: 'Senha'
             pos_hint: {'center_x': .175, 'center_y': .41}
