@@ -10,7 +10,7 @@ from kivy.lang import Builder
 Builder.load_string('''
 #:import join os.path.join
 #:import colors kivymd.color_definitions.colors
-
+            
 <BasicLabel@Label>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
     font_size: '12.5sp'
