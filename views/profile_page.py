@@ -18,10 +18,9 @@ Builder.load_string('''
         TopImageBar:
         ScrollView:
             size_hint: 1, .8
-            pos_hint: {'top': .875}
+            pos_hint: {'top': .85}
             MDFloatLayout:
                 adaptive_height: True
-                size_hint: 1, 1
                 MDIconButton:
                     icon: join('views', 'data', 'animal.png')
                     icon_size: '75sp'
@@ -35,7 +34,7 @@ Builder.load_string('''
                     pos: dp(10), root.height - dp(250)
                 Label:
                     text: 'Description\\nCavalo'
-                    font_size: '12.5sp'
+                    font_size: '14sp'
                     size_hint: None, None
                     size: self.texture_size
                     pos: dp(10), root.height - dp(285)
@@ -76,28 +75,29 @@ Builder.load_string('''
                 BasicLabel:
                     text: 'Publicações'
                     font_size: '25sp'
-                    pos_hint: {'x': .05, 'center_y': .46}
+                    center_y: root.height - root.height*0.6
+                    center_x: dp(7.5)
+                    halign: 'left'
                     canvas:
                         Color:
                             rgba: 1, 1, 1, 1
                         Line:
-                            points: 0, self.y - dp(10), 10000, self.y - dp(10)
+                            points: 0, self.y - dp(10), root.width, self.y - dp(10)
                 BasicButton:
                     size_hint_x: .275
-                    pos_hint: {'right': .95, 'center_y': .46}
+                    center_y: root.height - root.height*0.6
+                    right: root.width - dp(7.5)
                     text: 'Cardápio'
                     md_bg_color: app.theme_cls.primary_dark
-            
-            #MDStackLayout:
-            #    id: _stack
-            #    adaptive_height: True
-            #    spacing: 10, 20
-            #   Post:
-            #        post_title: "Jorginho lanches"
-            #    Post:
-            #    Post:
-            #    Post:
-            #    Post:
+                MDStackLayout:
+                    top: root.height - root.height*1.325
+                    spacing: 10, 20
+                    Post:
+                        post_title: "Jorginho lanches"
+                    Post:
+                    Post:
+                    Post:
+                    Post:
         BottomBar:
 '''
 )
