@@ -19,7 +19,7 @@ Builder.load_string('''
         ScrollView:
             size_hint: 1, .8
             pos_hint: {'top': .85}
-            MDFloatLayout:
+            MDRelativeLayout:
                 adaptive_height: True
                 MDIconButton:
                     icon: join('views', 'data', 'animal.png')
@@ -104,3 +104,4 @@ Builder.load_string('''
 
 class ProfilePage(MDScreen):
     name = 'profile_page'
+    print('ajeitar profile page')

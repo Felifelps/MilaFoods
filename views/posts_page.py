@@ -7,13 +7,15 @@ Builder.load_string(
 #:import BottomBar views.utils
 #:import BasicLabel views.utils
 #:import Background views.utils
+#:import LateralMenu views.utils
 #:import Post views.utils
     
 <PostsPage>:
     Background:
     FloatLayout:
-        TopSearchBar:
+        TopCentralSearchBar:
             id: bar
+            lm: _lm
         ScrollView:
             pos_hint: {'center_x': .5, 'top': .875}
             size_hint: .98, .8
@@ -23,8 +25,10 @@ Builder.load_string(
                 spacing: 10, 20
                 Post:
                     post_title: "Jorginho lanches"
-            
         BottomBar:
+        LateralMenu:
+            id: _lm
+        
         
         
 '''

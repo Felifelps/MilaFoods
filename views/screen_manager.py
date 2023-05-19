@@ -9,15 +9,17 @@ from .follow_estabs_page import FollowEstabsPage
 from .posts_page import PostsPage
 from .theme_config_page import ThemeConfigPage
 from .saved_page import SavedPage
+from .search_page import SearchPage
 from .profile_page import ProfilePage
 from kivymd.uix.screenmanager import MDScreenManager
 
 class ScreenManager(MDScreenManager):
     def on_kv_post(self, base_widget):
         for i in [
+            PostsPage(),
+            SearchPage(),
             ProfilePage(),
             EstabAccountEditPage(),
-            PostsPage(),
             EstabLoginPage(),
             EstabSignUpPage(),
             FollowEstabsPage(),

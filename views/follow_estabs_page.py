@@ -8,6 +8,7 @@ Builder.load_string(
 #:import Background views.utils
 #:import join os.path.join
 #:import colors kivymd.color_definitions.colors
+#:import EstabAccount views.utils
 
 <BottomAnimalBar@RelativeLayout>:
     canvas:
@@ -25,16 +26,6 @@ Builder.load_string(
         text: 'Vem lanchar'
         font_size: '20sp'
         pos_hint: {'center_x': .25, 'center_y': .5}
-
-<EstabAccount@BasicListItem>:
-    size_hint: 1, None
-    height: dp(80)
-    source: join('views', 'data', 'background_Red.png')
-    estab_name: 'Username'
-    estab_place: 'Rua do seu andré'
-    text: root.estab_name
-    secondary_text: root.estab_place
-    src: root.source
 
 <FollowEstabsPage>:
     Background:

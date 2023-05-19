@@ -1,7 +1,9 @@
 from kivymd.uix.list import TwoLineAvatarListItem, ImageLeftWidget
 from kivymd.uix.menu import MDDropdownMenu
+from kivy.animation import Animation
 from kivy.uix.textinput import TextInput
 from kivy.uix.image import Image
+from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFillRoundFlatIconButton
 from kivy.properties import StringProperty, ListProperty
 from kivy.metrics import dp
@@ -52,7 +54,17 @@ Builder.load_string('''
         pos_hint: {'center_x': .5, 'center_y': .8}
         size_hint: None, None
         size: dp(250), dp(250)
-    
+
+<EstabAccount@BasicListItem>:
+    size_hint: 1, None
+    height: dp(80)
+    source: join('views', 'data', 'background_Red.png')
+    estab_name: 'Username'
+    estab_place: 'Rua do seu andré'
+    text: root.estab_name
+    secondary_text: root.estab_place
+    src: root.source
+
 <BasicDropDownItem>:
     items: ['Lanches','Salgados','Pizzaria']
     text: "Escolha seu serviço"
@@ -74,8 +86,53 @@ Builder.load_string('''
     hint_text_color_focus: 0, 0, 0, 0
     hint_text_color_normal: 0, 0, 0, 0
 
+<LateralMenu>:
+    orientation: 'vertical'
+    size_hint: .8, 1
+    pos_hint: {'x': -0.8, 'top': 1}
+    bg_opacity: 0
+    canvas.before:
+        Rectangle:
+            pos: self.pos
+            size: self.size
+        Color:
+            rgba: 0, 0, 0, self.bg_opacity
+        Rectangle:
+            pos: 0, 0
+            size: self.width*1.25, self.height
+    MDRelativeLayout:  
+        md_bg_color: app.theme_cls.primary_dark
+        size_hint: 1, .3
+        pos_hint: {'top': 1}
+        MDIconButton:
+            pos_hint: {'right': 1, 'top': 1}
+            icon: "close"
+        MDIconButton:
+            icon: join('views', 'data', 'animal.png')
+            icon_size: '75sp'
+            pos_hint: {'center_x': .5, 'center_y': .65}
+        Label: 
+            text: 'Username'
+            font_size: '20sp'
+            pos_hint: {'center_x': .5, 'center_y': .3}
+            size_hint: None, None
+            size: self.texture_size
+    MDRelativeLayout:  
+        md_bg_color: 'white'
+        size_hint: 1, .7
+        pos_hint: {'top': .7}
+            
+<BarMenuButton@MDIconButton>:
+    lm: None
+    pos_hint: {'right': .975, 'center_y': .5}
+    icon_size: '25sp'
+    icon: "menu"
+    on_press:
+        self.lm.open()
+
 <TopTitleBar@MDRelativeLayout>:
     title: ''
+    lm: None
     canvas.before:
         Color: 
             rgba: 0, 0, 0, .4
@@ -100,13 +157,12 @@ Builder.load_string('''
         size_hint: None, None
         size: self.texture_size
         pos_hint: {'x': .2, 'center_y': .5}
-        font_size: '25sp'
-    MDIconButton:
-        pos_hint: {'right': .975, 'center_y': .5}
-        icon_size: '25sp'
-        icon: "menu"
+        font_size: '25sp'   
+    BarMenuButton:
+        lm: root.lm
 
 <TopImageBar@MDRelativeLayout>:
+    lm: None
     canvas.before:
         Color: 
             rgba: 0, 0, 0, .4
@@ -124,12 +180,11 @@ Builder.load_string('''
     Image:
         source: join('views', 'data', 'label.png')
         pos_hint: {'center_x': .3, 'center_y': .5}
-    MDIconButton:
-        pos_hint: {'right': .975, 'center_y': .5}
-        icon_size: '25sp'
-        icon: "menu"
+    BarMenuButton:
+        lm: root.lm
 
-<TopSearchBar@MDRelativeLayout>:
+<TopCentralSearchBar@MDRelativeLayout>:
+    lm: None
     canvas.before:
         Color: 
             rgba: 0, 0, 0, .4
@@ -160,12 +215,45 @@ Builder.load_string('''
         pos_hint: {'center_x': .5, 'center_y': .5}
     MDIconButton:
         pos_hint: {'x': .7, 'center_y': .5}
-        icon: "magnify"
-    MDIconButton:
-        pos_hint: {'right': .975, 'center_y': .5}
-        icon_size: '25sp'
-        icon: "menu"
+        icon: "magnify" 
+    BarMenuButton:
+        lm: root.lm
 
+<TopActiveSearchBar@MDRelativeLayout>:
+    canvas.before:
+        Color: 
+            rgba: 0, 0, 0, .4
+        RoundedRectangle: 
+            size: self.width, self.height + dp(4)
+            pos: 0, -dp(4)
+        Color: 
+            rgba: 0, 0, 0, .2
+        RoundedRectangle: 
+            size: self.width, self.height + dp(7)
+            pos: 0, -dp(7)
+    pos_hint: {'top': 1}
+    size_hint: 1, .1
+    md_bg_color: app.theme_cls.primary_dark
+    MDTextField:
+        color_mode: 'custom'
+        line_color_focus: .8, .8, .8, 1
+        text_color_normal: .8, .8, .8, 1
+        text_color_focus: .8, .8, .8, 1
+        font_size: "13sp"
+        hint_text_color_focus: 0, 0, 0, 0
+        hint_text_color_normal: 0, 0, 0, 0
+        size_hint: .5, 1
+        pos_hint: {'x': .125, 'center_y': .5}
+    MDIconButton:
+        pos_hint: {'x': 0, 'center_y': .5}
+        icon: "magnify"
+    BasicButton:
+        text: 'Cancelar'
+        size_hint: .1, .2
+        pos_hint: {'right': .975, 'center_y': .5}
+        font_size: '10sp'
+        md_bg_color: app.theme_cls.primary_dark
+    
 <BottomBar@MDRelativeLayout>:
     canvas.before:
         Color: 
@@ -327,3 +415,16 @@ class BasicTextInput(TextInput):
         elif self.type == 'cnpj' and (len(self.text) >= 14 or not substring.isdigit()): 
             return False
         return super().insert_text(substring, from_undo)
+
+class LateralMenu(MDBoxLayout):
+    open_animation = Animation(pos_hint={'x': 0}, bg_opacity=0.5, duration=0.1)
+    close_animation = Animation(pos_hint={'x': -0.8}, bg_opacity=0, duration=0.1)
+    def open(self):
+        self.open_animation.start(self)
+    def close(self):
+        self.close_animation.start(self)
+    def on_touch_down(self, touch):
+        if not self.collide_point(touch.x, touch.y):
+            self.close()
+        return super().on_touch_down(touch)
+        
