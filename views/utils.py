@@ -18,7 +18,16 @@ Builder.load_string('''
     font_size: '12.5sp'
     size_hint: None, None
     size: self.texture_size
-    
+
+<BasicIconButton@MDRectangleFlatIconButton>:
+    font_name: join('views', 'data', 'Graduate-Regular.ttf')
+    line_color: 0, 0, 0, 0
+    theme_text_color: "Custom"
+    text_color: "black"
+    theme_icon_color: "Custom"
+    icon_color: "black"
+    halign: 'left'
+
 <BasicButton@MDRaisedButton>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
 
@@ -87,6 +96,7 @@ Builder.load_string('''
     hint_text_color_normal: 0, 0, 0, 0
 
 <LateralMenu>:
+    id: _lm
     orientation: 'vertical'
     size_hint: .8, 1
     pos_hint: {'x': -0.8, 'top': 1}
@@ -104,23 +114,57 @@ Builder.load_string('''
         md_bg_color: app.theme_cls.primary_dark
         size_hint: 1, .3
         pos_hint: {'top': 1}
+        Image:
+            source: join('views', 'data', 'label.png')
+            pos_hint: {'x': 0, 'top': 1}
+            size_hint: .4, .2
         MDIconButton:
             pos_hint: {'right': 1, 'top': 1}
             icon: "close"
+            on_press: 
+                _lm.close()
         MDIconButton:
-            icon: join('views', 'data', 'animal.png')
+            icon: join('views', 'data', 'background_Green.png')
             icon_size: '75sp'
-            pos_hint: {'center_x': .5, 'center_y': .65}
+            pos_hint: {'center_x': .5, 'center_y': .55}
         Label: 
             text: 'Username'
             font_size: '20sp'
-            pos_hint: {'center_x': .5, 'center_y': .3}
+            pos_hint: {'center_x': .5, 'center_y': .25}
             size_hint: None, None
             size: self.texture_size
-    MDRelativeLayout:  
+    MDStackLayout:  
         md_bg_color: 'white'
         size_hint: 1, .7
         pos_hint: {'top': .7}
+        BasicIconButton:
+            text: "Background"            
+            icon: "selection-multiple"
+            size_hint: 1, .1
+        BasicIconButton:
+            text: "Editar perfil"            
+            icon: "account"
+            size_hint: 1, .1
+        BasicIconButton:
+            text: "Salvos"            
+            icon: "star"
+            size_hint: 1, .1
+        Label:
+            canvas: 
+                Color:
+                    rgb: 0, 0, 0
+                Line:
+                    points: 0, self.top, self.x + self.width, self.top
+                    width: 1
+                Rectangle: 
+                    size: self.size
+            text: 'Outros'
+            size_hint: 1, .1
+            halign: 'left'
+            color: 0, 0, 0, 1
+            font_name: join('views', 'data', 'Graduate-Regular.ttf')
+            on_touch_down:
+                print('hi')
             
 <BarMenuButton@MDIconButton>:
     lm: None
