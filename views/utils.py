@@ -28,6 +28,12 @@ Builder.load_string('''
     icon_color: "black"
     halign: 'left'
 
+<MenuIconButton@MDIconButton>:
+    theme_icon_color: 'Custom'
+    icon_color: app.theme_cls.primary_color
+    icon_size: '50sp'
+    md_bg_color: 'white'
+
 <BasicButton@MDRaisedButton>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
 
@@ -149,23 +155,34 @@ Builder.load_string('''
             text: "Salvos"            
             icon: "star"
             size_hint: 1, .1
-        Label:
+        MDLabel:
             canvas: 
                 Color:
                     rgb: 0, 0, 0
                 Line:
                     points: 0, self.top, self.x + self.width, self.top
                     width: 1
-                Rectangle: 
-                    size: self.size
-            text: 'Outros'
+            text: '  Outros'
             size_hint: 1, .1
-            halign: 'left'
             color: 0, 0, 0, 1
             font_name: join('views', 'data', 'Graduate-Regular.ttf')
-            on_touch_down:
-                print('hi')
-            
+        BasicIconButton:
+            text: "Carrinho"            
+            icon: "cart"
+            size_hint: 1, .1
+        BasicIconButton:
+            text: "Trocar de conta"            
+            icon: "account-convert"
+            size_hint: 1, .1
+        BasicIconButton:
+            text: "Compartilhar"            
+            icon: "share-variant"
+            size_hint: 1, .1
+        BasicIconButton:
+            text: "Avalie-nos"            
+            icon: "open-in-new"
+            size_hint: 1, .1
+
 <BarMenuButton@MDIconButton>:
     lm: None
     pos_hint: {'right': .975, 'center_y': .5}

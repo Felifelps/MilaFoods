@@ -25,6 +25,8 @@ Builder.load_string(
                 spacing: 10, 20
                 Post:
                     post_title: "Jorginho lanches"
+                Post:
+                    post_title: "Jorginho lanches"
         BottomBar:
         LateralMenu:
             id: _lm

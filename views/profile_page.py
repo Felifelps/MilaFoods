@@ -7,7 +7,7 @@ Builder.load_string('''
 #:import BasicButton views.utils
 #:import TopImageBar views.utils
 #:import BottomBar views.utils
-#:import CircularImage views.utils
+#:import LateralMenu views.utils
 #:import Post views.utils
 #:import join os.path.join
 
@@ -16,11 +16,11 @@ Builder.load_string('''
         id: _bg
     RelativeLayout:
         TopImageBar:
+            lm: _lm
         ScrollView:
             size_hint: 1, .8
             pos_hint: {'top': .85}
-            MDRelativeLayout:
-                adaptive_height: True
+            MDFloatLayout:
                 MDIconButton:
                     icon: join('views', 'data', 'animal.png')
                     icon_size: '75sp'
@@ -90,7 +90,7 @@ Builder.load_string('''
                     text: 'Cardápio'
                     md_bg_color: app.theme_cls.primary_dark
                 MDStackLayout:
-                    top: root.height - root.height*1.325
+                    top: root.height - root.height*0.7
                     spacing: 10, 20
                     Post:
                         post_title: "Jorginho lanches"
@@ -99,6 +99,8 @@ Builder.load_string('''
                     Post:
                     Post:
         BottomBar:
+        LateralMenu:
+            id: _lm
 '''
 )
 
