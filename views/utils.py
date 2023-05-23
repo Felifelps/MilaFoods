@@ -105,7 +105,7 @@ Builder.load_string('''
     id: _lm
     orientation: 'vertical'
     size_hint: .8, 1
-    pos_hint: {'x': -0.8, 'top': 1}
+    pos_hint: {'x': -2, 'top': 1}
     bg_opacity: 0
     canvas.before:
         Rectangle:
@@ -334,6 +334,8 @@ Builder.load_string('''
         pos_hint: {'center_x': .25, 'center_y': .65}
         icon_size: '25sp'
         icon: "home-account"
+        on_press:
+            self.parent.parent.parent.manager.current = 'posts_page'
     Label:
         text: 'Início'
         pos_hint: {'center_x': .25, 'center_y': .3}
@@ -391,7 +393,7 @@ Builder.load_string('''
         icon: "star"
         clicked: False
         on_release:
-            self.icon_color = (.75, .75, .75, 1) if self.clicked else (.2, .2, .2, 1)
+            self.icon_color = (.75, .75, .75, 1) if self.clicked else (.85, .68, .21, 1)
             self.clicked = not self.clicked
     MDIconButton:
         pos_hint: {'right': .9, 'top': .28}
@@ -400,7 +402,7 @@ Builder.load_string('''
         icon_color: .75, .75, .75, 1
         clicked: False
         on_release:
-            self.icon_color = (.75, .75, .75, 1) if self.clicked else (.2, .2, .2, 1)
+            self.icon_color = (.75, .75, .75, 1) if self.clicked else (1, 0, .2, 1)
             self.clicked = not self.clicked
     MDIconButton:
         pos_hint: {'right': 1, 'top': .28}
@@ -479,7 +481,7 @@ class BasicTextInput(TextInput):
 
 class LateralMenu(MDBoxLayout):
     open_animation = Animation(pos_hint={'x': 0}, bg_opacity=0.5, duration=0.1)
-    close_animation = Animation(pos_hint={'x': -0.8}, bg_opacity=0, duration=0.1)
+    close_animation = Animation(pos_hint={'x': -2}, bg_opacity=0, duration=0.1)
     def open(self):
         self.open_animation.start(self)
     def close(self):

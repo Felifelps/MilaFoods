@@ -18,7 +18,7 @@ class ScreenManager(MDScreenManager):
     def on_kv_post(self, base_widget):
         for i in [
             MenuPage(),
-            #PostsPage(),
+            PostsPage(),
             #SearchPage(),
             #ProfilePage(),
             #EstabAccountEditPage(),
@@ -36,5 +36,4 @@ class ScreenManager(MDScreenManager):
             
         return super().on_kv_post(base_widget)
     
-#briefcase dev
     
