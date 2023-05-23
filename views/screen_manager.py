@@ -17,10 +17,10 @@ from kivymd.uix.screenmanager import MDScreenManager
 class ScreenManager(MDScreenManager):
     def on_kv_post(self, base_widget):
         for i in [
-            MenuPage(),
+            #MenuPage(),
+            ProfilePage(),
             PostsPage(),
             #SearchPage(),
-            #ProfilePage(),
             #EstabAccountEditPage(),
             #EstabLoginPage(),
             #EstabSignUpPage(),
