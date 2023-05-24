@@ -1,8 +1,7 @@
 from kivymd.uix.screen import MDScreen
-from kivy.uix.relativelayout import RelativeLayout
+from kivymd.uix.relativelayout import MDRelativeLayout
 from kivy.animation import Animation
 from kivy.lang import Builder
-import math
 
 Builder.load_string('''
 #:import BasicLabel views.utils
@@ -12,11 +11,32 @@ Builder.load_string('''
 #:import BottomBar views.utils
 #:import LateralMenu views.utils
 #:import Post views.utils
+#:import BottomMenu views.utils
 #:import join os.path.join
 
+<NewPost@BottomMenu>:
+    md_bg_color: .95, .95, .95, 1
+    canvas:
+        Color:
+            rgba: 1, 0, 0, 1
+        Rectangle:
+            size: self.width, self.height*0.15
+            pos: 0, self.height*0.85
+    MDIconButton:
+        icon: 'arrow-left'
+        pos_hint: {'x': 0, 'center_y': .925}
+        on_press: root.close()
+    BasicLabel:
+        theme_text_color: 'Custom'
+        text_color: 0, 0, 0, 1
+        text: 'Nova Publicação'
+        font_size: '25sp'
+        halign: 'center'
+        pos_hint: {'center_x': .5, 'top': .975}
+
 <PostsArea>:
-    size_hint: 1, .35
-    pos_hint: {'top': .35}
+    size_hint: 1, .4
+    pos_hint: {'top': .4}
     BasicLabel:
         text: 'Publicações'
         font_size: '25sp'
@@ -52,6 +72,7 @@ Builder.load_string('''
     RelativeLayout:
         TopImageBar:
             lm: _lm
+            np: _np
         MDFloatLayout:
             MDIconButton:
                 icon: join('views', 'data', 'animal.png')
@@ -109,19 +130,20 @@ Builder.load_string('''
         BottomBar:
         LateralMenu:
             id: _lm
+        NewPost:
+            id: _np
 '''
 )
 
 class ProfilePage(MDScreen):
     name = 'profile_page'
-    print('ajeitar profile page')
 
-class PostsArea(RelativeLayout):
+class PostsArea(MDRelativeLayout):
     up_anim = Animation(pos_hint={'top': .9}, duration=0.1)
-    down_anim =  Animation(pos_hint={'top': .35}, duration=0.1)
+    down_anim =  Animation(pos_hint={'top': .4}, duration=0.1)
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos) and touch.spos[1] > .8 and self.pos_hint['top'] == .9:
             self.down_anim.start(self)
-        elif self.collide_point(*touch.pos) and self.pos_hint['top'] == .35:
+        elif self.collide_point(*touch.pos) and self.pos_hint['top'] == .4:
             self.up_anim.start(self)
         return super().on_touch_down(touch)

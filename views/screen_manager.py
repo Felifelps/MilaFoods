@@ -19,7 +19,7 @@ class ScreenManager(MDScreenManager):
         for i in [
             #MenuPage(),
             ProfilePage(),
-            PostsPage(),
+            #PostsPage(),
             #SearchPage(),
             #EstabAccountEditPage(),
             #EstabLoginPage(),

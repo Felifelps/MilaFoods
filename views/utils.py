@@ -5,6 +5,7 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.image import Image
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFillRoundFlatIconButton
+from kivymd.uix.relativelayout import MDRelativeLayout
 from kivy.properties import StringProperty, ListProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
@@ -101,6 +102,17 @@ Builder.load_string('''
     hint_text_color_focus: 0, 0, 0, 0
     hint_text_color_normal: 0, 0, 0, 0
 
+<BottomMenu>:
+    size_hint: 1, .6
+    pos_hint: {'y': -0.6}
+    bg_opacity: 0
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, self.bg_opacity
+        Rectangle:
+            pos: 0, 0
+            size: self.width, self.height*1.75
+            
 <LateralMenu>:
     id: _lm
     orientation: 'vertical'
@@ -224,6 +236,7 @@ Builder.load_string('''
 
 <TopImageBar@MDRelativeLayout>:
     lm: None
+    np: None
     canvas.before:
         Color: 
             rgba: 0, 0, 0, .4
@@ -241,6 +254,12 @@ Builder.load_string('''
     Image:
         source: join('views', 'data', 'label.png')
         pos_hint: {'center_x': .3, 'center_y': .5}
+    MDIconButton:
+        pos_hint: {'right': .85 if root.np != None else 0, 'center_y': .5}
+        icon_size: '25sp'
+        icon: "plus"
+        on_press:
+            root.np.open()
     BarMenuButton:
         lm: root.lm
 
@@ -486,6 +505,18 @@ class LateralMenu(MDBoxLayout):
         self.open_animation.start(self)
     def close(self):
         self.close_animation.start(self)
+    def on_touch_down(self, touch):
+        if not self.collide_point(touch.x, touch.y):
+            self.close()
+        return super().on_touch_down(touch)
+
+class BottomMenu(MDRelativeLayout):
+    open_anim = Animation(pos_hint={'y': 0}, bg_opacity=0.5, duration=0.1)
+    close_anim = Animation(pos_hint={'y': -0.6}, bg_opacity=0, duration=0.1)
+    def open(self):
+        self.open_anim.start(self)
+    def close(self):
+        self.close_anim.start(self)
     def on_touch_down(self, touch):
         if not self.collide_point(touch.x, touch.y):
             self.close()

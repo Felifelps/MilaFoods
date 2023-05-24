@@ -3,9 +3,9 @@ from kivymd.uix.relativelayout import MDRelativeLayout
 from kivy.animation import Animation
 from kivy.properties import StringProperty
 from kivy.lang import Builder
+from views.utils import BottomMenu
 
-Builder.load_string(
-'''
+Builder.load_string('''
 #:import MenuIconButton views.utils
 #:import BasicLabel views.utils
 #:import BasicTextField views.utils
@@ -21,15 +21,6 @@ Builder.load_string(
     description: 'description'
     price: 35
     quantity: 1
-    size_hint: 1, .6
-    pos_hint: {'x': 0, 'y': -0.6}
-    bg_opacity: 0
-    canvas.before:
-        Color:
-            rgba: 0, 0, 0, self.bg_opacity
-        Rectangle:
-            pos: 0, 0
-            size: self.width, self.height*1.75
     BasicLabel:
         text: root.title
         color: .2, .2, .2, 1
@@ -193,20 +184,12 @@ Builder.load_string(
 class MenuPage(MDScreen):
     name = 'menu_page'
     
-class MenuItemData(MDRelativeLayout):
+class MenuItemData(BottomMenu):
     description = StringProperty('description')
-    open_animation = Animation(pos_hint={'y': 0}, bg_opacity=0.5, duration=0.1)
-    close_animation = Animation(pos_hint={'y': -0.6}, bg_opacity=0, duration=0.1)
     def open(self, title, img, description, price):
         self.title = title
         self.img = img
         self.description = description 
         self.price = price
         self.quantity = 1
-        self.open_animation.start(self)
-    def close(self):
-        self.close_animation.start(self)
-    def on_touch_down(self, touch):
-        if not self.collide_point(touch.x, touch.y):
-            self.close()
-        return super().on_touch_down(touch)
+        super().open()
