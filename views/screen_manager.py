@@ -17,8 +17,8 @@ from kivymd.uix.screenmanager import MDScreenManager
 class ScreenManager(MDScreenManager):
     def on_kv_post(self, base_widget):
         for i in [
-            #MenuPage(),
-            ProfilePage(),
+            MenuPage(),
+            #ProfilePage(),
             #PostsPage(),
             #SearchPage(),
             #EstabAccountEditPage(),

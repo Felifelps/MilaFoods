@@ -7,6 +7,7 @@ Builder.load_string(
 #:import BasicLabel views.utils
 #:import BasicTextInput views.utils
 #:import Background views.utils
+#:import CodeConfirmMenu views.utils
 
 <ClientSignUpPage>:
     BackgroundLogo:
@@ -49,6 +50,8 @@ Builder.load_string(
             text: 'Criar conta'
             size_hint_x: .8
             pos_hint: {'center_x': .5, 'center_y': .2175}
+            on_press:
+                root.open()
         BasicLabel:
             text: 'Ou use suas redes sociais'
             pos_hint: {'center_x': .5, 'center_y': .16}
@@ -60,9 +63,14 @@ Builder.load_string(
             text: 'Facebook'
             size_hint_x: .3
             pos_hint: {'x': .1, 'center_y': .1}
+        CodeConfirmMenu:
+            id: _ccm
+
         
 '''
 )
 
 class ClientSignUpPage(MDScreen):
     name = 'client_sign_up_page'
+    def open(self):
+        self.ids._ccm.open()

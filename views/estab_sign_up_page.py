@@ -7,6 +7,7 @@ Builder.load_string(
 #:import BasicLabel views.utils
 #:import BasicTextInput views.utils
 #:import Background views.utils
+#:import CodeConfirmMenu views.utils
             
 <EstabSignUpPage>:
     BackgroundLogo:
@@ -54,9 +55,15 @@ Builder.load_string(
             text: 'Criar conta'
             size_hint_x: .8
             pos_hint: {'center_x': .5, 'center_y': .1}
+            on_press:
+                root.open()
+        CodeConfirmMenu:
+            id: _ccm
 '''
 )
 
 class EstabSignUpPage(MDScreen):
     name = 'estab_sign_up_page'
+    def open(self):
+        self.ids._ccm.open()
     print('Ajeitar o cpf e cnpj pra escolher')

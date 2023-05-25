@@ -6,7 +6,7 @@ from kivy.uix.image import Image
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFillRoundFlatIconButton
 from kivymd.uix.relativelayout import MDRelativeLayout
-from kivy.properties import StringProperty, ListProperty
+from kivy.properties import StringProperty, ListProperty, NumericProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
 
@@ -30,10 +30,13 @@ Builder.load_string('''
     halign: 'left'
 
 <MenuIconButton@MDIconButton>:
+    editable: False
     theme_icon_color: 'Custom'
     icon_color: app.theme_cls.primary_color
     icon_size: '50sp'
     md_bg_color: 'white'
+    badge_icon: 'numeric-2' if self.editable else ''
+    
 
 <BasicButton@MDRaisedButton>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
@@ -103,15 +106,71 @@ Builder.load_string('''
     hint_text_color_normal: 0, 0, 0, 0
 
 <BottomMenu>:
-    size_hint: 1, .6
-    pos_hint: {'y': -0.6}
+    base_height: .6
+    md_bg_color: .95, .95, .95, 1
+    size_hint: 1, self.base_height
+    pos_hint: {'y': -self.base_height}
     bg_opacity: 0
     canvas.before:
         Color:
             rgba: 0, 0, 0, self.bg_opacity
         Rectangle:
             pos: 0, 0
-            size: self.width, self.height*1.75
+            size: self.width, self.height*(10/self.base_height)
+
+<CodeConfirmMenu@BottomMenu>:
+    base_height: .5
+    MDLabel:
+        size_hint: .95, .35
+        pos_hint: {'center_x': .5, 'top': 1}
+        text: 'Olá\\nObrigado por se inscrever em nosso app!\\nPrecisamos apenas confirmar seu email.\\nInsira o código aqui.'
+        theme_text_color: 'Custom'
+        text_color: .3, .3, .3, 1
+        font_size: '17.5sp'
+    TextInput:
+        canvas.before:
+            Color:
+                rgba: .4, .4, .4, 1
+            Line:
+                rounded_rectangle: self.x, self.y, self.width, self.height, 10, 10, 10, 10
+                width: 1.25
+        size_hint: .95, .2
+        pos_hint: {'center_x': .5, 'top': .65}
+        background_color: 0, 0, 0, 0
+        hint_text_color: .95, .95, .95, 1
+        hint_text: 'Insira o código de confirmação'
+        font_size: '18sp'
+        padding_x: dp(15)
+        padding_y: dp(18)
+        input_filter: 'int'
+    Label:
+        size_hint: .8, .125
+        pos_hint: {'center_x': .5, 'top': .45}
+        text: 'Pode demorar alguns minutos para você receber \\nseu código!'
+        color: .6, .6, .6, 1
+        font_size: '12.5sp'
+        halign: 'justify'
+    BasicButton:
+        text: 'Verificar'
+        size_hint: .5, .15
+        pos_hint: {'center_x': .5, 'top': .315}
+        font_size: '20sp'
+    Label:
+        size_hint: .8, .125
+        pos_hint: {'center_x': .5, 'top': .45}
+        text: 'Pode demorar alguns minutos para você receber \\nseu código!'
+        color: .6, .6, .6, 1
+        font_size: '12.5sp'
+        halign: 'justify'
+    Label:
+        size_hint: .8, .05
+        pos_hint: {'center_x': .5, 'top': .1}
+        text: 'Não recebeu seu código? [ref=reenviar][color=0000ff]Reenviar[/color][/ref]'
+        markup: True
+        color: .6, .6, .6, 1
+        font_size: '12.5sp'
+        on_ref_press: 
+            print('reenviar')
             
 <LateralMenu>:
     id: _lm
@@ -405,6 +464,7 @@ Builder.load_string('''
         pos_hint: {'top': .85}
         size_hint: 1, .55
         source: 'close'
+        a: print('Post class image')
     MDIconButton:
         pos_hint: {'center_x': .08, 'center_y': .78}
         theme_icon_color: 'Custom'
@@ -511,8 +571,9 @@ class LateralMenu(MDBoxLayout):
         return super().on_touch_down(touch)
 
 class BottomMenu(MDRelativeLayout):
-    open_anim = Animation(pos_hint={'y': 0}, bg_opacity=0.5, duration=0.1)
-    close_anim = Animation(pos_hint={'y': -0.6}, bg_opacity=0, duration=0.1)
+    def on_kv_post(self, base_widget):
+        self.open_anim = Animation(pos_hint={'y': 0}, bg_opacity=0.5, duration=0.1)
+        self.close_anim = Animation(pos_hint={'y': -self.base_height}, bg_opacity=0, duration=0.1)
     def open(self):
         self.open_anim.start(self)
     def close(self):

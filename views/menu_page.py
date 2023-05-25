@@ -15,7 +15,6 @@ Builder.load_string('''
 #:import join os.path.join
 
 <MenuItemData>:
-    md_bg_color: .9, .9, .9, 1
     title: 'title'
     img: 'star'
     description: 'description'
@@ -133,15 +132,19 @@ Builder.load_string('''
             pos_hint: {'x': 0, 'top': .79}
             size_hint: 1, .1
             MenuIconButton:
+                editable: True
                 icon: 'hamburger'
                 pos_hint: {'x': .025}
             MenuIconButton:
+                editable: True
                 icon: 'french-fries'
                 pos_hint: {'x': .275}
             MenuIconButton:
+                editable: True
                 icon: 'bottle-soda-classic-outline'
                 pos_hint: {'x': .525}
             MenuIconButton:
+                editable: True
                 icon: 'ice-cream'
                 pos_hint: {'x': .775}
         MDLabel:

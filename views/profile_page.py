@@ -16,7 +16,6 @@ Builder.load_string('''
 #:import join os.path.join
 
 <NewPost@BottomMenu>:
-    md_bg_color: .95, .95, .95, 1
     canvas:
         Color:
             rgba: 1, 0, 0, 1
@@ -39,7 +38,7 @@ Builder.load_string('''
         halign: 'center'
         pos_hint: {'center_x': .5, 'top': .95}
     MDIconButton:
-        icon: 'account-circle'
+        icon: 'image'
         icon_theme_color: 'Custom'
         icon_color: .1, .1, .1, 1
         size_hint: 1.5, .4
@@ -56,7 +55,6 @@ Builder.load_string('''
         text: 'Publicar'
         font_size: '15sp'
 
-        
 <PostsArea>:
     size_hint: 1, .4
     pos_hint: {'top': .4}
