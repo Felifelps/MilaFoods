@@ -7,6 +7,7 @@ Builder.load_string('''
 #:import BasicLabel views.utils
 #:import Background views.utils
 #:import BasicButton views.utils
+#:import BasicTextField views.utils
 #:import TopImageBar views.utils
 #:import BottomBar views.utils
 #:import LateralMenu views.utils
@@ -22,6 +23,10 @@ Builder.load_string('''
         Rectangle:
             size: self.width, self.height*0.15
             pos: 0, self.height*0.85
+        Color:
+            rgba: 0, 0, 0, 1
+        Line:
+            rectangle: self.x, self.y + self.height*0.25, self.width, self.height*0.75
     MDIconButton:
         icon: 'arrow-left'
         pos_hint: {'x': 0, 'center_y': .925}
@@ -30,10 +35,28 @@ Builder.load_string('''
         theme_text_color: 'Custom'
         text_color: 0, 0, 0, 1
         text: 'Nova Publicação'
-        font_size: '25sp'
+        font_size: '22.5sp'
         halign: 'center'
-        pos_hint: {'center_x': .5, 'top': .975}
+        pos_hint: {'center_x': .5, 'top': .95}
+    MDIconButton:
+        icon: 'account-circle'
+        icon_theme_color: 'Custom'
+        icon_color: .1, .1, .1, 1
+        size_hint: 1.5, .4
+        md_bg_color: .4, .4, .4, 1
+        pos_hint: {'center_x': .5, 'top': .85}
+    TextInput:
+        size_hint: 1, .2
+        pos_hint: {'center_x': .5, 'top': .45}
+        font_size: '18.25sp'
+        hint_text: 'Escreva uma legenda'
+    BasicButton:
+        size_hint: .4, .15
+        pos_hint: {'center_x': .5, 'center_y': .125}
+        text: 'Publicar'
+        font_size: '15sp'
 
+        
 <PostsArea>:
     size_hint: 1, .4
     pos_hint: {'top': .4}
@@ -48,7 +71,7 @@ Builder.load_string('''
             Line:
                 points: 0, self.y - dp(10), root.width, self.y - dp(10)
     BasicButton:
-        size_hint: .275, .2
+        size_hint: .275, .15
         pos_hint: {'right': .975, 'top': .95}
         text: 'Cardápio'
         md_bg_color: app.theme_cls.primary_dark
@@ -134,7 +157,7 @@ Builder.load_string('''
             id: _np
 '''
 )
-
+4
 class ProfilePage(MDScreen):
     name = 'profile_page'
 
