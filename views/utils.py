@@ -35,7 +35,10 @@ Builder.load_string('''
     icon_color: app.theme_cls.primary_color
     icon_size: '50sp'
     md_bg_color: 'white'
-    badge_icon: 'numeric-2' if self.editable else ''
+    MDIcon:
+        size: dp(10), dp(10)
+        pos: root.x + root.width, root.y + root.height
+        badge_icon: 'close' if root.editable else ''
     
 
 <BasicButton@MDRaisedButton>:
