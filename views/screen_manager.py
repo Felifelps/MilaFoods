@@ -15,7 +15,8 @@ from .menu_page import MenuPage
 from kivymd.uix.screenmanager import MDScreenManager
 
 class ScreenManager(MDScreenManager):
-    def on_kv_post(self, base_widget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         for i in [
             MenuPage(),
             #ProfilePage(),
@@ -33,7 +34,5 @@ class ScreenManager(MDScreenManager):
             #ClientLoginPage(),
         ]: 
             self.add_widget(i)
-            
-        return super().on_kv_post(base_widget)
     
     

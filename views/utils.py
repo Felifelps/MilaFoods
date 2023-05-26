@@ -34,11 +34,22 @@ Builder.load_string('''
     theme_icon_color: 'Custom'
     icon_color: app.theme_cls.primary_color
     icon_size: '50sp'
+    size_hint: None, None
+    size: dp(80), dp(80)
     md_bg_color: 'white'
-    MDIcon:
-        size: dp(10), dp(10)
-        pos: root.x + root.width, root.y + root.height
-        badge_icon: 'close' if root.editable else ''
+    MDFloatLayout:
+        size: root.size
+        pos: root.pos
+        MDIconButton:
+            icon: 'close'
+            theme_icon_color: 'Custom'
+            icon_color: 1, 1, 1, 1
+            size_hint: .5, .5
+            pos: (self.parent.right - dp(10), self.parent.top - dp(10)) if self.parent.parent.editable else (-100, -100) 
+            icon_size: '15sp'
+            md_bg_color: app.theme_cls.primary_color
+            on_press:
+                print('Close')
     
 
 <BasicButton@MDRaisedButton>:
