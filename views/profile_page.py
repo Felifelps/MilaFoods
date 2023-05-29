@@ -13,12 +13,13 @@ Builder.load_string('''
 #:import LateralMenu views.utils
 #:import Post views.utils
 #:import BottomMenu views.utils
+#:import SelectImageButton views.utils
 #:import join os.path.join
 
 <NewPost@BottomMenu>:
     canvas:
         Color:
-            rgba: 1, 0, 0, 1
+            rgba: app.theme_cls.primary_color
         Rectangle:
             size: self.width, self.height*0.15
             pos: 0, self.height*0.85
@@ -37,13 +38,10 @@ Builder.load_string('''
         font_size: '22.5sp'
         halign: 'center'
         pos_hint: {'center_x': .5, 'top': .95}
-    MDIconButton:
-        icon: 'image'
-        icon_theme_color: 'Custom'
-        icon_color: .1, .1, .1, 1
+    SelectImageButton:
         size_hint: 1.5, .4
-        md_bg_color: .4, .4, .4, 1
         pos_hint: {'center_x': .5, 'top': .85}
+        avatar: False
     TextInput:
         size_hint: 1, .2
         pos_hint: {'center_x': .5, 'top': .45}
@@ -58,6 +56,7 @@ Builder.load_string('''
 <PostsArea>:
     size_hint: 1, .4
     pos_hint: {'top': .4}
+    scroll_view_blur: 0
     BasicLabel:
         text: 'Publicações'
         font_size: '25sp'
@@ -68,14 +67,24 @@ Builder.load_string('''
                 rgba: 1, 1, 1, 1
             Line:
                 points: 0, self.y - dp(10), root.width, self.y - dp(10)
+            
     BasicButton:
+        id: menu_button
         size_hint: .275, .15
         pos_hint: {'right': .975, 'top': .95}
         text: 'Cardápio'
         md_bg_color: app.theme_cls.primary_dark
+        on_press: 
+            app.root.current = 'menu_page'
     ScrollView:
         size_hint: 1, 2
-        pos_hint: {'top': .65}
+        pos_hint: {'top': .675}
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, self.parent.scroll_view_blur
+            Rectangle:
+                size: self.width, self.height*2
+                pos: self.x, self.y
         MDStackLayout:
             adaptive_height: True
             top: root.height - root.height*0.6
@@ -96,7 +105,7 @@ Builder.load_string('''
             np: _np
         MDFloatLayout:
             MDIconButton:
-                icon: join('views', 'data', 'animal.png')
+                icon: join('views', 'data', 'logo.png')
                 icon_size: '75sp'
                 x: dp(10)
                 center_y: root.height - dp(175)
@@ -160,11 +169,11 @@ class ProfilePage(MDScreen):
     name = 'profile_page'
 
 class PostsArea(MDRelativeLayout):
-    up_anim = Animation(pos_hint={'top': .9}, duration=0.1)
-    down_anim =  Animation(pos_hint={'top': .4}, duration=0.1)
+    up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.5)
+    down_anim =  Animation(pos_hint={'top': .4}, duration=0.1, scroll_view_blur=0)
     def on_touch_down(self, touch):
-        if self.collide_point(*touch.pos) and touch.spos[1] > .8 and self.pos_hint['top'] == .9:
+        if self.collide_point(*touch.pos) and touch.spos[1] > .8 and self.pos_hint['top'] == .9 and not self.ids.menu_button.collide_point(*touch.pos):
             self.down_anim.start(self)
-        elif self.collide_point(*touch.pos) and self.pos_hint['top'] == .4:
+        elif self.collide_point(*touch.pos) and self.pos_hint['top'] == .4 and not self.ids.menu_button.collide_point(*touch.pos):
             self.up_anim.start(self)
         return super().on_touch_down(touch)

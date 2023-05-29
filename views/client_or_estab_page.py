@@ -22,6 +22,8 @@ Builder.load_string(
             text: 'Entrar como empresa'
             size_hint_x: .8
             pos_hint: {'center_x': .5, 'center_y': .425}
+            on_press:
+                app.root.current = 'estab_login_page'
         BasicLabel:
             text: 'Cliente'
             pos_hint: {'center_x': .175, 'center_y': .35}
@@ -29,8 +31,10 @@ Builder.load_string(
             text: 'Entrar como cliente'
             size_hint_x: .8
             pos_hint: {'center_x': .5, 'center_y': .275}
+            on_press:
+                app.root.current = 'client_login_page'
 '''
 )
 
 class ClientOrEstabPage(MDScreen):
-    name = 'clent_or_estab_page'
+    name = 'client_or_estab_page'

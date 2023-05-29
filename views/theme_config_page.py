@@ -33,12 +33,11 @@ Builder.load_string('''
         MDTopAppBar:
             title: "Background"
             font_name: join('views', 'data', 'Graduate-Regular.ttf')
-            left_action_items: [['arrow-left', lambda x: print('opa')]]
+            left_action_items: [['arrow-left', lambda x: self.parent.parent.back()]]
             pos_hint: {'top': 1}
         MDStackLayout:
             size_hint: .84, .88
             pos_hint: {'x': .1, 'y': 0}
-            #md_bg_color: 'white'
             ThemeButton:
                 bg: _bg
             ThemeButton:
@@ -56,3 +55,4 @@ Builder.load_string('''
 
 class ThemeConfigPage(MDScreen):
     name = 'theme_config_page'
+    def back(self): self.manager.current = self.manager.previous()

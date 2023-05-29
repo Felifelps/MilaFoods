@@ -59,6 +59,7 @@ Builder.load_string(
                 root.open()
         CodeConfirmMenu:
             id: _ccm
+            posts: False
 '''
 )
 

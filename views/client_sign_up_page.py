@@ -65,8 +65,6 @@ Builder.load_string(
             pos_hint: {'x': .1, 'center_y': .1}
         CodeConfirmMenu:
             id: _ccm
-
-        
 '''
 )
 

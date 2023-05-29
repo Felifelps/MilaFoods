@@ -36,6 +36,8 @@ Builder.load_string(
     MDIconButton:
         pos_hint: {'right': 1, 'top': 1}
         icon: "close"
+        on_press:
+            app.root.current = 'posts_page'
     ScrollView:
         size_hint: .9, .78
         pos_hint: {'center_x': .5, 'top': .93}

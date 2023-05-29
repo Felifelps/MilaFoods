@@ -9,20 +9,26 @@ Builder.load_string(
 #:import BasicDropDownItem views.utils
 #:import TopImageBar views.utils
 #:import Background views.utils
+#:import LateralMenu views.utils
+#:import SelectImageButton views.utils
 #:import join os.path.join
             
 <EstabAccountEditPage>:
     Background:
     FloatLayout:
         TopImageBar:
+            lm: _lm
         BasicButton:
             text: 'Editar\\nCardápio'
             font_size: '12sp'
             size_hint: .1, .05
             pos_hint: {'right': .975, 'center_y': .835}
-        MDIconButton:
+            on_press:
+                app.root.current = 'menu_page'
+                app.root.current_screen.editable = True
+        SelectImageButton:
             pos_hint: {'center_x': .5, 'center_y': .7}
-            icon: "account-circle"
+            size_hint: .4, .2
             icon_size: '125sp'
         BasicLabel:
             text: 'Alterar Imagem'
@@ -49,7 +55,8 @@ Builder.load_string(
         BasicTextField:
             size_hint: .96, .12 
             pos_hint: {'center_x': .5, 'center_y': .16} 
-        
+        LateralMenu:
+            id: _lm
 
 '''
 )

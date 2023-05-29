@@ -13,26 +13,38 @@ from .search_page import SearchPage
 from .profile_page import ProfilePage
 from .menu_page import MenuPage
 from kivymd.uix.screenmanager import MDScreenManager
+from kivy.lang import Builder
 
 class ScreenManager(MDScreenManager):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for i in [
+            ClientOrEstabPage(),
             MenuPage(),
-            #ProfilePage(),
-            #PostsPage(),
-            #SearchPage(),
-            #EstabAccountEditPage(),
-            #EstabLoginPage(),
-            #EstabSignUpPage(),
-            #FollowEstabsPage(),
-            #EstabAccountConfigurationPage(),
-            #SavedPage(),
-            #ThemeConfigPage(),
-            #ClientSignUpPage(),
-            #ClientOrEstabPage(),
-            #ClientLoginPage(),
+            ProfilePage(),
+            PostsPage(),
+            SearchPage(),
+            EstabAccountEditPage(),
+            EstabLoginPage(),
+            EstabSignUpPage(),
+            FollowEstabsPage(),
+            EstabAccountConfigurationPage(),
+            SavedPage(),
+            ThemeConfigPage(),
+            ClientSignUpPage(),
+            ClientLoginPage(),
         ]: 
             self.add_widget(i)
+        for screen in self.screens:
+            screen.add_widget(Builder.load_string('''
+Button:
+    text: 'Next'
+    size: 10, 10
+    pos: 0, 0
+    size_hint: .1, .1
+    on_press: self.parent.manager.current = self.parent.manager.next()
+                                                  
+'''))
+    
     
     

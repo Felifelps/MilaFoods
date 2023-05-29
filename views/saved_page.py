@@ -7,6 +7,7 @@ Builder.load_string(
 #:import BottomBar views.utils
 #:import BasicLabel views.utils
 #:import Background views.utils
+#:import LateralMenu views.utils
 #:import join os.path.join
 
 <SavedPost@RelativeLayout>:
@@ -44,6 +45,7 @@ Builder.load_string(
     FloatLayout:
         TopTitleBar:
             id: bar
+            lm: _lm
             title: "[Username]"
             icon_size: '25sp'
         MDIconButton:
@@ -76,8 +78,8 @@ Builder.load_string(
                 SavedPost:
             
         BottomBar:
-        
-        
+        LateralMenu:
+            id: _lm
 '''
 )
 

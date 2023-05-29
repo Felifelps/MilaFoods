@@ -8,6 +8,7 @@ Builder.load_string(
 #:import BasicTextInput views.utils
 #:import BasicDropDownItem views.utils
 #:import Background views.utils
+#:import SelectImageButton views.utils
             
 <EstabAccountConfigurationPage>:
     Background:
@@ -15,9 +16,11 @@ Builder.load_string(
         MDIconButton:
             pos_hint: {'right': 1, 'top': 1}
             icon: "close"
-        MDIconButton:
+            on_press:
+                app.root.current = 'follow_estabs_page'
+        SelectImageButton:
             pos_hint: {'center_x': .5, 'center_y': .8}
-            icon: "account-circle"
+            size_hint: .4, .2
             icon_size: '125sp'
         BasicLabel:
             id: name
@@ -47,6 +50,8 @@ Builder.load_string(
             text: 'Definir'
             size_hint_x: .8
             pos_hint: {'center_x': .5, 'center_y': .15}
+            on_press:
+                app.root.current = 'follow_estabs_page'
 '''
 )
 

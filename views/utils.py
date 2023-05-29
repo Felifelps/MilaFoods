@@ -4,11 +4,14 @@ from kivy.animation import Animation
 from kivy.uix.textinput import TextInput
 from kivy.uix.image import Image
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDFillRoundFlatIconButton
+from kivymd.uix.button import MDFillRoundFlatIconButton, MDIconButton
 from kivymd.uix.relativelayout import MDRelativeLayout
-from kivy.properties import StringProperty, ListProperty, NumericProperty
+from kivymd.uix.filemanager import MDFileManager
+from kivymd.uix.snackbar import Snackbar
+from kivy.properties import StringProperty, ListProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
+import os
 
 Builder.load_string('''
 #:import join os.path.join
@@ -51,9 +54,9 @@ Builder.load_string('''
             on_press:
                 print('Close')
     
-
 <BasicButton@MDRaisedButton>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
+    md_bg_color: app.theme_cls.primary_color
 
 <BasicTextInput>:
     type: ''
@@ -74,6 +77,7 @@ Builder.load_string('''
     secondary_text_color: colors['Amber']['300']
     
 <Background>:
+    theme: app.theme_cls.primary_palette
     allow_stretch: True
     keep_ratio: False
     source: join('views', 'data', f'background_{self.theme}.png')
@@ -130,10 +134,11 @@ Builder.load_string('''
             rgba: 0, 0, 0, self.bg_opacity
         Rectangle:
             pos: 0, 0
-            size: self.width, self.height*(10/self.base_height)
+            size: self.width, self.height*(10*self.base_height)
 
 <CodeConfirmMenu@BottomMenu>:
     base_height: .5
+    posts: True
     MDLabel:
         size_hint: .95, .35
         pos_hint: {'center_x': .5, 'top': 1}
@@ -169,6 +174,8 @@ Builder.load_string('''
         size_hint: .5, .15
         pos_hint: {'center_x': .5, 'top': .315}
         font_size: '20sp'
+        on_press:
+            app.root.current = 'posts_page' if root.posts else 'estab_account_configuration_page' 
     Label:
         size_hint: .8, .125
         pos_hint: {'center_x': .5, 'top': .45}
@@ -232,14 +239,20 @@ Builder.load_string('''
             text: "Background"            
             icon: "selection-multiple"
             size_hint: 1, .1
+            on_press: 
+                app.root.current = 'theme_config_page'
         BasicIconButton:
             text: "Editar perfil"            
             icon: "account"
             size_hint: 1, .1
+            on_press: 
+                app.root.current = 'estab_account_edit_page'
         BasicIconButton:
             text: "Salvos"            
             icon: "star"
             size_hint: 1, .1
+            on_press: 
+                app.root.current = 'saved_page'
         MDLabel:
             canvas: 
                 Color:
@@ -259,6 +272,8 @@ Builder.load_string('''
             text: "Trocar de conta"            
             icon: "account-convert"
             size_hint: 1, .1
+            on_press: 
+                app.root.current = 'client_or_estab_page'
         BasicIconButton:
             text: "Compartilhar"            
             icon: "share-variant"
@@ -275,6 +290,13 @@ Builder.load_string('''
     icon: "menu"
     on_press:
         self.lm.open()
+
+<SelectImageButton>:
+    avatar: True
+    icon: 'account' if self.avatar else 'image'
+    icon_theme_color: 'Primary' if self.avatar else 'Custom'
+    md_bg_color: .3, .3, .3, 3
+    on_press: self.file_manager.show('C://')
 
 <TopTitleBar@MDRelativeLayout>:
     title: ''
@@ -366,6 +388,8 @@ Builder.load_string('''
         hint_text_color_normal: 0, 0, 0, 0
         size_hint: .6, 1
         pos_hint: {'center_x': .5, 'center_y': .5}
+        on_touch_down:
+            app.root.current = 'search_page'
     MDIconButton:
         pos_hint: {'x': .7, 'center_y': .5}
         icon: "magnify" 
@@ -406,6 +430,8 @@ Builder.load_string('''
         pos_hint: {'right': .975, 'center_y': .5}
         font_size: '10sp'
         md_bg_color: app.theme_cls.primary_dark
+        on_press:
+            app.root.current = app.root.previous()
     
 <BottomBar@MDRelativeLayout>:
     canvas.before:
@@ -436,6 +462,8 @@ Builder.load_string('''
         pos_hint: {'center_x': .75, 'center_y': .65}
         icon_size: '25sp'
         icon: "star"
+        on_press:
+            self.parent.parent.parent.manager.current = 'saved_page'
     Label:
         text: 'Salvos'
         pos_hint: {'center_x': .75, 'center_y': .3}
@@ -477,8 +505,7 @@ Builder.load_string('''
         id: _img
         pos_hint: {'top': .85}
         size_hint: 1, .55
-        source: 'close'
-        a: print('Post class image')
+        source: join('views', 'data', 'logo.png')
     MDIconButton:
         pos_hint: {'center_x': .08, 'center_y': .78}
         theme_icon_color: 'Custom'
@@ -596,4 +623,22 @@ class BottomMenu(MDRelativeLayout):
         if not self.collide_point(touch.x, touch.y):
             self.close()
         return super().on_touch_down(touch)
+           
+class SelectImageButton(MDIconButton):
+    def __init__(self, *args, **kwargs):
+        self.file_manager = MDFileManager(
+            exit_manager=self.exit_file_manager,
+            select_path=self.select_path
+        )
+        super().__init__(*args, **kwargs)
         
+    def select_path(self, path):
+        if '.' in path and path.split('.')[1] in ['png', 'jpg']: 
+            self.icon = os.path.join(path) 
+            self.file_manager.close()
+        else:
+            Snackbar(text='Escolha uma imagem').open()
+        print(path)
+    
+    def exit_file_manager(self, *args): 
+        self.file_manager.close()

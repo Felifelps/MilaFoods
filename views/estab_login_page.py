@@ -66,6 +66,8 @@ Builder.load_string('''
             size_hint_x: .8
             on_press: print(self.height)
             pos_hint: {'center_x': .5, 'center_y': .26}
+            on_press:
+                app.root.current = 'posts_page'
         BasicLabel:
             text: 'Ou use suas redes sociais'
             pos_hint: {'center_x': .5, 'center_y': .21}
@@ -81,8 +83,11 @@ Builder.load_string('''
             text: 'Esqueceu a senha?'
             pos_hint: {'center_x': .5, 'center_y': .075}
         BasicLabel:
-            text: 'Não tem uma conta? Crie aqui!!'
+            text: 'Não tem uma conta? [color=#0000ff][ref=create_account]Crie aqui!![/ref][/color]'
             pos_hint: {'center_x': .5, 'center_y': .025}
+            markup: True
+            on_ref_press:
+                app.root.current = 'estab_sign_up_page'
 '''
 )
 
