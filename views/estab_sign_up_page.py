@@ -44,13 +44,9 @@ Builder.load_string(
             pos_hint: {'center_x': .275, 'center_y': .35}
         BasicTextInput:
             pos_hint: {'center_x': .5, 'center_y': .3}
-        BasicLabel:
-            text: 'CPF ou CNPJ'
-            pos_hint: {'center_x': .225, 'center_y': .25}
-        BasicTextInput:
-            type: 'cpf'
-            pos_hint: {'center_x': .5, 'center_y': .2}
-            max_text_length: 11
+        CpfCnpjTextInput:
+            pos_hint: {'center_x': .5, 'center_y': .225}
+            size_hint: 1, .2
         BasicButton:
             text: 'Criar conta'
             size_hint_x: .8
@@ -67,5 +63,3 @@ class EstabSignUpPage(MDScreen):
     name = 'estab_sign_up_page'
     def open(self):
         self.ids._ccm.open(False)
-
-    print('Ajeitar o cpf e cnpj pra escolher')

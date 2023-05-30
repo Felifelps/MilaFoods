@@ -108,9 +108,9 @@ Builder.load_string('''
     font_size: "18sp"
     icon: 'menu-swap'
     theme_text_color: 'Custom'
-    line_color: 0, 0, 0, .8
+    line_color: 0, 0, 0, 0
     text_color: 'black'
-    md_bg_color: .75, .75, .75, 1
+    md_bg_color: .75, .75, .75, 0
     icon_color: 0, 0, 0, 1
     radius: [5, 5, 5, 5]
 
@@ -378,6 +378,8 @@ Builder.load_string('''
         pos_hint: {'x': .025, 'center_y': .5}
         icon_size: '40sp'
         icon: "account-circle"
+        on_press:
+            print('account')
     MDTextField:
         color_mode: 'custom'
         line_color_focus: .8, .8, .8, 1
@@ -388,11 +390,13 @@ Builder.load_string('''
         hint_text_color_normal: 0, 0, 0, 0
         size_hint: .6, 1
         pos_hint: {'center_x': .5, 'center_y': .5}
-        on_touch_down:
+        on_focus:
             app.root.current = 'search_page'
     MDIconButton:
         pos_hint: {'x': .7, 'center_y': .5}
         icon: "magnify" 
+        on_press:
+            app.root.current = 'search_page'
     BarMenuButton:
         lm: root.lm
 
@@ -431,7 +435,7 @@ Builder.load_string('''
         font_size: '10sp'
         md_bg_color: app.theme_cls.primary_dark
         on_press:
-            app.root.current = app.root.previous()
+            app.root.current = 'posts_page'
     
 <BottomBar@MDRelativeLayout>:
     canvas.before:
@@ -558,6 +562,33 @@ Builder.load_string('''
         font_size: '11sp'
         size_hint: .05, .1
         pos_hint: {"center_x": .14, "center_y": .075}
+
+<CpfCnpjTextInput@FloatLayout>:
+    cpf: True
+    BasicLabel:
+        text: 'Digite seu CPF ou CNPJ'
+        pos_hint: {'x': .12, 'center_y': .62}
+        font_size: '12.5sp'
+    BasicTextInput:
+        id: _cpf 
+        type: 'cpf'
+        hint_text: 'Digite seu CPF'
+        size_hint: .8, .3
+        pos_hint: {'x': .1, 'center_y': (.35 if root.cpf else 10)}
+    BasicTextInput:
+        id: _cnpj
+        type: 'cnpj'
+        hint_text: 'Digite seu CNPJ'
+        size_hint: .8, .3
+        pos_hint: {'x': .1, 'center_y': (.35 if not root.cpf else 10)}
+    BasicDropDownItem:
+        size_hint: .2, .1
+        text: 'CPF'
+        font_size: '12.5sp'
+        pos_hint: {'right': .9, 'center_y': .35}
+        items: ['CPF','CNPJ']
+        on_text:
+            root.cpf = not root.cpf
 
 ''')
 

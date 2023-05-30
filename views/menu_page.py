@@ -12,6 +12,7 @@ Builder.load_string('''
 #:import LateralMenu views.utils
 #:import TopImageBar views.utils
 #:import Background views.utils
+#:import SelectImageButton views.utils
 #:import join os.path.join
 
 <MenuItemData>:
@@ -27,9 +28,8 @@ Builder.load_string('''
         icon: root.img
         pos_hint: {'center_x': .5, 'center_y': .65}
     BasicButton:
-        text: 'Adicionar ao\\ncarrinho'
-        pos_hint: {'right': .975, 'top': .85}
-        size_hint: .3, .1
+        text: '+Carrinho'
+        pos_hint: {'right': .975, 'top': .9}
     BasicLabel:
         text: root.description
         color: .2, .2, .2, 1
@@ -68,10 +68,6 @@ Builder.load_string('''
             pos_hint: {'x': .8, 'center_y': .5}
             on_press:
                 root.quantity += 1
-    BasicButton:
-        text: '+Carrinho'
-        pos_hint: {'right': .98, 'center_y': .85}
-        size_hint: .15, .1
 
 <MenuItemEditable>:
     BasicTextInput:
@@ -79,16 +75,13 @@ Builder.load_string('''
         font_size: '17.5sp'
         pos_hint: {'center_x': .5, 'top': .975}
         size_hint: .96, .1 
-    MDIconButton:
-        id: _img
-        icon_size: '90sp'
-        md_bg_color: app.theme_cls.primary_color
-        icon: 'image'
-        pos_hint: {'center_x': .5, 'center_y': .7}
+    SelectImageButton:
+        pos_hint: {'center_x': .475, 'center_y': .7}
+        avatar: False
+        size_hint: .35, .3
     BasicButton:
-        text: 'Adicionar ao\\ncarrinho'
-        pos_hint: {'right': .95, 'top': .85}
-        size_hint: .3, .1
+        text: 'Salvar'
+        pos_hint: {'right': .975, 'top': .85}
     BasicTextInput:
         hint_text: 'Dê uma descrição ao produto'
         font_size: '15sp'
@@ -268,7 +261,7 @@ class MenuItemData(BottomMenu):
 class MenuItemEditable(BottomMenu):
     def open(self, *args):
         for child in self.children: 
-            if hasattr(child, 'text'): child.text = ''
+            if 'TextInput' in str(child): child.text = ''
         super().open()
     
     
