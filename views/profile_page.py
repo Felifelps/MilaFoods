@@ -98,6 +98,7 @@ Builder.load_string('''
             Post:
 
 <ProfilePage>:
+    id: _screen
     Background:
         id: _bg
     RelativeLayout:
@@ -106,18 +107,18 @@ Builder.load_string('''
             np: _np
         MDFloatLayout:
             MDIconButton:
-                icon: join('views', 'data', 'logo.png')
+                icon: join('views', 'data', _screen.img_src)
                 icon_size: '75sp'
                 x: dp(10)
                 center_y: root.height - dp(175)
             Label:
-                text: 'Username'
+                text: _screen.username
                 font_size: '25sp'
                 size_hint: None, None
                 size: self.texture_size
                 pos: dp(10), root.height - dp(250)
             Label:
-                text: 'Description\\nCavalo'
+                text: _screen.bio
                 font_size: '14sp'
                 size_hint: None, None
                 size: self.texture_size
@@ -135,9 +136,7 @@ Builder.load_string('''
                 text: 'Whatsapp'
                 md_bg_color: app.theme_cls.primary_dark
             Label:
-                id: publications
-                number: 300
-                text: f'[size=20sp]{self.number}[/size]\\nPublicações'
+                text: f'[size=20sp]{_screen.n_publications}[/size]\\nPublicações'
                 halign: 'center'
                 markup: True
                 font_size: '12.5sp'
@@ -146,9 +145,7 @@ Builder.load_string('''
                 center_y: root.height - dp(155)
                 center_x: root.width - dp(58)
             Label:
-                id: followers
-                number: 300
-                text: f'[size=20sp]{self.number}[/size]\\nSeguidores'
+                text: f'[size=20sp]{_screen.n_followers}[/size]\\nSeguidores'
                 halign: 'center'
                 markup: True
                 font_size: '12.5sp'
@@ -169,19 +166,20 @@ Builder.load_string('''
 4
 class ProfilePage(MDScreen):
     name = 'profile_page'
-    username = StringProperty('')
-    bio = StringProperty('')
-    img_src = StringProperty('')
-    n_followers = NumericProperty(0)
-    n_publications = NumericProperty(0)
+    username = StringProperty('username')
+    bio = StringProperty('bio')
+    img_src = StringProperty('logo.png')
+    n_followers = NumericProperty(1)
+    n_publications = NumericProperty(1)
     publications_data = [] #{'username': username, 'img_src': img_src, 'title': title, 'description': description}
 
-    def set_profile_page(self, username, bio, img_src, n_followers, n_publications):
+    def set_profile_page(self, username):
         self.username = username
-        self.bio = bio
-        self.img_src = img_src 
-        self.n_followers = n_followers
-        self.n_publications = n_publications
+        print('get the user by the database')
+        #self.bio = 'Bio'
+        #self.img_src = 'logo.png' 
+        #self.n_followers = 1
+        #self.n_publications = 1
 
 class PostsArea(MDRelativeLayout):
     up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.5)

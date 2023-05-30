@@ -33,14 +33,12 @@ Builder.load_string('''
     halign: 'left'
 
 <ProfileButton@MDIconButton>:
-    icon: 'account'
-    username: ''
-    bio: ''
-    img_src: ''
-    n_followers: 0
-    n_publications: 0
+    anonimous: True
+    icon: 'account' if self.anonimous else join('views', 'data', 'logo.png') 
+    icon_size: '50sp'
+    username: 'username'
     on_press:
-        app.root.get_screen('profile_page').set_profile_page(self.username, self.bio, self.img_src, self.n_followers, self.n_publications)
+        app.root.get_screen('profile_page').set_profile_page(self.username)
         app.root.current = 'profile_page'
         
 <MenuIconButton@MDIconButton>:
@@ -232,8 +230,9 @@ Builder.load_string('''
             icon: "close"
             on_press: 
                 _lm.close()
-        MDIconButton:
-            icon: join('views', 'data', 'background_Green.png')
+        ProfileButton:
+            username: 'Current user'
+            anonimous: False
             icon_size: '75sp'
             pos_hint: {'center_x': .5, 'center_y': .55}
         Label: 
@@ -246,6 +245,7 @@ Builder.load_string('''
         md_bg_color: 'white'
         size_hint: 1, .7
         pos_hint: {'top': .7}
+        on_touch_down: root.close()
         BasicIconButton:
             text: "Background"            
             icon: "selection-multiple"
@@ -326,7 +326,7 @@ Builder.load_string('''
     pos_hint: {'top': 1}
     size_hint: 1, .1
     md_bg_color: app.theme_cls.primary_dark
-    MDIconButton:
+    ProfileButton:
         pos_hint: {'x': .025, 'center_y': .5}
         icon_size: '40sp'
         icon: "account-circle"
@@ -385,7 +385,7 @@ Builder.load_string('''
     pos_hint: {'top': 1}
     size_hint: 1, .1
     md_bg_color: app.theme_cls.primary_dark
-    MDIconButton:
+    ProfileButton:
         pos_hint: {'x': .025, 'center_y': .5}
         icon_size: '40sp'
         icon: "account-circle"
@@ -645,12 +645,14 @@ class BasicTextInput(TextInput):
 class LateralMenu(MDBoxLayout):
     open_animation = Animation(pos_hint={'x': 0}, bg_opacity=0.5, duration=0.1)
     close_animation = Animation(pos_hint={'x': -2}, bg_opacity=0, duration=0.1)
-    def open(self):
+    def open(self): 
         self.open_animation.start(self)
-    def close(self):
+
+    def close(self): 
         self.close_animation.start(self)
+
     def on_touch_down(self, touch):
-        if not self.collide_point(touch.x, touch.y):
+        if not self.collide_point(*touch.pos): 
             self.close()
         return super().on_touch_down(touch)
 
@@ -676,12 +678,11 @@ class SelectImageButton(MDIconButton):
         super().__init__(*args, **kwargs)
         
     def select_path(self, path):
-        if '.' in path and path.split('.')[1] in ['png', 'jpg']: 
-            self.icon = os.path.join(path) 
-            self.file_manager.close()
-        else:
-            Snackbar(text='Escolha uma imagem').open()
-        print(path)
+        for extension in ['png', 'jpg']:
+            if extension in path: 
+                self.icon = os.path.join(path) 
+                return self.file_manager.close()
+        Snackbar(text='Escolha uma imagem').open()
     
     def exit_file_manager(self, *args): 
         self.file_manager.close()

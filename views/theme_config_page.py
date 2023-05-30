@@ -55,4 +55,4 @@ Builder.load_string('''
 
 class ThemeConfigPage(MDScreen):
     name = 'theme_config_page'
-    def back(self): self.manager.current = self.manager.previous()
+    def back(self): self.manager.current = 'posts_page'
