@@ -7,11 +7,13 @@ from views.utils import BottomMenu
 Builder.load_string('''
 #:import MenuIconButton views.utils
 #:import BasicLabel views.utils
+#:import BasicButton views.utils
 #:import BasicTextField views.utils
 #:import LateralMenu views.utils
 #:import TopImageBar views.utils
 #:import Background views.utils
 #:import join os.path.join
+
 <MenuItemData>:
     BasicLabel:
         text: root.title
@@ -24,6 +26,10 @@ Builder.load_string('''
         md_bg_color: app.theme_cls.primary_color
         icon: root.img
         pos_hint: {'center_x': .5, 'center_y': .65}
+    BasicButton:
+        text: 'Adicionar ao\\ncarrinho'
+        pos_hint: {'right': .975, 'top': .85}
+        size_hint: .3, .1
     BasicLabel:
         text: root.description
         color: .2, .2, .2, 1
@@ -79,6 +85,10 @@ Builder.load_string('''
         md_bg_color: app.theme_cls.primary_color
         icon: 'image'
         pos_hint: {'center_x': .5, 'center_y': .7}
+    BasicButton:
+        text: 'Adicionar ao\\ncarrinho'
+        pos_hint: {'right': .95, 'top': .85}
+        size_hint: .3, .1
     BasicTextInput:
         hint_text: 'Dê uma descrição ao produto'
         font_size: '15sp'

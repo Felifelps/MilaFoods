@@ -136,9 +136,8 @@ Builder.load_string('''
             pos: 0, 0
             size: self.width, self.height*(10*self.base_height)
 
-<CodeConfirmMenu@BottomMenu>:
+<CodeConfirmMenu>:
     base_height: .5
-    posts: True
     MDLabel:
         size_hint: .95, .35
         pos_hint: {'center_x': .5, 'top': 1}
@@ -170,12 +169,13 @@ Builder.load_string('''
         font_size: '12.5sp'
         halign: 'justify'
     BasicButton:
+        id: verify
         text: 'Verificar'
         size_hint: .5, .15
         pos_hint: {'center_x': .5, 'top': .315}
         font_size: '20sp'
-        on_press:
-            app.root.current = 'posts_page' if root.posts else 'estab_account_configuration_page' 
+        destiny: True
+        on_release: root.verify(self.destiny) 
     Label:
         size_hint: .8, .125
         pos_hint: {'center_x': .5, 'top': .45}
@@ -642,3 +642,12 @@ class SelectImageButton(MDIconButton):
     
     def exit_file_manager(self, *args): 
         self.file_manager.close()
+        
+class CodeConfirmMenu(BottomMenu):
+    def verify(self, posts=True):
+        self.parent.parent.manager.current = 'posts_page' if posts else 'estab_account_configuration_page'
+        self.close()
+    
+    def open(self, posts=True):
+        self.ids.verify.destiny = True
+        return super().open()

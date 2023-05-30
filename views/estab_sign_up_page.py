@@ -66,5 +66,6 @@ Builder.load_string(
 class EstabSignUpPage(MDScreen):
     name = 'estab_sign_up_page'
     def open(self):
-        self.ids._ccm.open()
+        self.ids._ccm.open(False)
+
     print('Ajeitar o cpf e cnpj pra escolher')
