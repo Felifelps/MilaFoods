@@ -2,6 +2,7 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivy.animation import Animation
 from kivy.lang import Builder
+from kivy.properties import StringProperty, NumericProperty
 
 Builder.load_string('''
 #:import BasicLabel views.utils
@@ -162,11 +163,25 @@ Builder.load_string('''
             id: _lm
         NewPost:
             id: _np
+
 '''
 )
 4
 class ProfilePage(MDScreen):
     name = 'profile_page'
+    username = StringProperty('')
+    bio = StringProperty('')
+    img_src = StringProperty('')
+    n_followers = NumericProperty(0)
+    n_publications = NumericProperty(0)
+    publications_data = [] #{'username': username, 'img_src': img_src, 'title': title, 'description': description}
+
+    def set_profile_page(self, username, bio, img_src, n_followers, n_publications):
+        self.username = username
+        self.bio = bio
+        self.img_src = img_src 
+        self.n_followers = n_followers
+        self.n_publications = n_publications
 
 class PostsArea(MDRelativeLayout):
     up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.5)

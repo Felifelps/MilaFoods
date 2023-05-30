@@ -1,7 +1,6 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.properties import StringProperty, BooleanProperty, NumericProperty
-from kivy.lang import Builder
 from views.utils import BottomMenu
 
 Builder.load_string('''
@@ -76,9 +75,9 @@ Builder.load_string('''
         pos_hint: {'center_x': .5, 'top': .975}
         size_hint: .96, .1 
     SelectImageButton:
-        pos_hint: {'center_x': .475, 'center_y': .7}
+        pos_hint: {'center_x': .5, 'center_y': .7}
         avatar: False
-        size_hint: .35, .3
+        size_hint: .3, .3
     BasicButton:
         text: 'Salvar'
         pos_hint: {'right': .975, 'top': .85}

@@ -32,6 +32,17 @@ Builder.load_string('''
     icon_color: "black"
     halign: 'left'
 
+<ProfileButton@MDIconButton>:
+    icon: 'account'
+    username: ''
+    bio: ''
+    img_src: ''
+    n_followers: 0
+    n_publications: 0
+    on_press:
+        app.root.get_screen('profile_page').set_profile_page(self.username, self.bio, self.img_src, self.n_followers, self.n_publications)
+        app.root.current = 'profile_page'
+        
 <MenuIconButton@MDIconButton>:
     editable: False
     theme_icon_color: 'Custom'
@@ -589,6 +600,7 @@ Builder.load_string('''
         items: ['CPF','CNPJ']
         on_text:
             root.cpf = not root.cpf
+
 
 ''')
 
