@@ -12,11 +12,7 @@ Builder.load_string('''
 #:import TopImageBar views.utils
 #:import Background views.utils
 #:import SelectImageButton views.utils
-#:import LateralMenuBase views.utils
 #:import join os.path.join
-
-<ShoppingCart@LateralMenuBase>:
-
 
 <MenuItemData>:
     BasicLabel:
@@ -172,20 +168,9 @@ Builder.load_string('''
         TopImageBar:
             lm: _lm
         BasicLabel:
-            text: '  Lanches'
-            pos_hint: {'x': 0, 'center_y': .85}
+            text: 'Menus'
+            pos_hint: {'x': .05, 'center_y': .85}
             font_size: '20sp'
-        BasicIconButton:
-            text: 'Carrinho'
-            icon: 'cart'
-            icon_size: '20sp'
-            font_size: '20sp'
-            text_color: 'white'
-            icon_color: 'white'
-            size_hint: .3, .1
-            pos_hint: {'right': 1, 'center_y': .85}
-            on_press:
-                _sp.open()
         MDRelativeLayout:
             pos_hint: {'x': 0, 'top': .79}
             size_hint: 1, .1
@@ -212,11 +197,11 @@ Builder.load_string('''
                 Line:
                     points: 0, self.y, self.x + self.width, self.y
                     width: 1
-            text: '  [b]Cardápio[/b]'
-            size_hint: 1, .075
+            text: '[b]Cardápio[/b]'
+            size_hint: .95, .075
             markup: True
             font_size: '20sp'
-            pos_hint: {'x': 0, 'center_y': .65}
+            pos_hint: {'x': .05, 'center_y': .65}
             font_name: join('views', 'data', 'Graduate-Regular.ttf')
         ScrollView:
             pos_hint: {'center_x': .5, 'top': .6}
@@ -241,8 +226,6 @@ Builder.load_string('''
             id: _mid
         MenuItemEditable:
             id: _mie
-        ShoppingCart:
-            id: _sp
 '''
 )
 

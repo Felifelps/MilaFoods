@@ -106,6 +106,58 @@ Builder.load_string('''
             lm: _lm
             np: _np
         MDFloatLayout:
+            id: _estab
+            MDIconButton:
+                icon: join('views', 'data', _screen.img_src)
+                icon_size: '75sp'
+                x: dp(10)
+                center_y: root.height - dp(175)
+            Label:
+                text: _screen.username
+                font_size: '25sp'
+                size_hint: None, None
+                size: self.texture_size
+                pos: dp(10), root.height - dp(250)
+            Label:
+                text: _screen.bio
+                font_size: '14sp'
+                size_hint: None, None
+                size: self.texture_size
+                pos: dp(10), root.height - dp(285)
+            BasicButton:
+                size_hint_x: .275
+                center_x: root.width/2 - dp(5)
+                center_y: root.height - dp(200)
+                text: 'Seguir'
+                md_bg_color: app.theme_cls.primary_dark
+            BasicButton:
+                size_hint_x: .275
+                center_x: root.width - dp(60)
+                center_y: root.height - dp(200)
+                text: 'Whatsapp'
+                md_bg_color: app.theme_cls.primary_dark
+            Label:
+                text: f'[size=20sp]{_screen.n_publications}[/size]\\nPublicações'
+                halign: 'center'
+                markup: True
+                font_size: '12.5sp'
+                size_hint: None, None
+                size: self.texture_size
+                center_y: root.height - dp(155)
+                center_x: root.width - dp(58)
+            Label:
+                text: f'[size=20sp]{_screen.n_followers}[/size]\\nSeguidores'
+                halign: 'center'
+                markup: True
+                font_size: '12.5sp'
+                size_hint: None, None
+                size: self.texture_size
+                center_y: root.height - dp(155)
+                center_x: root.width/2
+            PostsArea:
+            
+        MDFloatLayout:
+            id: _client
             MDIconButton:
                 icon: join('views', 'data', _screen.img_src)
                 icon_size: '75sp'
@@ -166,6 +218,7 @@ Builder.load_string('''
 4
 class ProfilePage(MDScreen):
     name = 'profile_page'
+    
     username = StringProperty('username')
     bio = StringProperty('bio')
     img_src = StringProperty('logo.png')

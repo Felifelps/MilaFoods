@@ -1,60 +1,55 @@
-from .db import DB
+from db import DB
 import os
-from .post import *
-from .utils import encode_image, decode_image
+from post import *
+from product import *
+from utils import encode_image, decode_image
 
 ESTABS = DB.collection("estabs")
 
 def list_estabs():
     return [i.id for i in ESTABS.stream()]
 
-def new_estab(name, email, password, contact, description, image=None):
+def new_estab(username, email, cpf, cnpj, tel, password, description, image=None):
     """Creates a new estab object in the database"""
-    new = ESTABS.document(email)
+    if username in list_estabs(): return False
+    new = ESTABS.document(username)
     new.set({
-        "name": name,
+        "username": username,
         "email": email,
         "password": password,
-        "contact": contact,
+        "cpf": cpf,
+        "cnpj": cnpj,
+        "tel": tel,
         "description": description,
         "image": image if image == None else encode_image(image)
     })
     new.collection("menu")
     new.collection("posts")
     new_post(
-        email,
-        "Bem-vindo ao app",
-        name + " acabou de criar sua conta!!",
+        username,
+        f"{username} acabou de criar sua conta!!",
         image
     )
+    return True
     
-def update_estab(email, data):
+def update_estab(username, data):
     """Updates a estab object of the database"""
-    ESTABS.document(email).update(data)
+    ESTABS.document(username).update(data)
     
-def delete_estab(email):
+def delete_estab(username):
     """Deletes a estab object of the database"""
-    ESTABS.document(email).delete()
+    ESTABS.document(username).delete()
     
-def get_estab(email):
+def get_estab(username):
     """Gets all the data of a client object of the database"""
-    return ESTABS.document(email).get().to_dict()
+    return ESTABS.document(username).get().to_dict()
 
-def download_estab_image(email):
-    estab = get_estab(email)
-    path = os.path.join("data", email)
+def download_estab_image(username):
+    estab = get_estab(username)
+    path = os.path.join("data", username)
     if not os.path.exists(path): 
         os.mkdir(path)
     decode_image(estab["image"][1], "image." + estab["image"][0], path)
     
-def change_estab_image(email, image_path):
-    update_estab(email, {"image": encode_image(image_path)})
-
-
-new_estab(
-    'junin lanches',
-    'junin@lanches.com',
-    '12345678',
-    '40028922',
-    'Juninho resolveu fazer lanches'
-)
+def change_estab_image(username, image_path):
+    update_estab(username, {"image": encode_image(image_path)})

@@ -14,7 +14,5 @@ else:
 
 """
 
-
 auth = AuthenticationMail()
-#print(auth.check_cpf_or_cnpj_confirmation())
 auth.send_cpf_or_cnpj_email(cpf_and_date=["testando", "o código"])
