@@ -201,8 +201,8 @@ Builder.load_string('''
         font_size: '12.5sp'
         on_ref_press: 
             print('reenviar')
-            
-<LateralMenu>:
+
+<LateralMenuBase>:
     id: _lm
     orientation: 'vertical'
     size_hint: .8, 1
@@ -217,6 +217,8 @@ Builder.load_string('''
         Rectangle:
             pos: 0, 0
             size: self.width*1.25, self.height
+            
+<LateralMenu@LateralMenuBase>:
     MDRelativeLayout:  
         md_bg_color: app.theme_cls.primary_dark
         size_hint: 1, .3
@@ -330,6 +332,8 @@ Builder.load_string('''
         pos_hint: {'x': .025, 'center_y': .5}
         icon_size: '40sp'
         icon: "account-circle"
+        anonimous: False
+        username: "Current username"
     Label:
         text: f'[b]{root.title}[/b]'
         markup: True
@@ -389,6 +393,8 @@ Builder.load_string('''
         pos_hint: {'x': .025, 'center_y': .5}
         icon_size: '40sp'
         icon: "account-circle"
+        anonimous: False
+        username: "Current username"
         on_press:
             print('account')
     MDTextField:
@@ -642,7 +648,7 @@ class BasicTextInput(TextInput):
             return False
         return super().insert_text(substring, from_undo)
 
-class LateralMenu(MDBoxLayout):
+class LateralMenuBase(MDBoxLayout):
     open_animation = Animation(pos_hint={'x': 0}, bg_opacity=0.5, duration=0.1)
     close_animation = Animation(pos_hint={'x': -2}, bg_opacity=0, duration=0.1)
     def open(self): 

@@ -1,6 +1,7 @@
 from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
 from kivy.core.window import Window
+#from control.firebase_to_local import *
 Window.size = (340, 600)
 
 class MilaFoods(MDApp):

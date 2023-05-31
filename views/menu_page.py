@@ -12,7 +12,11 @@ Builder.load_string('''
 #:import TopImageBar views.utils
 #:import Background views.utils
 #:import SelectImageButton views.utils
+#:import LateralMenuBase views.utils
 #:import join os.path.join
+
+<ShoppingCart@LateralMenuBase>:
+
 
 <MenuItemData>:
     BasicLabel:
@@ -180,6 +184,8 @@ Builder.load_string('''
             icon_color: 'white'
             size_hint: .3, .1
             pos_hint: {'right': 1, 'center_y': .85}
+            on_press:
+                _sp.open()
         MDRelativeLayout:
             pos_hint: {'x': 0, 'top': .79}
             size_hint: 1, .1
@@ -235,6 +241,8 @@ Builder.load_string('''
             id: _mid
         MenuItemEditable:
             id: _mie
+        ShoppingCart:
+            id: _sp
 '''
 )
 

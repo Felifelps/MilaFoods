@@ -85,4 +85,3 @@ class DbManager:
         sql = f'drop table {table_name};'
         self.execute(sql)
         self.commit()
-        
