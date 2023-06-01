@@ -22,9 +22,8 @@ Builder.load_string(
             pos_hint: {'center_x': .5, 'top': .875}
             size_hint: .98, .8
             RecycleBoxLayout:
-                id: _stack
-                adaptive_height: True
-                spacing: 10, 20
+                id: _box
+                orientation: 'vertical'
         BottomBar:
         LateralMenu:
             id: _lm
