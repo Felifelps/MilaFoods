@@ -26,6 +26,6 @@ def decode_image(string, image_name, dir):
         file.write(base64.b64decode(string))
 
 
-from gmail import AuthenticationMail
+#from gmail import AuthenticationMail
 
-AuthenticationMail().send_code_email("felipefelipe23456@gmail.com")
+#AuthenticationMail().send_code_email("felipefelipe23456@gmail.com")

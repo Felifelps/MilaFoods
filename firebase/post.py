@@ -1,6 +1,6 @@
 import datetime
-from db import DB
-from utils import encode_image
+from .db import DB
+from .utils import encode_image
 
 def new_post(username, text, image=None):
     posts = DB.collection(f"estabs/{username}/posts")

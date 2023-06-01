@@ -1,6 +1,6 @@
 import datetime
-from db import DB
-from utils import encode_image
+from .db import DB
+from .utils import encode_image
 
 def list_products(username):
     return [i.id for i in DB.collection(f"estabs/{username}/menu").stream()]

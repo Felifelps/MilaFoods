@@ -1,5 +1,0 @@
-create table logged_user (
-    username varchar(50) primary key, 
-    email varchar(50),
-    password varchar(50)
-)

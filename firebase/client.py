@@ -1,4 +1,4 @@
-from db import DB
+from .db import DB
 
 CLIENTS = DB.collection("clients")
 
@@ -28,4 +28,6 @@ def delete_client(username):
     
 def get_client(username):
     """Gets all the data of a client object of the database"""
+    if username not in list_clients():
+        return False
     return CLIENTS.document(username).get().to_dict()

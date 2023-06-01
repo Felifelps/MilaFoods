@@ -16,26 +16,23 @@ Builder.load_string(
         TopCentralSearchBar:
             id: bar
             lm: _lm
-        ScrollView:
+        RecycleView:
+            id: _rv
+            viewclass: 'Post'
             pos_hint: {'center_x': .5, 'top': .875}
             size_hint: .98, .8
-            MDStackLayout:
+            RecycleBoxLayout:
                 id: _stack
                 adaptive_height: True
                 spacing: 10, 20
-                Post:
-                    post_title: "Jorginho lanches"
-                Post:
-                    post_title: "Jorginho lanches"
         BottomBar:
         LateralMenu:
             id: _lm
-        
-        
-        
 '''
 )
 
 class PostsPage(MDScreen):
     name = 'posts_page'
-    
+    def on_enter(self, *args):
+        self.ids._rv.data = [{'text': f'jorginho lanches {x}'} for x in range(25)]
+        return super().on_enter(*args)

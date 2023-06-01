@@ -8,15 +8,17 @@ from kivymd.uix.button import MDFillRoundFlatIconButton, MDIconButton
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.snackbar import Snackbar
+from kivymd.uix.spinner import MDSpinner 
 from kivy.properties import StringProperty, ListProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
+from kivy.clock import Clock
 import os
 
 Builder.load_string('''
 #:import join os.path.join
-#:import colors kivymd.color_definitions.colors
-            
+#:import colors kivymd.color_definitions.colors          
+
 <BasicLabel@Label>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
     font_size: '12.5sp'
@@ -147,6 +149,7 @@ Builder.load_string('''
 
 <CodeConfirmMenu>:
     base_height: .5
+    screen: None
     MDLabel:
         size_hint: .95, .35
         pos_hint: {'center_x': .5, 'top': 1}
@@ -155,6 +158,7 @@ Builder.load_string('''
         text_color: .3, .3, .3, 1
         font_size: '17.5sp'
     TextInput:
+        id: _code
         canvas.before:
             Color:
                 rgba: .4, .4, .4, 1
@@ -178,13 +182,12 @@ Builder.load_string('''
         font_size: '12.5sp'
         halign: 'justify'
     BasicButton:
-        id: verify
         text: 'Verificar'
         size_hint: .5, .15
         pos_hint: {'center_x': .5, 'top': .315}
         font_size: '20sp'
         destiny: True
-        on_release: root.verify(self.destiny) 
+        on_release: root.screen.check_code(_code.text)
     Label:
         size_hint: .8, .125
         pos_hint: {'center_x': .5, 'top': .45}
@@ -694,10 +697,6 @@ class SelectImageButton(MDIconButton):
         self.file_manager.close()
         
 class CodeConfirmMenu(BottomMenu):
-    def verify(self, posts=True):
-        self.parent.parent.manager.current = 'posts_page' if posts else 'estab_account_configuration_page'
-        self.close()
-    
-    def open(self, posts=True):
-        self.ids.verify.destiny = True
+    def open(self):
         return super().open()
+        

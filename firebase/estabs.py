@@ -1,8 +1,8 @@
-from db import DB
+from .db import DB
 import os
-from post import *
-from product import *
-from utils import encode_image, decode_image
+from .post import *
+from .product import *
+from .utils import encode_image, decode_image
 
 ESTABS = DB.collection("estabs")
 

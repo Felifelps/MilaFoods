@@ -1,4 +1,6 @@
 from kivymd.uix.screen import MDScreen
+from kivymd.uix.snackbar import Snackbar
+from control.firebase_to_local import list_clients, send_code_email, sign_up_and_login_new_client
 from kivy.lang import Builder
 
 Builder.load_string(
@@ -10,6 +12,7 @@ Builder.load_string(
 #:import CodeConfirmMenu views.utils
 
 <ClientSignUpPage>:
+    id: _screen
     BackgroundLogo:
     RelativeLayout:
         BasicLabel:
@@ -17,22 +20,24 @@ Builder.load_string(
             pos_hint: {'center_x': .5, 'center_y': .6}
             font_size: '25sp'
         BasicLabel:
-            text: 'Nome'
+            text: 'Username'
             pos_hint: {'center_x': .175, 'center_y': .55}
         BasicTextInput:
-            hint_text: 'Digite seu nome'
+            id: _username
+            hint_text: 'Digite seu username'
             pos_hint: {'center_x': .5, 'center_y': .5}
         BasicLabel:
             text: 'Email'
             pos_hint: {'center_x': .175, 'center_y': .45}
         BasicTextInput:
+            id: _email
             hint_text: 'exemplo@email.com'
             pos_hint: {'center_x': .5, 'center_y': .4}
         BasicLabel:
             text: 'Senha'
             pos_hint: {'center_x': .175, 'center_y': .35}
         BasicTextInput:
-            id: password
+            id: _password
             hint_text: "minhaSenha1!"
             password: True
             password_mask: '*'
@@ -44,31 +49,39 @@ Builder.load_string(
             theme_icon_color: "Custom"
             icon_color: .05, .05, .05, 1
             on_release:
-                password.password = not password.password
-                self.icon = 'eye' if password.password else 'eye-off'
+                _password.password = not _password.password
+                self.icon = 'eye' if _password.password else 'eye-off'
         BasicButton:
             text: 'Criar conta'
             size_hint_x: .8
             pos_hint: {'center_x': .5, 'center_y': .2175}
             on_press:
-                root.open()
-        BasicLabel:
-            text: 'Ou use suas redes sociais'
-            pos_hint: {'center_x': .5, 'center_y': .16}
-        BasicButton:
-            text: 'Instagram'
-            size_hint_x: .3
-            pos_hint: {'right': .9, 'center_y': .1}
-        BasicButton:
-            text: 'Facebook'
-            size_hint_x: .3
-            pos_hint: {'x': .1, 'center_y': .1}
+                _screen.check_inputs(_username.text, _email.text, _password.text)
         CodeConfirmMenu:
             id: _ccm
+            screen: _screen
 '''
 )
 
 class ClientSignUpPage(MDScreen):
     name = 'client_sign_up_page'
-    def open(self):
+        
+    def check_inputs(self, username, email, password):
+        if username in list_clients():
+            return Snackbar(text='Username em uso').open()
+        if '@' not in email or '.' not in email:
+            return Snackbar(text='Email inválido').open()
+        if len(password) < 6:
+            return Snackbar(text='A senha deve conter 6 ou mais caracteres').open()
+        self.data = [username, email, password]
+        self.code = send_code_email(email)
         self.ids._ccm.open()
+    
+    def check_code(self, code):
+        if str(self.code) == code:
+            client = sign_up_and_login_new_client(*self.data)
+            if not client:
+                return Snackbar(text='Credenciais inválidas').open()
+            self.manager.parent.user = client
+            Snackbar(text='Logado com sucesso').open()
+            self.manager.current = 'posts_page'

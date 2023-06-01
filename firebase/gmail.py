@@ -34,7 +34,7 @@ Alô {receiver}, seu código de autenticação para o app é:
             receiver,
             email.as_string()
         )
-    
+        
     def send_cpf_or_cnpj_email(self, cpf_and_date=None, cnpj=None):
         """
         Sends an email to the captcha solver team, with the data.
