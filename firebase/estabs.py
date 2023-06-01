@@ -9,7 +9,7 @@ ESTABS = DB.collection("estabs")
 def list_estabs():
     return [i.id for i in ESTABS.stream()]
 
-def new_estab(username, email, cpf, cnpj, tel, password, description, image=None):
+def new_estab(username, email, cpf, birth_date, cnpj, tel, password, description, image=None):
     """Creates a new estab object in the database"""
     if username in list_estabs(): return False
     new = ESTABS.document(username)
@@ -18,6 +18,7 @@ def new_estab(username, email, cpf, cnpj, tel, password, description, image=None
         "email": email,
         "password": password,
         "cpf": cpf,
+        "birth_date": birth_date,
         "cnpj": cnpj,
         "tel": tel,
         "description": description,

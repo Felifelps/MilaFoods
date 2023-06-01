@@ -495,11 +495,10 @@ Builder.load_string('''
 
 <Post@RelativeLayout>:
     username: 'Username'
-    post_title: 'title'
     description: 'description'
     image: _img
     size_hint: 1, None
-    height: dp(275)
+    height: dp(600)
     canvas.before:
         Color:
             rgba: .98, .98, .98, 1
@@ -554,21 +553,13 @@ Builder.load_string('''
         icon: "message-outline"
         icon_color: .1, .1, .1, 1
     Label:
-        text: root.post_title
+        text: root.description
         color: .1, .1, .1, 1
         size_hint: None, None
         size: self.texture_size
         font_size: '14sp'
         markup: True
-        pos_hint: {'x': .025, 'top': .28}
-    Label:
-        text: root.description
-        color: .1, .1, .1, 1
-        size_hint: None, None
-        size: self.texture_size
-        font_size: '11sp'
-        markup: True
-        pos_hint: {'x': .03, 'top': .19}
+        pos_hint: {'x': .03, 'top': .28}
     MDRectangleFlatIconButton:
         text: "Comentar"
         halign: 'left'

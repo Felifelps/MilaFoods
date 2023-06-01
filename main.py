@@ -17,7 +17,7 @@ class MilaFoods(MDApp):
         if data[0] != '===++UserDefault++===': 
             self.user = (get_client(data[0]) if data[2] == 'client' else get_estab(data[0]))
             self.user['type'] = data[2]
-        self.root.load_client_pages()
+        self.root.load_screens(self.user)
         return super().on_start()
 
 if __name__ == '__main__':

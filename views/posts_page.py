@@ -24,6 +24,12 @@ Builder.load_string(
             RecycleBoxLayout:
                 id: _box
                 orientation: 'vertical'
+                default_size: None, dp(56)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+                padding: [0, 0, 0, dp(10)]
         BottomBar:
         LateralMenu:
             id: _lm
@@ -33,5 +39,5 @@ Builder.load_string(
 class PostsPage(MDScreen):
     name = 'posts_page'
     def on_enter(self, *args):
-        self.ids._rv.data = [{'text': f'jorginho lanches {x}'} for x in range(25)]
+        self.ids._rv.data = [{'description': f'jorginho lanches {x}', 'height': 'dp(400)'} for x in range(25)]
         return super().on_enter(*args)
