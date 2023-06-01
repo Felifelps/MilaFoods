@@ -289,7 +289,7 @@ Builder.load_string('''
             icon: "account-convert"
             size_hint: 1, .1
             on_press: 
-                app.root.current = 'client_or_estab_page'
+                app.root.logout()
         BasicIconButton:
             text: "Compartilhar"            
             icon: "share-variant"
@@ -406,8 +406,9 @@ Builder.load_string('''
         text_color_normal: .8, .8, .8, 1
         text_color_focus: .8, .8, .8, 1
         font_size: "13sp"
-        hint_text_color_focus: 0, 0, 0, 0
-        hint_text_color_normal: 0, 0, 0, 0
+        hint_text: "Pesquisar"
+        hint_text_color_focus: .8, .8, .8, 0.5
+        hint_text_color_normal: .8, .8, .8, 0.5
         size_hint: .6, 1
         pos_hint: {'center_x': .5, 'center_y': .5}
         on_focus:
@@ -441,8 +442,9 @@ Builder.load_string('''
         text_color_normal: .8, .8, .8, 1
         text_color_focus: .8, .8, .8, 1
         font_size: "13sp"
-        hint_text_color_focus: 0, 0, 0, 0
-        hint_text_color_normal: 0, 0, 0, 0
+        hint_text: "Pesquisar"
+        hint_text_color_focus: .8, .8, .8, 0.5
+        hint_text_color_normal: .8, .8, .8, 0.5
         size_hint: .5, 1
         pos_hint: {'x': .125, 'center_y': .5}
     MDIconButton:
@@ -498,7 +500,6 @@ Builder.load_string('''
     description: 'description'
     image: _img
     size_hint: 1, None
-    height: dp(600)
     canvas.before:
         Color:
             rgba: .98, .98, .98, 1

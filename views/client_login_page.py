@@ -10,7 +10,6 @@ Builder.load_string(
 #:import BasicLabel views.utils
 #:import BasicTextInput views.utils
 #:import Background views.utils
-#:import AsyncSpinner views.utils
 
 <ClientLoginPage>:
     id: _screen
@@ -65,6 +64,9 @@ Builder.load_string(
 class ClientLoginPage(MDScreen):
     name = 'client_login_page'
     def login_client(self, username, password):
+        for i in '''@#$%¨*()!"'.?/:;}]{[º^~´`\\|°=+-<>''':
+            if i in username:
+                return Snackbar(text='Caracteres inválidos para username').open()
         if len(password) < 6:
             return Snackbar(text='A senha deve conter 6 ou mais caracteres').open()
         client = login_client(username, password)
@@ -72,5 +74,6 @@ class ClientLoginPage(MDScreen):
             return Snackbar(text='Credenciais inválidas').open()
         self.manager.parent.user = client
         Snackbar(text='Logado com sucesso').open()
+        self.manager.load_client_pages()
         self.manager.current = 'posts_page'
     

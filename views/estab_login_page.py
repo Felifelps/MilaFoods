@@ -1,4 +1,5 @@
 from kivymd.uix.screen import MDScreen
+from kivymd.uix.snackbar import Snackbar
 from kivy.lang import Builder
 
 Builder.load_string('''
@@ -48,17 +49,6 @@ Builder.load_string('''
         BasicLabel:
             text: 'Ou use suas redes sociais'
             pos_hint: {'center_x': .5, 'center_y': .21}
-        BasicButton:
-            text: 'Instagram'
-            size_hint_x: .3
-            pos_hint: {'right': .9, 'center_y': .145}
-        BasicButton:
-            text: 'Facebook'
-            size_hint_x: .3
-            pos_hint: {'x': .1, 'center_y': .145}
-        BasicLabel:
-            text: 'Esqueceu a senha?'
-            pos_hint: {'center_x': .5, 'center_y': .075}
         BasicLabel:
             text: 'Não tem uma conta? [color=#0000ff][ref=create_account]Crie aqui!![/ref][/color]'
             pos_hint: {'center_x': .5, 'center_y': .025}
@@ -70,3 +60,4 @@ Builder.load_string('''
 
 class EstabLoginPage(MDScreen):
     name = 'estab_login_page'
+    

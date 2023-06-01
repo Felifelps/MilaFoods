@@ -67,6 +67,9 @@ class ClientSignUpPage(MDScreen):
     name = 'client_sign_up_page'
         
     def check_inputs(self, username, email, password):
+        for i in '''@#$%¨*()!"'.?/:;}]{[º^~´`\\|°=+-<>''':
+            if i in username:
+                return Snackbar(text='Caracteres inválidos para username').open()
         if username in list_clients():
             return Snackbar(text='Username em uso').open()
         if '@' not in email or '.' not in email:
@@ -84,4 +87,5 @@ class ClientSignUpPage(MDScreen):
                 return Snackbar(text='Credenciais inválidas').open()
             self.manager.parent.user = client
             Snackbar(text='Logado com sucesso').open()
+            self.manager.load_client_pages()
             self.manager.current = 'posts_page'

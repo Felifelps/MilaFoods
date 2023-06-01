@@ -1,5 +1,6 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
+from kivy.metrics import dp
 
 Builder.load_string(
 '''
@@ -29,7 +30,7 @@ Builder.load_string(
                 size_hint_y: None
                 height: self.minimum_height
                 orientation: 'vertical'
-                padding: [0, 0, 0, dp(10)]
+                spacing: dp(10)
         BottomBar:
         LateralMenu:
             id: _lm
@@ -39,5 +40,5 @@ Builder.load_string(
 class PostsPage(MDScreen):
     name = 'posts_page'
     def on_enter(self, *args):
-        self.ids._rv.data = [{'description': f'jorginho lanches {x}', 'height': 'dp(400)'} for x in range(25)]
+        self.ids._rv.data = [{'description': f'jorginho lanches {x}', 'height': dp(300)} for x in range(200)]
         return super().on_enter(*args)

@@ -1,10 +1,16 @@
 from kivymd.uix.screenmanager import MDScreenManager
+from control.firebase_to_local import logout
 
 class ScreenManager(MDScreenManager):
+    def logout(self):
+        logout()
+    
     def load_client_pages(self):
         from .posts_page import PostsPage
+        from .search_page import SearchPage
         for i in [
-            PostsPage()
+            PostsPage(),
+            SearchPage()
         ]: 
             self.add_widget(i)
     
@@ -28,12 +34,15 @@ class ScreenManager(MDScreenManager):
         ]: 
             self.add_widget(i)
     
-    def load_screens(self, user):
-        if user == {}:
+    def load_screens(self, user, default_user):
+        client = user['image'] == None
+        estab = user['image_code'] == None
+        print(user['username'], default_user)
+        if user['username'] == default_user:
             self.load_login_pages()
-        elif user['type'] == 'client':
+        elif client and not estab:
             self.load_client_pages()
-        elif user['type'] == 'estab':
+        elif estab and not client:
             self.load_estab_pages()
         
 
