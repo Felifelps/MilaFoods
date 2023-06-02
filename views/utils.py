@@ -235,7 +235,6 @@ Builder.load_string('''
             on_press: 
                 _lm.close()
         ProfileButton:
-            anonimous: False
             icon_size: '75sp'
             pos_hint: {'center_x': .5, 'center_y': .55}
         Label: 

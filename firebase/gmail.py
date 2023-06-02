@@ -14,9 +14,14 @@ Alô {receiver}, seu código de autenticação para o app é:
 """
     my_gmail = MailBox('imap.gmail.com').login(sender, password)
     context = ssl.create_default_context()
-    smtp = smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context)
+    
+    def load_smtp(self):
+        self.smtp = smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context)
 
     def send_code_email(self, receiver):
+        #Load smtp
+        self.load_smtp()
+
         #Random access code
         self.code = random.randint(10000, 99999)
 

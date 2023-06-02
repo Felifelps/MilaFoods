@@ -1,3 +1,4 @@
+import asyncio
 from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
 from kivy.core.window import Window
@@ -7,6 +8,10 @@ Window.size = (340, 600)
 
 class MilaFoods(MDApp):
     user = DictProperty(get_user_data())
+    def __init__(self, loop, **kwargs):
+        super().__init__(**kwargs)
+        self.loop = loop
+
     def build(self):
         self.theme_cls.theme_style = 'Dark'
         self.theme_cls.primary_palette = self.user['theme']
@@ -18,5 +23,9 @@ class MilaFoods(MDApp):
 
     def update_user(self): self.user = get_user_data()
 
+loop = asyncio.get_event_loop()
 if __name__ == '__main__':
-    MilaFoods().run()
+    loop.run_until_complete(
+        MilaFoods(loop).async_run()
+    )
+loop.close()

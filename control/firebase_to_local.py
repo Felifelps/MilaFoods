@@ -3,11 +3,14 @@ from firebase.estabs import new_estab, get_estab
 from local.appdb import *
 
 def send_email_code(email):
-    try:
-        from firebase.authenticate_email import send_code_email
-        return send_code_email(email)
-    except:
-        return False
+    for i in range(5):
+        try:
+            from firebase.authenticate_email import send_code_email
+            return send_code_email(email)
+        except Exception as e:
+            print(e)
+    return False
+
 
 def check_username_and_password(username, password):
     if username == '' or password == '':

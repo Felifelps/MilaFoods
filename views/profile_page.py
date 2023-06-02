@@ -17,29 +17,27 @@ Builder.load_string('''
 #:import SelectImageButton views.utils
 #:import join os.path.join
 
-<PostsArea>:
+<SavedArea>:
     size_hint: 1, .4
     pos_hint: {'top': .4}
     scroll_view_blur: 0
     BasicLabel:
-        text: 'Publicações'
+        text: 'Salvos'
         font_size: '25sp'
-        pos_hint: {'x': .025, 'top': .9}
-        halign: 'left'
+        pos_hint: {'center_x': .5, 'top': .9}
         canvas:
             Color:
                 rgba: 1, 1, 1, 1
             Line:
                 points: 0, self.y - dp(10), root.width, self.y - dp(10)
-            
-    BasicButton:
-        id: menu_button
-        size_hint: .275, .15
-        pos_hint: {'right': .975, 'top': .95}
-        text: 'Cardápio'
-        md_bg_color: app.theme_cls.primary_dark
-        on_press: 
-            app.root.current = 'menu_page'
+    MDIconButton:
+        icon: 'star'
+        icon_size: '40sp'
+        pos_hint: {'right': 1, 'top': .975}
+    MDIconButton:
+        icon: 'star'
+        icon_size: '40sp'
+        pos_hint: {'x': 0, 'top': .975}
     ScrollView:
         size_hint: 1, 2
         pos_hint: {'top': .675}
@@ -71,8 +69,8 @@ Builder.load_string('''
             id: _estab
             MDIconButton:
                 icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f'{app.user["image_code"]}.png')
-                icon_size: '75sp'
-                x: dp(10)
+                icon_size: '112.5sp'
+                center_x: root.width*0.2
                 center_y: root.height - dp(175)
             Label:
                 text: app.user['username']
@@ -86,7 +84,12 @@ Builder.load_string('''
                 size_hint: None, None
                 size: self.texture_size
                 pos: dp(10), root.height - dp(275)
-            PostsArea:
+            BasicButton:
+                text: 'Editar Perfil'
+                font_size: '15sp'
+                size_hint: .2, .025
+                pos_hint: {'x': .01, 'center_y': .425}
+            SavedArea:
             
         BottomBar:
         LateralMenu:
@@ -94,7 +97,7 @@ Builder.load_string('''
 
 '''
 )
-4
+
 class ProfilePage(MDScreen):
     name = 'profile_page'
     
@@ -113,12 +116,12 @@ class ProfilePage(MDScreen):
         #self.n_followers = 1
         #self.n_publications = 1
 
-class PostsArea(MDRelativeLayout):
+class SavedArea(MDRelativeLayout):
     up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.5)
     down_anim =  Animation(pos_hint={'top': .4}, duration=0.1, scroll_view_blur=0)
     def on_touch_down(self, touch):
-        if self.collide_point(*touch.pos) and touch.spos[1] > .8 and self.pos_hint['top'] == .9 and not self.ids.menu_button.collide_point(*touch.pos):
+        if self.collide_point(*touch.pos) and touch.spos[1] > .8 and self.pos_hint['top'] == .9:
             self.down_anim.start(self)
-        elif self.collide_point(*touch.pos) and self.pos_hint['top'] == .4 and not self.ids.menu_button.collide_point(*touch.pos):
+        elif self.collide_point(*touch.pos) and self.pos_hint['top'] == .4:
             self.up_anim.start(self)
         return super().on_touch_down(touch)

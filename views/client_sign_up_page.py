@@ -2,6 +2,7 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.snackbar import Snackbar
 from control.firebase_to_local import check_username_email_and_password, send_email_code, sign_up_and_login_new_client
 from kivy.lang import Builder
+from kivymd.uix.dialog import MDDialog
 
 Builder.load_string(
 '''
@@ -84,6 +85,10 @@ class ClientSignUpPage(MDScreen):
             return Snackbar(text=valid).open()
         self.data = [username, email, password]
         self.code = send_email_code(email)
+        if not self.code:
+            return MDDialog(
+                text='Falha de conexão, reinicie o app :('
+            )
         self.ids._ccm.open()
     
     def check_code(self, code):
