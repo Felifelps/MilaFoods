@@ -2,7 +2,7 @@ from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivymd.uix.snackbar import Snackbar
 from kivy.clock import Clock
-from control.firebase_to_local import login_client
+from control.firebase_to_local import check_username_and_password
 
 Builder.load_string(
 '''
@@ -15,9 +15,17 @@ Builder.load_string(
     id: _screen
     BackgroundLogo:
     RelativeLayout:
+        id: _rel
+        MDIconButton:
+            pos_hint: {'center_x': .1, 'center_y': .6}
+            theme_icon_color: 'Custom'
+            icon_color: .9, .9, .9, 1
+            icon: "arrow-left"
+            on_press:
+                app.root.current = 'client_or_estab_page'
         BasicLabel:
             text: 'Login de cliente'
-            pos_hint: {'center_x': .5, 'center_y': .6}
+            pos_hint: {'center_x': .525, 'center_y': .6}
             font_size: '25sp'
         BasicLabel:
             text: 'Username'
@@ -50,6 +58,8 @@ Builder.load_string(
             pos_hint: {'center_x': .5, 'center_y': .26}
             on_press:
                 _screen.login_client(_username.text, _password.text)
+                _username.text = ''
+                _password.text = ''
         BasicLabel:
             text: 'Esqueceu a senha?'
             pos_hint: {'center_x': .5, 'center_y': .075}
@@ -64,15 +74,9 @@ Builder.load_string(
 class ClientLoginPage(MDScreen):
     name = 'client_login_page'
     def login_client(self, username, password):
-        for i in '''@#$%¨*()!"'.?/:;}]{[º^~´`\\|°=+-<>''':
-            if i in username:
-                return Snackbar(text='Caracteres inválidos para username').open()
-        if len(password) < 6:
-            return Snackbar(text='A senha deve conter 6 ou mais caracteres').open()
-        client = login_client(username, password)
-        if not client:
-            return Snackbar(text='Credenciais inválidas').open()
-        self.manager.parent.user = client
+        client = check_username_and_password(username, password)
+        if isinstance(client, str): return Snackbar(text=client).open()
+        self.manager.app.update_user()
         Snackbar(text='Logado com sucesso').open()
         self.manager.load_client_pages()
         self.manager.current = 'posts_page'

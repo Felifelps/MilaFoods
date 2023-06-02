@@ -3,15 +3,15 @@ import sqlite3
 conn = sqlite3.connect('database.db')
 cursor = conn.cursor()
 
-def save_client_data(username, email, password, theme, image_code=None, following=[], saved=[]):
+def save_client_data(username, email, password, theme, description, image_code=None, following=[], saved=[]):
     cursor.execute(f'''
 update user 
 set username = "{username}",
     email = "{email}", 
     theme = "{theme}",
     password = "{password}",
-    image_code = {image_code}, 
-    description = null,   
+    image_code = "{image_code}", 
+    description = "{description}",   
     cpf = null,   
     birth_date = null,  
     cnpj = null,   
@@ -20,7 +20,7 @@ set username = "{username}",
 where rowid = 1;         
     ''')
     for username in following:
-        cursor.execute(f'insert into following values ({username});')
+        cursor.execute(f'insert into following values ("{username}");')
     conn.commit()
 
 def save_estab_data(username, email, password, theme, description, cpf=None, birth_date=None, cnpj=None, tel=None, image=None):
@@ -48,9 +48,17 @@ def get_user_data():
     return {columns[x]: (data[x].replace("'", "") if isinstance(data[x], str) else data[x]) for x in range(len(columns))}
 
 def back_to_default_user():
-    cursor.execute(f'''
+    cursor.execute('''
 update user 
 set username = "===++UserDefault++==="
+where rowid = 1;         
+    ''')
+    conn.commit()
+    
+def alter_theme(theme):
+    cursor.execute(f'''
+update user 
+set theme = "{theme}"
 where rowid = 1;         
     ''')
     conn.commit()

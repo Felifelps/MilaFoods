@@ -4,11 +4,11 @@ from kivy.animation import Animation
 from kivy.uix.textinput import TextInput
 from kivy.uix.image import Image
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.button import MDFillRoundFlatIconButton, MDIconButton
+from kivymd.uix.button import MDFillRoundFlatIconButton, MDIconButton, MDFlatButton
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.snackbar import Snackbar
-from kivymd.uix.spinner import MDSpinner 
+from kivymd.uix.dialog import MDDialog 
 from kivy.properties import StringProperty, ListProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
@@ -35,12 +35,9 @@ Builder.load_string('''
     halign: 'left'
 
 <ProfileButton@MDIconButton>:
-    anonimous: True
-    icon: 'account' if self.anonimous else join('views', 'data', 'logo.png') 
+    icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
     icon_size: '50sp'
-    username: 'username'
     on_press:
-        app.root.get_screen('profile_page').set_profile_page(self.username)
         app.root.current = 'profile_page'
         
 <MenuIconButton@MDIconButton>:
@@ -68,6 +65,8 @@ Builder.load_string('''
 <BasicButton@MDRaisedButton>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
     md_bg_color: app.theme_cls.primary_color
+    theme_text_color: "Custom"
+    text_color: .9, .9, .9, 1
 
 <BasicTextInput>:
     type: ''
@@ -147,7 +146,7 @@ Builder.load_string('''
             pos: 0, 0
             size: self.width, self.height*(10*self.base_height)
 
-<CodeConfirmMenu>:
+<CodeConfirmMenu@BottomMenu>:
     base_height: .5
     screen: None
     MDLabel:
@@ -236,12 +235,11 @@ Builder.load_string('''
             on_press: 
                 _lm.close()
         ProfileButton:
-            username: 'Current user'
             anonimous: False
             icon_size: '75sp'
             pos_hint: {'center_x': .5, 'center_y': .55}
         Label: 
-            text: 'Username'
+            text: app.user['username']
             font_size: '20sp'
             pos_hint: {'center_x': .5, 'center_y': .25}
             size_hint: None, None
@@ -289,7 +287,7 @@ Builder.load_string('''
             icon: "account-convert"
             size_hint: 1, .1
             on_press: 
-                app.root.logout()
+                self.parent.parent.dialog.open()
         BasicIconButton:
             text: "Compartilhar"            
             icon: "share-variant"
@@ -395,11 +393,6 @@ Builder.load_string('''
     ProfileButton:
         pos_hint: {'x': .025, 'center_y': .5}
         icon_size: '40sp'
-        icon: "account-circle"
-        anonimous: False
-        username: "Current username"
-        on_press:
-            print('account')
     MDTextField:
         color_mode: 'custom'
         line_color_focus: .8, .8, .8, 1
@@ -646,6 +639,20 @@ class BasicTextInput(TextInput):
 class LateralMenuBase(MDBoxLayout):
     open_animation = Animation(pos_hint={'x': 0}, bg_opacity=0.5, duration=0.1)
     close_animation = Animation(pos_hint={'x': -2}, bg_opacity=0, duration=0.1)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dialog = MDDialog(
+            text='Quer mesmo trocar de conta?',
+            buttons=[
+                MDFlatButton(text='Cancelar', on_press=lambda: self.dialog.dismiss()),
+                MDFlatButton(text='Sair', on_press=self.change_account)
+            ]
+        )
+        
+    def change_account(self, *args):
+        self.parent.parent.manager.logout()
+        self.dialog.dismiss()
+    
     def open(self): 
         self.open_animation.start(self)
 
@@ -687,8 +694,4 @@ class SelectImageButton(MDIconButton):
     
     def exit_file_manager(self, *args): 
         self.file_manager.close()
-        
-class CodeConfirmMenu(BottomMenu):
-    def open(self):
-        return super().open()
         

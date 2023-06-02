@@ -14,9 +14,16 @@ Builder.load_string('''
 <EstabLoginPage>:
     BackgroundLogo:
     RelativeLayout:
+        MDIconButton:
+            pos_hint: {'center_x': .1, 'center_y': .6}
+            theme_icon_color: 'Custom'
+            icon_color: .9, .9, .9, 1
+            icon: "arrow-left"
+            on_press:
+                app.root.current = 'client_or_estab_page'
         BasicLabel:
             text: 'Login de Empresa'
-            pos_hint: {'center_x': .5, 'center_y': .6}
+            pos_hint: {'center_x': .55, 'center_y': .6}
             font_size: '25sp'
         CpfCnpjTextInput:
             pos_hint: {'center_x': .5, 'center_y': .5}

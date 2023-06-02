@@ -18,7 +18,7 @@ Alô {receiver}, seu código de autenticação para o app é:
 
     def send_code_email(self, receiver):
         #Random access code
-        self.code = random.randint(1000, 9999)
+        self.code = random.randint(10000, 99999)
 
         #Email creating
         email = EmailMessage()

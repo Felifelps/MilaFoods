@@ -5,7 +5,7 @@ CLIENTS = DB.collection("clients")
 def list_clients():
     return [i.id for i in CLIENTS.stream()]
 
-def new_client(username, email, password, image_code=False):
+def new_client(username, email, password, description, image_code=0):
     """Creates a new client object in the database"""
     if username in list_clients(): return False
     CLIENTS.document(username).set({
@@ -13,10 +13,11 @@ def new_client(username, email, password, image_code=False):
         "email": email,
         "password": password,
         "following": ["MilaFoods"],
+        "description": description,
         "saved": [],
         "image_code": image_code
     })
-    return True
+    return get_client(username)
 
 def update_client(username, data):
     """Updates a client object of the database"""

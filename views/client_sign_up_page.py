@@ -1,6 +1,6 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.snackbar import Snackbar
-from control.firebase_to_local import list_clients, send_code_email, sign_up_and_login_new_client
+from control.firebase_to_local import check_username_email_and_password, send_email_code, sign_up_and_login_new_client
 from kivy.lang import Builder
 
 Builder.load_string(
@@ -13,15 +13,25 @@ Builder.load_string(
 
 <ClientSignUpPage>:
     id: _screen
+    textinputs: [_username, _email, _password]
     BackgroundLogo:
     RelativeLayout:
+        id: _rel
+        MDIconButton:
+            pos_hint: {'center_x': .1, 'center_y': .6}
+            theme_icon_color: 'Custom'
+            icon_color: .9, .9, .9, 1
+            icon: "arrow-left"
+            on_press:
+                app.root.current = 'client_or_estab_page'
         BasicLabel:
-            text: 'Criar conta de cliente'
+            text: 'Criar conta de\\ncliente'
+            halign: 'center'
             pos_hint: {'center_x': .5, 'center_y': .6}
             font_size: '25sp'
         BasicLabel:
             text: 'Username'
-            pos_hint: {'center_x': .175, 'center_y': .55}
+            pos_hint: {'x': .1, 'center_y': .55}
         BasicTextInput:
             id: _username
             hint_text: 'Digite seu username'
@@ -57,6 +67,9 @@ Builder.load_string(
             pos_hint: {'center_x': .5, 'center_y': .2175}
             on_press:
                 _screen.check_inputs(_username.text, _email.text, _password.text)
+                _username.text = ''
+                _email.text = ''
+                _password.text = ''
         CodeConfirmMenu:
             id: _ccm
             screen: _screen
@@ -65,19 +78,12 @@ Builder.load_string(
 
 class ClientSignUpPage(MDScreen):
     name = 'client_sign_up_page'
-        
     def check_inputs(self, username, email, password):
-        for i in '''@#$%¨*()!"'.?/:;}]{[º^~´`\\|°=+-<>''':
-            if i in username:
-                return Snackbar(text='Caracteres inválidos para username').open()
-        if username in list_clients():
-            return Snackbar(text='Username em uso').open()
-        if '@' not in email or '.' not in email:
-            return Snackbar(text='Email inválido').open()
-        if len(password) < 6:
-            return Snackbar(text='A senha deve conter 6 ou mais caracteres').open()
+        valid = check_username_email_and_password(username, email, password)
+        if isinstance(valid, str): 
+            return Snackbar(text=valid).open()
         self.data = [username, email, password]
-        self.code = send_code_email(email)
+        self.code = send_email_code(email)
         self.ids._ccm.open()
     
     def check_code(self, code):
@@ -85,7 +91,10 @@ class ClientSignUpPage(MDScreen):
             client = sign_up_and_login_new_client(*self.data)
             if not client:
                 return Snackbar(text='Credenciais inválidas').open()
-            self.manager.parent.user = client
-            Snackbar(text='Logado com sucesso').open()
+            self.manager.app.update_user()
             self.manager.load_client_pages()
             self.manager.current = 'posts_page'
+            return Snackbar(text='Logado com sucesso').open()
+        Snackbar(text='Código errado').open()
+        
+        
