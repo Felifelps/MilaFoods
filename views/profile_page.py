@@ -19,17 +19,17 @@ Builder.load_string('''
 
 <SavedArea>:
     size_hint: 1, .4
-    pos_hint: {'top': .4}
+    pos_hint: {'top': .5}
     scroll_view_blur: 0
     BasicLabel:
         text: 'Salvos'
-        font_size: '25sp'
+        font_size: '30sp'
         pos_hint: {'center_x': .5, 'top': .9}
         canvas:
             Color:
                 rgba: 1, 1, 1, 1
             Line:
-                points: 0, self.y - dp(10), root.width, self.y - dp(10)
+                points: 0, self.y - dp(5), root.width, self.y - dp(10)
     MDIconButton:
         icon: 'star'
         icon_size: '40sp'
@@ -70,25 +70,24 @@ Builder.load_string('''
             MDIconButton:
                 icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f'{app.user["image_code"]}.png')
                 icon_size: '112.5sp'
-                center_x: root.width*0.2
-                center_y: root.height - dp(175)
+                pos_hint: {'center_x': .2, 'center_y': .75}
             Label:
-                text: app.user['username']
+                text: f"[b]{app.user['username']}[/b]"
                 font_size: '25sp'
+                markup: True
                 size_hint: None, None
                 size: self.texture_size
-                pos_hint: {'x': .4, 'center_y': .7}
+                pos_hint: {'x': .4, 'center_y': .75}
             Label:
                 text: app.user['description']
                 font_size: '14sp'
                 size_hint: None, None
                 size: self.texture_size
-                pos: dp(10), root.height - dp(275)
+                pos_hint: {'x': .05, 'top': .65}
             BasicButton:
                 text: 'Editar Perfil'
-                font_size: '15sp'
-                size_hint: .2, .025
-                pos_hint: {'x': .01, 'center_y': .425}
+                md_bg_color: app.theme_cls.primary_dark
+                pos_hint: {'x': .025, 'y': .48}
             SavedArea:
             
         BottomBar:

@@ -8,9 +8,8 @@ Window.size = (340, 600)
 
 class MilaFoods(MDApp):
     user = DictProperty(get_user_data())
-    def __init__(self, loop, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.loop = loop
 
     def build(self):
         self.theme_cls.theme_style = 'Dark'
@@ -26,6 +25,6 @@ class MilaFoods(MDApp):
 loop = asyncio.get_event_loop()
 if __name__ == '__main__':
     loop.run_until_complete(
-        MilaFoods(loop).async_run()
+        MilaFoods().async_run()
     )
 loop.close()

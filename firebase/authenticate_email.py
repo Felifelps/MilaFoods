@@ -1,6 +1,5 @@
 from .gmail import AuthenticationMail
 
-
 auth = AuthenticationMail()
 def send_code_email(receiver):
     auth.send_code_email(receiver)

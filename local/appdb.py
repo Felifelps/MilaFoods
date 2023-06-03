@@ -19,6 +19,7 @@ set username = "{username}",
     image = null
 where rowid = 1;         
     ''')
+    cursor.execute('delete from "following";')
     for username in following:
         cursor.execute(f'insert into following values ("{username}");')
     conn.commit()

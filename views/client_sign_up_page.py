@@ -3,6 +3,7 @@ from kivymd.uix.snackbar import Snackbar
 from control.firebase_to_local import check_username_email_and_password, send_email_code, sign_up_and_login_new_client
 from kivy.lang import Builder
 from kivymd.uix.dialog import MDDialog
+import asyncio
 
 Builder.load_string(
 '''
@@ -68,9 +69,6 @@ Builder.load_string(
             pos_hint: {'center_x': .5, 'center_y': .2175}
             on_press:
                 _screen.check_inputs(_username.text, _email.text, _password.text)
-                _username.text = ''
-                _email.text = ''
-                _password.text = ''
         CodeConfirmMenu:
             id: _ccm
             screen: _screen
@@ -79,6 +77,10 @@ Builder.load_string(
 
 class ClientSignUpPage(MDScreen):
     name = 'client_sign_up_page'
+    def on_pre_enter(self, *args):
+        for i in self.textinputs: i.text = ''
+        return super().on_pre_enter(*args)
+    
     def check_inputs(self, username, email, password):
         valid = check_username_email_and_password(username, email, password)
         if isinstance(valid, str): 
@@ -88,7 +90,7 @@ class ClientSignUpPage(MDScreen):
         if not self.code:
             return MDDialog(
                 text='Falha de conexão, reinicie o app :('
-            )
+            ).open()
         self.ids._ccm.open()
     
     def check_code(self, code):

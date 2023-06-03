@@ -1,6 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.metrics import dp
+from kivy.properties import ListProperty
 
 Builder.load_string(
 '''
@@ -34,11 +35,14 @@ Builder.load_string(
         BottomBar:
         LateralMenu:
             id: _lm
+    AsyncImage:
+        source: '
 '''
 )
 
 class PostsPage(MDScreen):
     name = 'posts_page'
+    data = ListProperty()
     def on_enter(self, *args):
-        self.ids._rv.data = [{'description': f'jorginho lanches {x}', 'height': dp(300)} for x in range(200)]
+        self.ids._rv.data = self.data
         return super().on_enter(*args)

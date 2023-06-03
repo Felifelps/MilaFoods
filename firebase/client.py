@@ -17,11 +17,16 @@ def new_client(username, email, password, description, image_code=0):
         "saved": [],
         "image_code": image_code
     })
-    return get_client(username)
+    return get_client(username)    
 
 def update_client(username, data):
     """Updates a client object of the database"""
     CLIENTS.document(username).update(data)
+    
+def save_post(username, timestamp, estab_username):
+    update_client(username, {
+        'saved': [f'{timestamp}-{estab_username}']
+    })
     
 def delete_client(username):
     """Deletes a client object of the database"""

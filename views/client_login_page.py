@@ -13,6 +13,7 @@ Builder.load_string(
 
 <ClientLoginPage>:
     id: _screen
+    textinputs: [_username, _password]
     BackgroundLogo:
     RelativeLayout:
         id: _rel
@@ -73,6 +74,9 @@ Builder.load_string(
 )
 class ClientLoginPage(MDScreen):
     name = 'client_login_page'
+    def on_pre_enter(self, *args):
+        for i in self.textinputs: i.text = ''
+        return super().on_pre_enter(*args)
     def login_client(self, username, password):
         client = check_username_and_password(username, password)
         if isinstance(client, str): return Snackbar(text=client).open()
