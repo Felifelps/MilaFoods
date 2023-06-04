@@ -9,36 +9,8 @@ Builder.load_string(
 #:import Background views.utils
 #:import LateralMenu views.utils
 #:import join os.path.join
+#:import SavedPost views.utils
 
-<SavedPost@RelativeLayout>:
-    image: _img
-    size_hint: None, None
-    size: dp(130), dp(150)
-    canvas.before:
-        Color:
-            rgba: .9, .9, .9, 1
-        Rectangle:
-            size: self.width, self.height
-            pos: 0, 0
-    Image:
-        id: _img
-        pos_hint: {'top': 1}
-        size_hint: 1, .75
-    Label:
-        text: '[b][Título do post][/b]'
-        color: .1, .1, .1, 1
-        size_hint: None, None
-        size: self.texture_size
-        font_size: '12sp'
-        markup: True
-        pos_hint: {'x': .05, 'center_y': .175}
-    Label:
-        text: '[Nome estab]'
-        color: .1, .1, .1, 1
-        size_hint: None, None
-        size: self.texture_size
-        font_size: '10sp'
-        pos_hint: {'x': .05, 'center_y': .075}
             
 <SavedPage>:
     Background:

@@ -1,6 +1,7 @@
 from firebase.client import new_client, get_client, list_clients, delete_client
-from firebase.estabs import new_estab, get_estab
+from firebase.estabs import new_estab, get_estab, post, get_post, list_posts
 from local.appdb import *
+import asyncio
 
 def send_email_code(email):
     for i in range(5):
@@ -10,7 +11,6 @@ def send_email_code(email):
         except Exception as e:
             print(e)
     return False
-
 
 def check_username_and_password(username, password):
     if username == '' or password == '':
@@ -66,6 +66,17 @@ def sign_up_and_login_new_client(username, email, password):
     save_client_data(username, client['email'], client['password'], 'Red', 'Sou novo no app!', client['image_code'], client['following'], client['saved'])
     return get_client(username)
 
+def update_posts():
+    posts = []
+    local_posts = [f'{i["username"]}-{i["id"]}' for i in get_posts_data()]
+    for post in list_posts():
+        if post not in local_posts:
+            posts.append(get_post(post))
+    save_posts_data(posts)
+    
+def get_posts_from_db():
+    return get_posts_data()
+        
 def get_local_user_data():
     return get_user_data()
 

@@ -38,7 +38,7 @@ Builder.load_string('''
     icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
     icon_size: '50sp'
     on_press:
-        app.root.current = 'profile_page'
+        app.root.current = 'client_profile_page'
         
 <MenuIconButton@MDIconButton>:
     editable: False
@@ -331,9 +331,6 @@ Builder.load_string('''
     ProfileButton:
         pos_hint: {'x': .025, 'center_y': .5}
         icon_size: '40sp'
-        icon: "account-circle"
-        anonimous: False
-        username: "Current username"
     Label:
         text: f'[b]{root.title}[/b]'
         markup: True
@@ -487,11 +484,15 @@ Builder.load_string('''
         pos_hint: {'center_x': .75, 'center_y': .3}
         font_size: '15sp'
 
-<Post@RelativeLayout>:
+<Post>:
     username: 'Username'
-    description: 'description'
-    image: _img
+    text: 'description'
+    image: join('views', 'data', 'logo.png')
+    timestamp: ''
+    id: 0
+    likes: 0
     size_hint: 1, None
+    manager: app.root
     canvas.before:
         Color:
             rgba: .98, .98, .98, 1
@@ -504,12 +505,6 @@ Builder.load_string('''
         theme_icon_color: 'Custom'
         icon_color: .1, .1, .1, 1
         icon: "account-circle"
-    MDIconButton:
-        pos_hint: {'right': 1, 'center_y': .925}
-        icon_size: '30sp'
-        theme_icon_color: 'Custom'
-        icon_color: .1, .1, .1, 1
-        icon: "dots-horizontal"
     Label:
         text: root.username
         color: .1, .1, .1, 1
@@ -521,7 +516,7 @@ Builder.load_string('''
         id: _img
         pos_hint: {'top': .85}
         size_hint: 1, .55
-        source: join('views', 'data', 'logo.png')
+        source: join('views', 'data', 'logo.png') if root.image == 'None' else root.image
     MDIconButton:
         pos_hint: {'center_x': .08, 'center_y': .78}
         theme_icon_color: 'Custom'
@@ -546,7 +541,7 @@ Builder.load_string('''
         icon: "message-outline"
         icon_color: .1, .1, .1, 1
     Label:
-        text: root.description
+        text: root.text
         color: .1, .1, .1, 1
         size_hint: None, None
         size: self.texture_size
@@ -566,6 +561,37 @@ Builder.load_string('''
         font_size: '11sp'
         size_hint: .05, .1
         pos_hint: {"center_x": .14, "center_y": .075}
+
+<SavedPost@RelativeLayout>:
+    image: _img
+    username: 'Username'
+    size_hint: None, None
+    size: dp(130), dp(150)
+    canvas.before:
+        Color:
+            rgba: .9, .9, .9, 1
+        Rectangle:
+            size: self.width, self.height
+            pos: 0, 0
+    Image:
+        id: _img
+        pos_hint: {'top': 1}
+        size_hint: 1, .75
+    Label:
+        text: root.username
+        color: .1, .1, .1, 1
+        size_hint: None, None
+        size: self.texture_size
+        font_size: '12sp'
+        markup: True
+        pos_hint: {'x': .05, 'center_y': .175}
+    Label:
+        text: '[Nome estab]'
+        color: .1, .1, .1, 1
+        size_hint: None, None
+        size: self.texture_size
+        font_size: '10sp'
+        pos_hint: {'x': .05, 'center_y': .075}
 
 <CpfCnpjTextInput@FloatLayout>:
     cpf: True
@@ -593,8 +619,6 @@ Builder.load_string('''
         items: ['CPF','CNPJ']
         on_text:
             root.cpf = not root.cpf
-
-
 ''')
 
 class BasicListItem(TwoLineAvatarListItem):
@@ -693,4 +717,10 @@ class SelectImageButton(MDIconButton):
     
     def exit_file_manager(self, *args): 
         self.file_manager.close()
+        
+class Post(MDRelativeLayout):
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos):
+            self.manager.current = 'view_post_page'
+        return super().on_touch_down(touch)
         

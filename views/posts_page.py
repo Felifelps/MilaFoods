@@ -2,6 +2,8 @@ from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import ListProperty
+from kivymd.uix.dialog import MDDialog
+from control.firebase_to_local import update_posts, get_posts_from_db
 
 Builder.load_string(
 '''
@@ -35,14 +37,23 @@ Builder.load_string(
         BottomBar:
         LateralMenu:
             id: _lm
-    AsyncImage:
-        source: '
 '''
 )
 
 class PostsPage(MDScreen):
     name = 'posts_page'
     data = ListProperty()
+    def get_posts(self):
+        update_posts()
+        self.dialog.dismiss()
+        data = get_posts_from_db()
+        print(data)
+        self.ids._rv.data = data
+    
     def on_enter(self, *args):
-        self.ids._rv.data = self.data
+        self.dialog = MDDialog(
+            text='Carregando posts...',
+            on_open=lambda x: self.get_posts()
+        )
+        self.dialog.open()
         return super().on_enter(*args)

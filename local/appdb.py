@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3, random
 
 conn = sqlite3.connect('database.db')
 cursor = conn.cursor()
@@ -63,3 +63,33 @@ set theme = "{theme}"
 where rowid = 1;         
     ''')
     conn.commit()
+    
+def save_posts_data(posts):
+    if posts == []: return 
+    cursor.execute('delete from posts;')
+    for post in posts:
+        cursor.execute(f'''insert into posts values ("{post['username']}",
+        {post['id']},
+        "{post['text']}",
+        "{post["image"]}",
+        {post['likes']},
+        "{post['timestamp']}"
+    )
+''')
+    conn.commit()
+    
+def get_posts_data():
+    posts = []
+    cursor.execute('select * from posts;')
+    for line in cursor.fetchall():
+        print(line)
+        posts.append({
+            'username': line[0],
+            'id': str(line[1]),
+            'text': line[2],
+            'image': str(line[3]),
+            'likes': line[4],
+            'timestamp': line[5],
+            'height': 300 #For the post class
+        })
+    return random.sample(posts, len(posts))

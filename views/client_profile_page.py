@@ -29,7 +29,7 @@ Builder.load_string('''
             Color:
                 rgba: 1, 1, 1, 1
             Line:
-                points: 0, self.y - dp(5), root.width, self.y - dp(10)
+                points: 0, self.y - dp(5), root.width, self.y - dp(5)
     MDIconButton:
         icon: 'star'
         icon_size: '40sp'
@@ -38,27 +38,22 @@ Builder.load_string('''
         icon: 'star'
         icon_size: '40sp'
         pos_hint: {'x': 0, 'top': .975}
-    ScrollView:
+    RecycleView:
+        id: _rv
+        viewclass: 'SavedPost'
         size_hint: 1, 2
         pos_hint: {'top': .675}
-        canvas.before:
-            Color:
-                rgba: 0, 0, 0, self.parent.scroll_view_blur
-            Rectangle:
-                size: self.width, self.height*2
-                pos: self.x, self.y
-        MDStackLayout:
-            adaptive_height: True
-            top: root.height - root.height*0.6
-            spacing: 10, 20
-            Post:
-                post_title: "Jorginho lanches"
-            Post:
-            Post:
-            Post:
-            Post:
+        RecycleGridLayout:
+            cols: 3
+            default_col_width: dp(106)
+            default_size: None, dp(56)
+            default_size_hint: 1, None
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(5)
+            spacing: dp(5)
 
-<ProfilePage>:
+<ClientProfilePage>:
     id: _screen
     Background:
         id: _bg
@@ -97,23 +92,8 @@ Builder.load_string('''
 '''
 )
 
-class ProfilePage(MDScreen):
-    name = 'profile_page'
-    
-    username = StringProperty('username')
-    bio = StringProperty('bio')
-    img_src = StringProperty('logo.png')
-    n_followers = NumericProperty(1)
-    n_publications = NumericProperty(1)
-    publications_data = [] #{'username': username, 'img_src': img_src, 'title': title, 'description': description}
-
-    def set_profile_page(self, username):
-        self.username = username
-        print('get the user by the database')
-        #self.bio = 'Bio'
-        #self.img_src = 'logo.png' 
-        #self.n_followers = 1
-        #self.n_publications = 1
+class ClientProfilePage(MDScreen):
+    name = 'client_profile_page'
 
 class SavedArea(MDRelativeLayout):
     up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.5)

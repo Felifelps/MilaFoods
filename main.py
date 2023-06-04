@@ -3,7 +3,7 @@ from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
 from kivy.core.window import Window
 from kivy.properties import DictProperty
-from control.firebase_to_local import get_user_data
+from control.firebase_to_local import get_user_data, post
 Window.size = (340, 600)
 
 class MilaFoods(MDApp):
@@ -22,9 +22,5 @@ class MilaFoods(MDApp):
 
     def update_user(self): self.user = get_user_data()
 
-loop = asyncio.get_event_loop()
 if __name__ == '__main__':
-    loop.run_until_complete(
-        MilaFoods().async_run()
-    )
-loop.close()
+    asyncio.run(MilaFoods().async_run())

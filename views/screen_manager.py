@@ -21,12 +21,14 @@ class ScreenManager(MDScreenManager):
             from .posts_page import PostsPage
             from .search_page import SearchPage
             from .theme_config_page import ThemeConfigPage
-            from .profile_page import ProfilePage
+            from .client_profile_page import ClientProfilePage
+            from .view_post_page import ViewPostPage
             for i in [
                 PostsPage(),
                 SearchPage(),
                 ThemeConfigPage(),
-                ProfilePage()
+                ClientProfilePage(),
+                ViewPostPage()
             ]: 
                 self.add_widget(i)
             self.client_pages = True
@@ -64,7 +66,9 @@ class ScreenManager(MDScreenManager):
             self.load_client_pages()
         elif estab and not client:
             self.load_estab_pages()
-        
-
-    
-    
+            
+    def set_profile_page(self, profile_button):
+        profile_page = self.get_screen('profile_page')
+        for i in ['username', 'description', 'username']:
+            exec(f'profile_page.{i} = profile_button.{i}')
+        self.current = 'profile_page'

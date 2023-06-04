@@ -22,11 +22,13 @@ def new_estab(username, email, cpf, birth_date, cnpj, tel, password, description
         "cnpj": cnpj,
         "tel": tel,
         "description": description,
-        "image": image if image == None else encode_image(image)
+        "image": image if image == None else encode_image(image),
+        "n_of_posts": 1
     })
     new.collection("menu")
     new.collection("posts")
     new_post(
+        1,
         username,
         f"{username} acabou de criar sua conta!!",
         image
@@ -36,6 +38,11 @@ def new_estab(username, email, cpf, birth_date, cnpj, tel, password, description
 def update_estab(username, data):
     """Updates a estab object of the database"""
     ESTABS.document(username).update(data)
+    
+def post(username, text, image):
+    id = get_estab(username)['n_of_posts'] + 1
+    new_post(id, username, text, image)
+    update_estab(username, {"n_of_posts": id})
     
 def delete_estab(username):
     """Deletes a estab object of the database"""
