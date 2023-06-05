@@ -1,4 +1,5 @@
-from .db import DB
+from .db import DB, firestore
+from .post import update_post, get_post
 
 CLIENTS = DB.collection("clients")
 
@@ -15,9 +16,21 @@ def new_client(username, email, password, description, image_code=0):
         "following": ["MilaFoods"],
         "description": description,
         "saved": [],
+        "liked": [],
         "image_code": image_code
     })
     return get_client(username)    
+
+def client_like(username, post_id):
+    update_post(post_id, {'likes': firestore.Increment(1)})
+    update_client(username, {'liked': firestore.ArrayUnion([post_id])})
+
+def client_un_like(username, post_id):
+    update_post(post_id, {'likes': firestore.Increment(-1)})
+    update_client(username, {'liked': firestore.ArrayRemove([post_id])})
+
+def client_comment(username, post_id, comment_code):
+    update_post(post_id, {'comments': firestore.ArrayUnion([f'{username}-{comment_code}'])})
 
 def update_client(username, data):
     """Updates a client object of the database"""

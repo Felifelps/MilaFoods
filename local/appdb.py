@@ -66,7 +66,6 @@ where rowid = 1;
     
 def save_posts_data(posts):
     if posts == []: return 
-    cursor.execute('delete from posts;')
     for post in posts:
         cursor.execute(f'''insert into posts values ("{post['username']}",
         {post['id']},
@@ -82,7 +81,6 @@ def get_posts_data():
     posts = []
     cursor.execute('select * from posts;')
     for line in cursor.fetchall():
-        print(line)
         posts.append({
             'username': line[0],
             'id': str(line[1]),

@@ -11,7 +11,8 @@ def new_post(id, username, text, image=None):
         "text": text,
         "image": image if image == None else encode_image(image),
         "timestamp": str(datetime.datetime.today()).split(".")[0],
-        "likes": 0
+        "likes": 0,
+        "comments": []
     })
     DB.document(f"estabs/{username}/posts/{key}").set({"id": id})
     return True

@@ -1,6 +1,6 @@
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.clock import Clock
-from control.firebase_to_local import logout
+from control.firebase_to_local import logout, get_post
 
 class ScreenManager(MDScreenManager):
     client_pages = False
@@ -67,8 +67,17 @@ class ScreenManager(MDScreenManager):
         elif estab and not client:
             self.load_estab_pages()
             
-    def set_profile_page(self, profile_button):
+    def set_client_profile_page(self, profile_button):
         profile_page = self.get_screen('profile_page')
         for i in ['username', 'description', 'username']:
             exec(f'profile_page.{i} = profile_button.{i}')
         self.current = 'profile_page'
+        
+    def load_view_post_page(self, id, username, image, text, comments):
+        page = self.get_screen('view_post_page')
+        page.username = username
+        page.image = image
+        page.text = text
+        page.comments = get_post(f'{username}-{id}')['comments']
+        print(page.comments)
+        self.current = 'view_post_page'

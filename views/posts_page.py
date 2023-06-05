@@ -1,12 +1,11 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.metrics import dp
-from kivy.properties import ListProperty
+from kivy.properties import ListProperty, BooleanProperty
 from kivymd.uix.dialog import MDDialog
-from control.firebase_to_local import update_posts, get_posts_from_db
+from control.firebase_to_local import get_posts_from_db, update_posts
 
-Builder.load_string(
-'''
+Builder.load_string('''
 #:import TopSearchBar views.utils
 #:import BottomBar views.utils
 #:import BasicLabel views.utils
@@ -32,7 +31,6 @@ Builder.load_string(
                 default_size_hint: 1, None
                 size_hint_y: None
                 height: self.minimum_height
-                orientation: 'vertical'
                 spacing: dp(10)
         BottomBar:
         LateralMenu:
@@ -43,17 +41,20 @@ Builder.load_string(
 class PostsPage(MDScreen):
     name = 'posts_page'
     data = ListProperty()
+    updated = BooleanProperty(False)
     def get_posts(self):
-        update_posts()
+        if not self.updated:
+            update_posts()
+            self.updated = True
         self.dialog.dismiss()
         data = get_posts_from_db()
-        print(data)
         self.ids._rv.data = data
     
     def on_enter(self, *args):
-        self.dialog = MDDialog(
-            text='Carregando posts...',
-            on_open=lambda x: self.get_posts()
-        )
-        self.dialog.open()
+        if not self.updated:
+            self.dialog = MDDialog(
+                text='Atualizando posts...',
+                on_open=lambda x: self.get_posts()
+            )
+            self.dialog.open()
         return super().on_enter(*args)

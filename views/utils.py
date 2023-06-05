@@ -35,6 +35,8 @@ Builder.load_string('''
     halign: 'left'
 
 <ProfileButton@MDIconButton>:
+    image: 'None'
+    username: 'Username'
     icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
     icon_size: '50sp'
     on_press:
@@ -369,6 +371,31 @@ Builder.load_string('''
             root.np.open()
     BarMenuButton:
         lm: root.lm
+
+<TopImageAndStarBar@MDRelativeLayout>:
+    canvas.before:
+        Color: 
+            rgba: 0, 0, 0, .4
+        RoundedRectangle: 
+            size: self.width, self.height + dp(4)
+            pos: 0, -dp(4)
+        Color: 
+            rgba: 0, 0, 0, .2
+        RoundedRectangle: 
+            size: self.width, self.height + dp(7)
+            pos: 0, -dp(7)
+    pos_hint: {'top': 1}
+    size_hint: 1, .1
+    md_bg_color: app.theme_cls.primary_dark
+    Image:
+        source: join('views', 'data', 'label.png')
+        pos_hint: {'center_x': .3, 'center_y': .5}
+    MDIconButton:
+        pos_hint: {'right': 1, 'center_y': .5}
+        icon_size: '25sp'
+        icon: "star"
+        on_press:
+            print('Save')
 
 <TopCentralSearchBar@MDRelativeLayout>:
     lm: None
@@ -721,6 +748,6 @@ class SelectImageButton(MDIconButton):
 class Post(MDRelativeLayout):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            self.manager.current = 'view_post_page'
+            self.manager.load_view_post_page(self.id, self.username, self.image, self.text, [])
         return super().on_touch_down(touch)
         

@@ -3,7 +3,7 @@ from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
 from kivy.core.window import Window
 from kivy.properties import DictProperty
-from control.firebase_to_local import get_user_data, post
+from control.firebase_to_local import get_user_data, estab_un_like, estab_comment
 Window.size = (340, 600)
 
 class MilaFoods(MDApp):
@@ -20,7 +20,12 @@ class MilaFoods(MDApp):
         self.root.load_screens(self.user)
         return super().on_start()
 
-    def update_user(self): self.user = get_user_data()
+    def update_user(self): self.user = get_user_data()    
+
+estab_un_like(
+    'MilaFoods',
+    'MilaFoods-1'
+)
 
 if __name__ == '__main__':
     asyncio.run(MilaFoods().async_run())

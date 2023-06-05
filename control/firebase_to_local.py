@@ -1,5 +1,5 @@
-from firebase.client import new_client, get_client, list_clients, delete_client
-from firebase.estabs import new_estab, get_estab, post, get_post, list_posts
+from firebase.client import new_client, get_client, list_clients, client_like, client_comment, client_un_like
+from firebase.estabs import new_estab, get_estab, post, get_post, list_posts, estab_like, estab_comment, estab_un_like
 from local.appdb import *
 import asyncio
 
@@ -71,6 +71,7 @@ def update_posts():
     local_posts = [f'{i["username"]}-{i["id"]}' for i in get_posts_data()]
     for post in list_posts():
         if post not in local_posts:
+            print('Loading', post)
             posts.append(get_post(post))
     save_posts_data(posts)
     
