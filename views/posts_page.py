@@ -43,12 +43,12 @@ class PostsPage(MDScreen):
     data = ListProperty()
     updated = BooleanProperty(False)
     
-    def get_posts(self):
+    def get_posts(self, random=True):
         if not self.updated:
             update_posts()
             self.updated = True
         self.dialog.dismiss()
-        data = get_posts_from_db()
+        data = get_posts_from_db(random)
         self.ids._rv.data = data
     
     def on_enter(self, *args):

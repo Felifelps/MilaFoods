@@ -119,7 +119,7 @@ def save_posts_data(posts):
 ''')
     conn.commit()
     
-def get_posts_data():
+def get_posts_data(randomize=True):
     posts = []
     cursor.execute('select * from posts;')
     for line in cursor.fetchall():
@@ -133,4 +133,6 @@ def get_posts_data():
             'height': 300, 
             'liked': True if f'{line[0]}-{line[1]}' in get_liked_data() else False
         })
-    return random.sample(posts, len(posts))
+    if randomize:
+        return random.sample(posts, len(posts))
+    return posts

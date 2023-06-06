@@ -75,8 +75,8 @@ def update_posts():
             posts.append(get_post(post))
     save_posts_data(posts)
     
-def get_posts_from_db():
-    return get_posts_data()
+def get_posts_from_db(random):
+    return get_posts_data(random)
         
 def get_local_user_data():
     return get_user_data()

@@ -76,6 +76,7 @@ class ScreenManager(MDScreenManager):
         page.username = username
         page.user_image = image
         page.text = text
+        print(f'{username}-{id}')
         page.comments = get_post(f'{username}-{id}')['comments']
         self.current = 'view_post_page'
     

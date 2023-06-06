@@ -148,6 +148,8 @@ class ViewPostPage(MDScreen):
     def like_or_un_like(self, liked, is_client):
         if is_client:
             client_un_like(self.parent.app.user['username'], self.code) if liked else client_like(self.parent.app.user['username'], self.code)
-            return add_liked_data(self.code)
-        estab_un_like(self.parent.app.user['username'], self.code) if liked else estab_like(self.parent.app.user['username'], self.code)
-        remove_liked_data(self.code)
+            add_liked_data(self.code)
+        else:
+            estab_un_like(self.parent.app.user['username'], self.code) if liked else estab_like(self.parent.app.user['username'], self.code)
+            remove_liked_data(self.code)
+        self.manager.current_screen.get_posts(False)
