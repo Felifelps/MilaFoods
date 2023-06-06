@@ -46,6 +46,7 @@ def update_estab(username, data):
 def post(username, text, image):
     id = get_estab(username)['n_of_posts'] + 1
     new_post(id, username, text, image)
+    print(f'Posted {username}-{id}')
     update_estab(username, {"n_of_posts": id})
 
 def estab_like(username, post_id):

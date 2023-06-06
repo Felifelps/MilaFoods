@@ -1,7 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.properties import StringProperty, ListProperty
-from control.firebase_to_local import estab_like, estab_un_like, client_like, client_un_like
+from control.firebase_to_local import estab_like, estab_un_like, client_like, client_un_like, add_liked_data, remove_liked_data
 
 Builder.load_string('''
 #:import TopImageAndStarBar views.utils
@@ -83,8 +83,8 @@ Builder.load_string('''
                 pos_hint: {'x': 0, 'center_y': .95}
                 icon_size: '35sp'
                 theme_icon_color: 'Custom'
-                icon_color: 'black'
-                icon: "account-circle" if _screen.image == 'None' else _screen.image
+                icon_color: 0, 0, 0, 1
+                icon: 'account-circle' if _screen.user_image == 'None' else _screen.user_image
                 on_press:
                     app.root.load_estab_profile_page(_screen.username)
             Label:
@@ -92,7 +92,7 @@ Builder.load_string('''
                 color: .1, .1, .1, 1
                 size_hint: None, None
                 size: self.texture_size
-                font_size: '18sp'
+                font_size: '15sp'
                 pos_hint: {'x': .16, 'center_y': .95}
             Image:
                 pos_hint: {'top': .9}
@@ -103,11 +103,11 @@ Builder.load_string('''
                 theme_icon_color: 'Custom'
                 icon: "heart"
                 icon_color: .75, .75, .75, 1
-                clicked: False
+                clicked: _screen.code in app.liked
                 on_release:
+                    _screen.like_or_un_like(self.clicked, app.root.logged_user_is_client)
                     self.icon_color = (.75, .75, .75, 1) if self.clicked else (1, 0, .2, 1)
                     self.clicked = not self.clicked
-                    _screen.like_or_un_like(self.clicked, app.root.logged_user_is_client)
             Label:
                 text: _screen.text
                 color: .1, .1, .1, 1
@@ -131,7 +131,6 @@ Builder.load_string('''
             CommentBar:
                 pos_hint: {'y': 0}
                 size_hint: 1, .125
-            
         BottomBar:
 '''
 )
@@ -139,11 +138,16 @@ Builder.load_string('''
 class ViewPostPage(MDScreen):
     name = 'view_post_page'
     username = StringProperty('') 
-    image = StringProperty('') 
+    user_image = StringProperty('') 
     text = StringProperty('') 
+    code = StringProperty('') 
     comments = ListProperty([]) 
     def on_comments(self, a, b):
         self.rv.data = [{'username': x.split('-')[0], 'code': x.split('-')[1], 'size_hint_x': .35} for x in self.comments]
     
     def like_or_un_like(self, liked, is_client):
-        
+        if is_client:
+            client_un_like(self.parent.app.user['username'], self.code) if liked else client_like(self.parent.app.user['username'], self.code)
+            return add_liked_data(self.code)
+        estab_un_like(self.parent.app.user['username'], self.code) if liked else estab_like(self.parent.app.user['username'], self.code)
+        remove_liked_data(self.code)

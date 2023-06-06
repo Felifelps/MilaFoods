@@ -54,7 +54,8 @@ def login_client(username, password):
             client['description'],
             client['image_code'],
             client['following'],
-            client['saved']
+            client['saved'],
+            client['liked']
         )
         return client
     

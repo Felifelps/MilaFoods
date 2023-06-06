@@ -528,6 +528,7 @@ Builder.load_string('''
     image: join('views', 'data', 'logo.png')
     timestamp: ''
     id: 0
+    liked: False
     likes: 0
     size_hint: 1, None
     manager: app.root
@@ -545,7 +546,6 @@ Builder.load_string('''
         icon: "account-circle" if root.image == 'None' else root.image
         on_press:
             root.manager.load_estab_profile_page(root.username)
-            
     Label:
         text: root.username
         color: .1, .1, .1, 1
@@ -572,8 +572,9 @@ Builder.load_string('''
         theme_icon_color: 'Custom'
         icon: "heart"
         icon_color: .75, .75, .75, 1
-        clicked: False
+        clicked: root.liked
         on_release:
+            print(f'{root.username}-{root.id}')
             self.icon_color = (.75, .75, .75, 1) if self.clicked else (1, 0, .2, 1)
             self.clicked = not self.clicked
     MDIconButton:

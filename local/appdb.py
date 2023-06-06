@@ -3,7 +3,7 @@ import sqlite3, random
 conn = sqlite3.connect('database.db')
 cursor = conn.cursor()
 
-def save_client_data(username, email, password, theme, description, image_code=None, following=[], saved=[]):
+def save_client_data(username, email, password, theme, description, image_code=None, following=[], saved=[], liked=[]):
     cursor.execute(f'''
 update user 
 set username = "{username}",
@@ -19,13 +19,15 @@ set username = "{username}",
     image = null
 where rowid = 1;         
     ''')
+    cursor.execute('delete from "liked";')
+    for username in liked:
+        cursor.execute(f'insert into liked values ("{username}");')
     cursor.execute('delete from "following";')
     for username in following:
         cursor.execute(f'insert into following values ("{username}");')
     cursor.execute('delete from "saved";')
     for post in saved:
-        i = post.split('-')
-        cursor.execute(f'insert into saved values ("{i[0]}", "{i[1]}");')
+        cursor.execute(f'insert into saved values ("{post}");')
     conn.commit()
 
 def save_estab_data(username, email, password, theme, description, cpf=None, birth_date=None, cnpj=None, tel=None, image=None):
@@ -54,11 +56,39 @@ def get_user_data():
 
 def get_following_data():
     cursor.execute(f'select * from following')
-    return list(cursor.fetchall())
+    return list(map(lambda x: x[0], cursor.fetchall()))
+
+def get_liked_data():
+    cursor.execute(f'select * from liked')
+    return list(map(lambda x: x[0], cursor.fetchall()))
 
 def get_saved_data():
     cursor.execute(f'select * from saved')
-    return [f'{j[0]}-{j[1]}' for j in cursor.fetchall()]
+    return list(map(lambda x: x[0], cursor.fetchall()))
+
+def add_following_data(following):
+    cursor.execute(f'insert into following values ("{following}");')
+    conn.commit()
+
+def add_liked_data(liked):
+    cursor.execute(f'insert into liked values ("{liked}");')
+    conn.commit()
+
+def add_saved_data(saved):
+    cursor.execute(f'insert into saved values ("{saved}");')
+    conn.commit()
+
+def remove_following_data(following):
+    cursor.execute(f'delete from following where username = "{following}";')
+    conn.commit()
+
+def remove_liked_data(liked):
+    cursor.execute(f'delete from liked where post_id = "{liked}";')
+    conn.commit()
+
+def remove_saved_data(saved):
+    cursor.execute(f'delete from saved where post_id = "{saved}";')
+    conn.commit()
 
 def back_to_default_user():
     cursor.execute('''
@@ -100,6 +130,7 @@ def get_posts_data():
             'image': str(line[3]),
             'likes': line[4],
             'timestamp': line[5],
-            'height': 300 #For the post class
+            'height': 300, 
+            'liked': True if f'{line[0]}-{line[1]}' in get_liked_data() else False
         })
     return random.sample(posts, len(posts))

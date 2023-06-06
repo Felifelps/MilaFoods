@@ -72,8 +72,9 @@ class ScreenManager(MDScreenManager):
         
     def load_view_post_page(self, id, username, image, text, comments):
         page = self.get_screen('view_post_page')
+        page.code = f'{username}-{id}'
         page.username = username
-        page.image = image
+        page.user_image = image
         page.text = text
         page.comments = get_post(f'{username}-{id}')['comments']
         self.current = 'view_post_page'
