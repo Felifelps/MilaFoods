@@ -1,7 +1,6 @@
 from firebase.client import new_client, get_client, list_clients, client_like, client_comment, client_un_like
 from firebase.estabs import new_estab, get_estab, post, get_post, list_posts, estab_like, estab_comment, estab_un_like
 from local.appdb import *
-import asyncio
 
 def send_email_code(email):
     for i in range(5):

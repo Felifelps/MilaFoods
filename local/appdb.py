@@ -22,6 +22,10 @@ where rowid = 1;
     cursor.execute('delete from "following";')
     for username in following:
         cursor.execute(f'insert into following values ("{username}");')
+    cursor.execute('delete from "saved";')
+    for post in saved:
+        i = post.split('-')
+        cursor.execute(f'insert into saved values ("{i[0]}", "{i[1]}");')
     conn.commit()
 
 def save_estab_data(username, email, password, theme, description, cpf=None, birth_date=None, cnpj=None, tel=None, image=None):
@@ -47,6 +51,14 @@ def get_user_data():
     columns = list(map(lambda x: x[0], cursor.description))
     data = list(cursor.fetchall())[0]
     return {columns[x]: (data[x].replace("'", "") if isinstance(data[x], str) else data[x]) for x in range(len(columns))}
+
+def get_following_data():
+    cursor.execute(f'select * from following')
+    return list(cursor.fetchall())
+
+def get_saved_data():
+    cursor.execute(f'select * from saved')
+    return [f'{j[0]}-{j[1]}' for j in cursor.fetchall()]
 
 def back_to_default_user():
     cursor.execute('''

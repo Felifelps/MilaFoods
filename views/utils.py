@@ -17,7 +17,9 @@ import os
 
 Builder.load_string('''
 #:import join os.path.join
-#:import colors kivymd.color_definitions.colors          
+#:import colors kivymd.color_definitions.colors      
+#:import get_client control.firebase_to_local.get_client
+#:import get_estab control.firebase_to_local.get_estab    
 
 <BasicLabel@Label>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
@@ -236,8 +238,11 @@ Builder.load_string('''
             icon: "close"
             on_press: 
                 _lm.close()
-        ProfileButton:
+        MDIconButton:
+            icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
             icon_size: '75sp'
+            on_press:
+                app.root.load_client_profile_page(app.user['username'], app.user['image_code'], app.user['description'])
             pos_hint: {'center_x': .5, 'center_y': .55}
         Label: 
             text: app.user['username']
@@ -330,7 +335,10 @@ Builder.load_string('''
     pos_hint: {'top': 1}
     size_hint: 1, .1
     md_bg_color: app.theme_cls.primary_dark
-    ProfileButton:
+    MDIconButton:
+        icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
+        on_press:
+            app.root.load_client_profile_page(app.user['username'], app.user['image_code'], app.user['description'])
         pos_hint: {'x': .025, 'center_y': .5}
         icon_size: '40sp'
     Label:
@@ -413,9 +421,12 @@ Builder.load_string('''
     pos_hint: {'top': 1}
     size_hint: 1, .1
     md_bg_color: app.theme_cls.primary_dark
-    ProfileButton:
+    MDIconButton:
         pos_hint: {'x': .025, 'center_y': .5}
         icon_size: '40sp'
+        icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
+        on_press:
+            app.root.load_client_profile_page()
     MDTextField:
         color_mode: 'custom'
         line_color_focus: .8, .8, .8, 1
@@ -531,7 +542,10 @@ Builder.load_string('''
         icon_size: '35sp'
         theme_icon_color: 'Custom'
         icon_color: .1, .1, .1, 1
-        icon: "account-circle"
+        icon: "account-circle" if root.image == 'None' else root.image
+        on_press:
+            root.manager.load_estab_profile_page(root.username)
+            
     Label:
         text: root.username
         color: .1, .1, .1, 1

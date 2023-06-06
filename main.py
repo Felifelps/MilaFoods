@@ -17,15 +17,11 @@ class MilaFoods(MDApp):
         return ScreenManager(self)
 
     def on_start(self):
+        print(self.user)
         self.root.load_screens(self.user)
         return super().on_start()
 
     def update_user(self): self.user = get_user_data()    
-
-estab_un_like(
-    'MilaFoods',
-    'MilaFoods-1'
-)
 
 if __name__ == '__main__':
     asyncio.run(MilaFoods().async_run())

@@ -2,7 +2,8 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivy.animation import Animation
 from kivy.lang import Builder
-from kivy.properties import StringProperty, NumericProperty
+from kivy.properties import ListProperty
+from control.firebase_to_local import get_post
 
 Builder.load_string('''
 #:import BasicLabel views.utils
@@ -21,6 +22,7 @@ Builder.load_string('''
     size_hint: 1, .4
     pos_hint: {'top': .5}
     scroll_view_blur: 0
+    rv: _rv
     BasicLabel:
         text: 'Salvos'
         font_size: '30sp'
@@ -55,6 +57,10 @@ Builder.load_string('''
 
 <ClientProfilePage>:
     id: _screen
+    username: 'Username'
+    description: 'Bio'
+    image_code: 0
+    sa: _sa
     Background:
         id: _bg
     RelativeLayout:
@@ -63,18 +69,18 @@ Builder.load_string('''
         MDFloatLayout:
             id: _estab
             MDIconButton:
-                icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f'{app.user["image_code"]}.png')
+                icon: 'account-circle' if _screen.image_code == 0 else join('views', 'data', 'profile_images', f'{_screen.image_code}.png')
                 icon_size: '112.5sp'
                 pos_hint: {'center_x': .2, 'center_y': .75}
             Label:
-                text: f"[b]{app.user['username']}[/b]"
+                text: f"[b]{_screen.username}[/b]"
                 font_size: '25sp'
                 markup: True
                 size_hint: None, None
                 size: self.texture_size
                 pos_hint: {'x': .4, 'center_y': .75}
             Label:
-                text: app.user['description']
+                text: _screen.description
                 font_size: '14sp'
                 size_hint: None, None
                 size: self.texture_size
@@ -84,6 +90,7 @@ Builder.load_string('''
                 md_bg_color: app.theme_cls.primary_dark
                 pos_hint: {'x': .025, 'y': .48}
             SavedArea:
+                id: _sa
             
         BottomBar:
         LateralMenu:
@@ -94,6 +101,9 @@ Builder.load_string('''
 
 class ClientProfilePage(MDScreen):
     name = 'client_profile_page'
+    saved = ListProperty([])
+    def on_saved(self, a, b):
+        self.sa.rv.data = [get_post(saved) for saved in self.saved]
 
 class SavedArea(MDRelativeLayout):
     up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.5)

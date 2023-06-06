@@ -32,6 +32,12 @@ def client_un_like(username, post_id):
 def client_comment(username, post_id, comment_code):
     update_post(post_id, {'comments': firestore.ArrayUnion([f'{username}-{comment_code}'])})
 
+def client_save(username, post_id):
+    update_client(username, {'saved': firestore.ArrayUnion([post_id])})
+
+def client_un_save(username, post_id):
+    update_client(username, {'saved': firestore.ArrayRemove([post_id])})
+    
 def update_client(username, data):
     """Updates a client object of the database"""
     CLIENTS.document(username).update(data)

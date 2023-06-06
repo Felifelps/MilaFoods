@@ -27,6 +27,7 @@ Builder.load_string('''
     Label:
         text: root.username
         pos_hint: {'x': .2, 'center_y': .825}
+        color: 0, 0, 0, 1
     MDIconButton:
         pos_hint: {'center_x': .65, 'center_y': .375}
         size_hint: .3, .5
@@ -69,16 +70,18 @@ Builder.load_string('''
             size_hint: 1, .8
             canvas.before:
                 Color:
-                    rgba: .98, .1, .98, 1
+                    rgba: .95, .95, .95, 1
                 Rectangle:
                     size: self.width, self.height
                     pos: 0, 0
-            ProfileButton:
+            MDIconButton:
                 pos_hint: {'x': 0, 'center_y': .95}
                 icon_size: '35sp'
                 theme_icon_color: 'Custom'
                 icon_color: 'black'
-                icon: 'account'
+                icon: "account-circle" if _screen.image == 'None' else _screen.image
+                on_press:
+                    app.root.load_estab_profile_page(_screen.username)
             Label:
                 text: _screen.username
                 color: .1, .1, .1, 1
