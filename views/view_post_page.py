@@ -1,6 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.properties import StringProperty, ListProperty
+from control.firebase_to_local import estab_like, estab_un_like, client_like, client_un_like
 
 Builder.load_string('''
 #:import TopImageAndStarBar views.utils
@@ -20,10 +21,14 @@ Builder.load_string('''
     size_hint: .35, .1
     username: 'username'
     code: 1
-    ProfileButton:
+    MDIconButton:
         pos_hint: {'x': 0, 'center_y': .5}
         icon_size: '35sp'
-        icon: 'account'
+        icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
+        theme_icon_color: "Custom"
+        icon_color: 'black'
+        on_press:
+            app.root.load_profile_page(root.username)
     Label:
         text: root.username
         pos_hint: {'x': .2, 'center_y': .825}
@@ -102,6 +107,7 @@ Builder.load_string('''
                 on_release:
                     self.icon_color = (.75, .75, .75, 1) if self.clicked else (1, 0, .2, 1)
                     self.clicked = not self.clicked
+                    _screen.like_or_un_like(self.clicked, app.root.logged_user_is_client)
             Label:
                 text: _screen.text
                 color: .1, .1, .1, 1
@@ -139,3 +145,5 @@ class ViewPostPage(MDScreen):
     def on_comments(self, a, b):
         self.rv.data = [{'username': x.split('-')[0], 'code': x.split('-')[1], 'size_hint_x': .35} for x in self.comments]
     
+    def like_or_un_like(self, liked, is_client):
+        

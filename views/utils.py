@@ -242,7 +242,7 @@ Builder.load_string('''
             icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
             icon_size: '75sp'
             on_press:
-                app.root.load_client_profile_page(app.user['username'], app.user['image_code'], app.user['description'])
+                app.root.load_profile_page()
             pos_hint: {'center_x': .5, 'center_y': .55}
         Label: 
             text: app.user['username']
@@ -338,7 +338,7 @@ Builder.load_string('''
     MDIconButton:
         icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
         on_press:
-            app.root.load_client_profile_page(app.user['username'], app.user['image_code'], app.user['description'])
+            app.root.load_profile_page()
         pos_hint: {'x': .025, 'center_y': .5}
         icon_size: '40sp'
     Label:
@@ -426,7 +426,7 @@ Builder.load_string('''
         icon_size: '40sp'
         icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
         on_press:
-            app.root.load_client_profile_page()
+            app.root.load_profile_page()
     MDTextField:
         color_mode: 'custom'
         line_color_focus: .8, .8, .8, 1

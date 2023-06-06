@@ -49,7 +49,6 @@ class PostsPage(MDScreen):
             self.updated = True
         self.dialog.dismiss()
         data = get_posts_from_db()
-        print(data)
         self.ids._rv.data = data
     
     def on_enter(self, *args):

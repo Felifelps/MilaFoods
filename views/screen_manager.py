@@ -1,12 +1,12 @@
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.clock import Clock
-from control.firebase_to_local import logout, get_post, get_saved_data, get_client
+from control.firebase_to_local import logout, get_post, get_saved_data, get_client, get_estab
 
 class ScreenManager(MDScreenManager):
     client_pages = False
     login_pages = False
     estab_pages = False
-    client = False
+    logged_user_is_client = False
     def __init__(self, app, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.app = app
@@ -65,10 +65,10 @@ class ScreenManager(MDScreenManager):
             self.load_login_pages()
         elif client and not estab:
             self.load_client_pages()
-            self.client = True
+            self.logged_user_is_client = True
         elif estab and not client:
             self.load_estab_pages()
-            self.client = False
+            self.logged_user_is_client = False
         
     def load_view_post_page(self, id, username, image, text, comments):
         page = self.get_screen('view_post_page')
@@ -78,28 +78,32 @@ class ScreenManager(MDScreenManager):
         page.comments = get_post(f'{username}-{id}')['comments']
         self.current = 'view_post_page'
     
-    def load_client_profile_page(self, username=False):
-        page = self.get_screen('client_profile_page')
+    def load_profile_page(self, username=False):
         if username == False:
-            page.username = self.app.user['username']
-            page.image_code = self.app.user['image_code']
-            page.description = self.app.user['description']
-            page.saved = get_saved_data()
+            if self.logged_user_is_client:
+                page = self.get_screen('client_profile_page')
+                page.username = self.app.user['username']
+                page.image_code = self.app.user['image_code']
+                page.description = self.app.user['description']
+                page.saved = get_saved_data()
+                self.current = 'client_profile_page'
+                return True
+            else:
+                pass
+        client = get_client(username)
+        if isinstance(client, dict):
+            self.load_client_profile_page(client)
         else:
-            client = get_client(username)
-            if client == False: return 
-            page.username = username
-            page.image_code = client['image_code']
-            page.description = client['description']
-            page.saved = client['saved']
+            self.load_estab_profile_page(get_estab(username))
+
+    def load_client_profile_page(self, data):
+        page = self.get_screen('client_profile_page')
+        page.username = data['username']
+        page.image_code = data['image_code']
+        page.description = data['description']
+        page.saved = data['saved']
         self.current = 'client_profile_page'
         
     def load_estab_profile_page(self, username):
         pass
     
-    def client_user(self, username):
-        client = get_client(username)
-        print(client, not isinstance(client, dict))
-        if not isinstance(client, dict):
-            return False
-        return True

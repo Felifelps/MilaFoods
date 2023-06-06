@@ -17,7 +17,6 @@ class MilaFoods(MDApp):
         return ScreenManager(self)
 
     def on_start(self):
-        print(self.user)
         self.root.load_screens(self.user)
         return super().on_start()
 
