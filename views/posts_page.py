@@ -3,7 +3,7 @@ from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import ListProperty, BooleanProperty
 from kivymd.uix.dialog import MDDialog
-from control.firebase_to_local import get_posts_from_db, update_posts
+from control.control import get_posts_from_db, update_posts
 
 Builder.load_string('''
 #:import TopSearchBar views.utils
@@ -42,14 +42,19 @@ class PostsPage(MDScreen):
     name = 'posts_page'
     data = ListProperty()
     updated = BooleanProperty(False)
-    
     def get_posts(self, random=True):
         if not self.updated:
             update_posts()
             self.updated = True
         self.dialog.dismiss()
-        data = get_posts_from_db(random)
-        self.ids._rv.data = data
+        self.ids._rv.data = get_posts_from_db(False)
+    
+    def on_pre_enter(self, *args):
+        self.ids._rv.data = get_posts_from_db(False)
+        return super().on_pre_enter(*args)
+
+    def on_data(self, a, b):
+        self.ids._rv.data = self.data
     
     def on_enter(self, *args):
         if not self.updated:

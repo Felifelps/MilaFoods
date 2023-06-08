@@ -1,6 +1,6 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
-from control.firebase_to_local import save_theme
+from control.control import save_theme
 
 Builder.load_string('''
 #:import BasicLabel views.utils

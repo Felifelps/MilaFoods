@@ -1,6 +1,8 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.snackbar import Snackbar
 from kivy.lang import Builder
+from control.control import login_estab
+from kivymd.uix.dialog import MDDialog
 
 Builder.load_string('''
 #:import join os.path.join
@@ -12,6 +14,8 @@ Builder.load_string('''
 #:import CpfCnpjTextInput views.utils
             
 <EstabLoginPage>:
+    id: _screen
+    textinputs: [_cpf_cnpj.ids._cpf, _cpf_cnpj.ids._cnpj, _password]
     BackgroundLogo:
     RelativeLayout:
         MDIconButton:
@@ -26,13 +30,15 @@ Builder.load_string('''
             pos_hint: {'center_x': .55, 'center_y': .6}
             font_size: '25sp'
         CpfCnpjTextInput:
-            pos_hint: {'center_x': .5, 'center_y': .5}
+            id: _cpf_cnpj
+            allow_date: False
+            pos_hint: {'center_x': .5, 'center_y': .45}
             size_hint: 1, .2
         BasicLabel:
             text: 'Senha'
             pos_hint: {'center_x': .175, 'center_y': .41}
         BasicTextInput:
-            id: password
+            id: _password
             hint_text: "minhaSenha1!"
             password: True
             password_mask: '*'
@@ -44,18 +50,14 @@ Builder.load_string('''
             theme_icon_color: "Custom"
             icon_color: .05, .05, .05, 1
             on_release:
-                password.password = not password.password
-                self.icon = 'eye' if password.password else 'eye-off'
+                _password.password = not _password.password
+                self.icon = 'eye' if _password.password else 'eye-off'
         BasicButton:
             text: 'Entrar'
             size_hint_x: .8
-            on_press: print(self.height)
             pos_hint: {'center_x': .5, 'center_y': .26}
             on_press:
-                app.root.current = 'posts_page'
-        BasicLabel:
-            text: 'Ou use suas redes sociais'
-            pos_hint: {'center_x': .5, 'center_y': .21}
+                _screen.login_estab(_cpf_cnpj.text, _password.text)
         BasicLabel:
             text: 'Não tem uma conta? [color=#0000ff][ref=create_account]Crie aqui!![/ref][/color]'
             pos_hint: {'center_x': .5, 'center_y': .025}
@@ -67,4 +69,22 @@ Builder.load_string('''
 
 class EstabLoginPage(MDScreen):
     name = 'estab_login_page'
+    def on_pre_enter(self, *args):
+        for i in self.textinputs: i.text, i.date = '', 'Selecione sua data de nascimento'
+        return super().on_pre_enter(*args)
     
+    def login_estab(self, cpf_cnpj, password):
+        self.dialog = MDDialog(
+            text='Checando os dados da conta...',
+            on_open=lambda a: self.check_login_data(cpf_cnpj, password)
+        )
+        self.dialog.open()
+        
+    def check_login_data(self, cpf_cnpj, password):
+        estab = login_estab(cpf_cnpj, password)
+        self.dialog.dismiss()
+        if isinstance(estab, str): return Snackbar(text=estab).open()
+        self.manager.app.update_user()
+        Snackbar(text='Logado com sucesso').open()
+        self.manager.load_client_pages()
+        self.manager.current = 'posts_page'

@@ -1,8 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivymd.uix.snackbar import Snackbar
-from kivy.clock import Clock
-from control.firebase_to_local import check_username_and_password
+from control.control import login_client
 
 Builder.load_string(
 '''
@@ -59,8 +58,6 @@ Builder.load_string(
             pos_hint: {'center_x': .5, 'center_y': .26}
             on_press:
                 _screen.login_client(_username.text, _password.text)
-                _username.text = ''
-                _password.text = ''
         BasicLabel:
             text: 'Esqueceu a senha?'
             pos_hint: {'center_x': .5, 'center_y': .075}
@@ -77,8 +74,9 @@ class ClientLoginPage(MDScreen):
     def on_pre_enter(self, *args):
         for i in self.textinputs: i.text = ''
         return super().on_pre_enter(*args)
+    
     def login_client(self, username, password):
-        client = check_username_and_password(username, password)
+        client = login_client(username, password)
         if isinstance(client, str): return Snackbar(text=client).open()
         self.manager.app.update_user()
         Snackbar(text='Logado com sucesso').open()

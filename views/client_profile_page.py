@@ -3,7 +3,7 @@ from kivymd.uix.relativelayout import MDRelativeLayout
 from kivy.animation import Animation
 from kivy.lang import Builder
 from kivy.properties import ListProperty
-from control.firebase_to_local import get_post
+from control.control import get_post
 
 Builder.load_string('''
 #:import BasicLabel views.utils

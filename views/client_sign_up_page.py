@@ -1,11 +1,10 @@
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.snackbar import Snackbar
-from control.firebase_to_local import check_username_email_and_password, send_email_code, sign_up_and_login_new_client
+from control.control import sign_up_and_login_client, send_email_code, check_client_sign_up_inputs
 from kivy.lang import Builder
 from kivymd.uix.dialog import MDDialog
 
-Builder.load_string(
-'''
+Builder.load_string('''
 #:import BasicButton views.utils
 #:import BasicLabel views.utils
 #:import BasicTextInput views.utils
@@ -90,7 +89,7 @@ class ClientSignUpPage(MDScreen):
         self.ids._ccm.open()
         
     def check_inputs(self, username, email, password):
-        valid = check_username_email_and_password(username, email, password)
+        valid = check_client_sign_up_inputs(username, email, password)
         if isinstance(valid, str): 
             return Snackbar(text=valid).open()
         self.data = [username, email, password]
@@ -102,7 +101,7 @@ class ClientSignUpPage(MDScreen):
         
     def check_code(self, code):
         if str(self.code) == code:
-            client = sign_up_and_login_new_client(*self.data)
+            client = sign_up_and_login_client(*self.data)
             if not client:
                 return Snackbar(text='Credenciais inválidas').open()
             self.manager.app.update_user()

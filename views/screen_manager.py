@@ -1,6 +1,6 @@
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.clock import Clock
-from control.firebase_to_local import logout, get_post, get_saved_data, get_client, get_estab
+from control.control import logout, get_post, get_saved_data
 
 class ScreenManager(MDScreenManager):
     client_pages = False
@@ -23,7 +23,7 @@ class ScreenManager(MDScreenManager):
             from .search_page import SearchPage
             from .theme_config_page import ThemeConfigPage
             from .client_profile_page import ClientProfilePage
-            from .view_post_page import ViewPostPage
+            from .comment_page import ViewPostPage
             for i in [
                 PostsPage(),
                 SearchPage(),

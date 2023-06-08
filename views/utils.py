@@ -6,20 +6,19 @@ from kivy.uix.image import Image
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFillRoundFlatIconButton, MDIconButton, MDFlatButton
 from kivymd.uix.relativelayout import MDRelativeLayout
+from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.snackbar import Snackbar
 from kivymd.uix.dialog import MDDialog 
+from kivymd.uix.pickers import MDDatePicker
 from kivy.properties import StringProperty, ListProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
-from kivy.clock import Clock
 import os
 
 Builder.load_string('''
 #:import join os.path.join
-#:import colors kivymd.color_definitions.colors      
-#:import get_client control.firebase_to_local.get_client
-#:import get_estab control.firebase_to_local.get_estab    
+#:import colors kivymd.color_definitions.colors
 
 <BasicLabel@Label>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
@@ -571,11 +570,11 @@ Builder.load_string('''
         pos_hint: {'right': .9, 'top': .28}
         theme_icon_color: 'Custom'
         icon: "heart"
-        icon_color: .75, .75, .75, 1
+        icon_color: (.75, .75, .75, 1) if root.liked else (1, 0, .2, 1)
         clicked: root.liked
         on_release:
-            print(f'{root.username}-{root.id}')
-            self.icon_color = (.75, .75, .75, 1) if self.clicked else (1, 0, .2, 1)
+
+            self.icon_color = (.75, .75, .75, 1) if not self.clicked else (1, 0, .2, 1)
             self.clicked = not self.clicked
     MDIconButton:
         pos_hint: {'right': 1, 'top': .28}
@@ -635,29 +634,44 @@ Builder.load_string('''
         font_size: '10sp'
         pos_hint: {'x': .05, 'center_y': .075}
 
-<CpfCnpjTextInput@FloatLayout>:
+<CpfCnpjTextInput>:
     cpf: True
+    text: ''
+    date: 'Selecione sua data de nascimento'
+    allow_date: True
     BasicLabel:
         text: 'Digite seu CPF ou CNPJ'
-        pos_hint: {'x': .12, 'center_y': .62}
+        pos_hint: {'x': .12, 'center_y': .9}
         font_size: '12.5sp'
     BasicTextInput:
         id: _cpf 
         type: 'cpf'
+        on_text:
+            root.text = self.text
         hint_text: 'Digite seu CPF'
         size_hint: .8, .3
-        pos_hint: {'x': .1, 'center_y': (.35 if root.cpf else 10)}
+        pos_hint: {'x': .1, 'center_y': (.65 if root.cpf else 10)}
     BasicTextInput:
         id: _cnpj
         type: 'cnpj'
+        on_text:
+            root.text = self.text
+            root.date = 'Selecione sua data de nascimento'
         hint_text: 'Digite seu CNPJ'
         size_hint: .8, .3
-        pos_hint: {'x': .1, 'center_y': (.35 if not root.cpf else 10)}
+        pos_hint: {'x': .1, 'center_y': (.65 if not root.cpf else 10)}
+    MDRaisedButton:
+        id: _date
+        text: root.date
+        size_hint: .8, .3
+        disabled: not root.cpf
+        pos_hint: {'x': .1, 'center_y': (.25 if root.allow_date else 10)}
+        on_release: root.date_picker()
     BasicDropDownItem:
         size_hint: .2, .1
         text: 'CPF'
         font_size: '12.5sp'
-        pos_hint: {'right': .9, 'center_y': .35}
+        pos_hint: {'right': .9, 'center_y': .65}
         items: ['CPF','CNPJ']
         on_text:
             root.cpf = not root.cpf
@@ -695,11 +709,14 @@ class BasicDropDownItem(MDFillRoundFlatIconButton):
 
 class BasicTextInput(TextInput):
     def insert_text(self, substring, from_undo=False):
-        if self.type == 'cpf' and (len(self.text) >= 11 or not substring.isdigit()): 
+        if self.type == 'cpf' and (len(self.text) + len(substring) > 11 or not substring.isdigit()): 
             return False
-        elif self.type == 'cnpj' and (len(self.text) >= 14 or not substring.isdigit()): 
+        elif self.type == 'cnpj' and (len(self.text) + len(substring) > 14 or not substring.isdigit()): 
             return False
         return super().insert_text(substring, from_undo)
+    
+    def paste(self):
+        return super().paste()
 
 class LateralMenuBase(MDBoxLayout):
     open_animation = Animation(pos_hint={'x': 0}, bg_opacity=0.5, duration=0.1)
@@ -765,4 +782,13 @@ class Post(MDRelativeLayout):
         if self.collide_point(*touch.pos):
             self.manager.load_view_post_page(self.id, self.username, self.image, self.text, [])
         return super().on_touch_down(touch)
+
+class CpfCnpjTextInput(MDFloatLayout):
+    picker = MDDatePicker()
+    def date_picker(self):
+        self.picker.bind(on_cancel=lambda a, b: self.picker.dismiss(), on_save=self.save_date)
+        self.picker.open()
         
+    def save_date(self, instance, value, date_range):
+        self.date = value.strftime('%d/%m/%Y')
+        self.picker.dismiss()

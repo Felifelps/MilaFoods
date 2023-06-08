@@ -5,7 +5,6 @@ from .utils import encode_image
 def list_products(username):
     return [i.id for i in DB.collection(f"estabs/{username}/menu").stream()]
 
-
 def new_product(username, name, description, price, category_id, image=None):
     #['bebidas', 'doces', 'salgados', 'lanches', 'pratos'][category_id]
     products = DB.collection(f"estabs/{username}/menu")

@@ -4,87 +4,84 @@ from imap_tools import MailBox, AND
 
 class AuthenticationMail:
     sender = "mestount@gmail.com"
-    cpf_cnpj_mail = "captchasolver240@gmail.com"
+    cpf_cnpj_mail = "felipefelipe23456@gmail.com" #"captchasolver240@gmail.com"
     password = "iquduhyskpuadboe"
     subject = "Código de confirmação"
-    body = lambda self, receiver, code: f"""
+    body = lambda receiver, code: f"""
 Alô {receiver}, seu código de autenticação para o app é:
 
 {code}
 """
     my_gmail = MailBox('imap.gmail.com').login(sender, password)
     context = ssl.create_default_context()
+    smtp_connection_is_done = False
     
-    def load_smtp(self):
-        self.smtp = smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context)
+    def load_smtp():
+        try:
+            AuthenticationMail.smtp = smtplib.SMTP_SSL("smtp.gmail.com", 465, context=AuthenticationMail.context)
+            AuthenticationMail.smtp_connection_is_done = True
+        except:
+            return False
 
-    def send_code_email(self, receiver):
+    def send_code_email(receiver):
         #Load smtp
-        self.load_smtp()
+        if not AuthenticationMail.smtp_connection_is_done: AuthenticationMail.load_smtp()
 
         #Random access code
-        self.code = random.randint(10000, 99999)
+        AuthenticationMail.code = random.randint(10000, 99999)
 
         #Email creating
         email = EmailMessage()
-        email["From"] = self.sender
+        email["From"] = AuthenticationMail.sender
         email["To"] = receiver
-        email["Subject"] = self.subject
-        email.set_content(self.body(receiver, self.code))
+        email["Subject"] = AuthenticationMail.subject
+        email.set_content(AuthenticationMail.body(receiver, AuthenticationMail.code))
 
         #Sending the email
-        self.smtp.login(self.sender, self.password)
-        self.smtp.sendmail(
-            self.sender,
+        AuthenticationMail.smtp.login(AuthenticationMail.sender, AuthenticationMail.password)
+        AuthenticationMail.smtp.sendmail(
+            AuthenticationMail.sender,
             receiver,
             email.as_string()
         )
+        return AuthenticationMail.code
         
-    def send_cpf_or_cnpj_email(self, cpf_and_date=None, cnpj=None):
-        """
-        Sends an email to the captcha solver team, with the data.
-        cpf_and_date: [cpf str, birth date (dd/mm/yyyy)]
-        cnpj: cnpj str
+    def send_cpf_or_cnpj_email(cnpj, cpf, birth_date):
+        #Load smtp
+        if not AuthenticationMail.smtp_connection_is_done: AuthenticationMail.load_smtp()
         
-        """
-        body = "É ou não é?"
+        body = "Responda apenas com 'É' se for, e 'Não' se não for validado, ok? Lembrando que é em até um dia depois daqui."
         if cnpj != None:
             body += "\nhttps://solucoes.receita.fazenda.gov.br/Servicos/cnpjreva/cnpjreva_solicitacao.asp"
             body += f"\nDados => CNPJ: {cnpj}"
-        elif cpf_and_date != None:
+        elif cpf != None:
             body += "\nhttps://servicos.receita.fazenda.gov.br/Servicos/CPF/ConsultaSituacao/ConsultaPublica.asp"
-            body += f"\nDados => CPF: {cpf_and_date[0]} Aniversário: {cpf_and_date[1]}"
+            body += f"\nDados => CPF: {cpf} Data de Nascimentp: {birth_date}"
         else:
             raise Exception("Attribute error")
         email = EmailMessage()
-        email["From"] = self.sender
-        email["To"] = self.cpf_cnpj_mail
-        email["Subject"] = "Trabaiar man"
+        email["From"] = AuthenticationMail.sender
+        email["To"] = AuthenticationMail.cpf_cnpj_mail
+        email["Subject"] = (cpf if cnpj == None else cnpj)
         email.set_content(body)
 
         #Sending the email
-        self.smtp.login(self.sender, self.password)
-        self.smtp.sendmail(
-            self.sender,
-            self.cpf_cnpj_mail,
+        AuthenticationMail.smtp.login(AuthenticationMail.sender, AuthenticationMail.password)
+        AuthenticationMail.smtp.sendmail(
+            AuthenticationMail.sender,
+            AuthenticationMail.cpf_cnpj_mail,
             email.as_string()
         )
     
-    def check_cpf_or_cnpj_confirmation(self):
-        """
-        Returns a list with itens like:
-            [data sended, answer]
-        
-        If nothing was find, returns []
-        
-        """
-        answers = [] 
-        for email in self.my_gmail.fetch(AND(from_="captchasolver240@gmail.com")):
-            if "Trabaiar man" in email.subject:
-                answer = email.text.split(".")[0]
-                data = email.text.split("Dados =>")[1].split("\n")[0].strip()
-                answers.append([data, answer])
-        return answers
-        
+    def check_cpf_or_cnpj_confirmation(cpf_or_cnpj):
+        #Load smtp
+        if not AuthenticationMail.smtp_connection_is_done: AuthenticationMail.load_smtp()
+        for email in AuthenticationMail.my_gmail.fetch(AND(from_=AuthenticationMail.cpf_cnpj_mail)):
+            print(email.subject, email.text)
+            if cpf_or_cnpj in email.subject:
+                text = email.text.split()[0].lower()
+                if 'é' == text: return True
+                elif 'não' == text: return False
+        return None
 
                 

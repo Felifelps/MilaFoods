@@ -3,14 +3,13 @@ from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
 from kivy.core.window import Window
 from kivy.properties import DictProperty
-from control.firebase_to_local import get_user_data, get_following_data, get_saved_data, post, get_liked_data
+from control.control import get_user_data, get_saved_data
 Window.size = (340, 600)
 
 class MilaFoods(MDApp):
     user = DictProperty(get_user_data())
     saved = get_saved_data()
-    liked = get_liked_data()
-    following = get_following_data()
+    liked = []
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
