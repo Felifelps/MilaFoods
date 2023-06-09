@@ -2,6 +2,7 @@ from firebase.user import new_client_user, new_estab_user, get_user, list_users,
 from firebase.post import new_post, get_post, list_posts
 from local.appdb import *
 from firebase.gmail import AuthenticationMail
+import random
 
 USER = get_user(get_user_data()['username'])
 
@@ -112,7 +113,7 @@ def sign_up_estab(username, email, password, cnpj, cpf, birth_date):
     user = new_estab_user(username, email, cpf, birth_date, cnpj, None, password, 'Sou novo no app!', None)
     return user
 
-def get_posts_from_server():
+def get_posts_from_server(randomize=True):
     posts = list_posts(False)
     user = get_user(USER['username'])
     save_user_data(user)
@@ -120,6 +121,7 @@ def get_posts_from_server():
         post['id'] = str(post['id'])
         post['height'] = 300
         post['liked'] = f"{post['username']}-{post['id']}" in user['liked']
+    if randomize: random.shuffle(posts)
     return posts 
         
 def get_local_user_data():
