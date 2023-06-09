@@ -1,11 +1,11 @@
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.clock import Clock
-from control.control import logout, get_post, get_saved_data
+from control.control import logout, get_post, get_saved_data, get_user
 from .posts_page import PostsPage
 from .search_page import SearchPage
 from .theme_config_page import ThemeConfigPage
 from .client_profile_page import ClientProfilePage
-from .comment_page import ViewPostPage
+from .comment_page import CommentPage
 
 class ScreenManager(MDScreenManager):
     client_pages = False
@@ -28,7 +28,7 @@ class ScreenManager(MDScreenManager):
             SearchPage(),
             ThemeConfigPage(),
             ClientProfilePage(),
-            ViewPostPage()
+            CommentPage()
         ]: 
             self.add_widget(i)
 
@@ -98,11 +98,11 @@ class ScreenManager(MDScreenManager):
                 return True
             else:
                 pass
-        client = get_client(username)
+        client = get_user(username)
         if isinstance(client, dict):
             self.load_client_profile_page(client)
         else:
-            self.load_estab_profile_page(get_estab(username))
+            self.load_estab_profile_page(get_user(username))
 
     def load_client_profile_page(self, data):
         page = self.get_screen('client_profile_page')

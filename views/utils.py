@@ -567,15 +567,17 @@ Builder.load_string('''
             self.icon_color = (.75, .75, .75, 1) if self.clicked else (.85, .68, .21, 1)
             self.clicked = not self.clicked
     MDIconButton:
-        pos_hint: {'right': .9, 'top': .28}
+        pos_hint: {'right': 1, 'top': .33}
         theme_icon_color: 'Custom'
         icon: "heart"
         icon_color: (.75, .75, .75, 1) if not root.liked else (1, 0, .2, 1)
-    MDIconButton:
-        pos_hint: {'right': 1, 'top': .28}
-        theme_icon_color: 'Custom'
-        icon: "message-outline"
-        icon_color: .1, .1, .1, 1
+    Label:
+        text: str(root.likes)
+        color: .1, .1, .1, 1
+        size_hint: None, None
+        size: self.texture_size
+        font_size: '13sp'
+        pos_hint: {'right': .85, 'center_y': .255}
     Label:
         text: root.text
         color: .1, .1, .1, 1

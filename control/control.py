@@ -1,4 +1,4 @@
-from firebase.user import new_client_user, new_estab_user, get_user, list_users, delete_user, update_user
+from firebase.user import new_client_user, new_estab_user, get_user, list_users, delete_user, update_user, user_like, user_save, user_comment, user_un_like
 from firebase.post import new_post, get_post, list_posts
 from local.appdb import *
 from firebase.gmail import AuthenticationMail
@@ -114,10 +114,12 @@ def sign_up_estab(username, email, password, cnpj, cpf, birth_date):
 
 def get_posts_from_server():
     posts = list_posts(False)
+    user = get_user(USER['username'])
+    save_user_data(user)
     for post in posts:
         post['id'] = str(post['id'])
         post['height'] = 300
-        post['liked'] = f"{post['username']}-{post['id']}" in USER['liked']
+        post['liked'] = f"{post['username']}-{post['id']}" in user['liked']
     return posts 
         
 def get_local_user_data():

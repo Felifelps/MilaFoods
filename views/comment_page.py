@@ -1,7 +1,8 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.properties import StringProperty, ListProperty
-from control.control import *
+from control.control import user_like, user_un_like
+from kivymd.uix.dialog import MDDialog
 
 Builder.load_string('''
 #:import TopImageAndStarBar views.utils
@@ -64,7 +65,7 @@ Builder.load_string('''
     EmojiButton:
         code: 8
     
-<ViewPostPage>:
+<CommentPage>:
     id: _screen
     rv: _rv
     Background:
@@ -105,7 +106,7 @@ Builder.load_string('''
                 icon_color: .75, .75, .75, 1
                 clicked: _screen.code in app.liked
                 on_release:
-                    _screen.like_or_un_like(self.clicked, app.root.logged_user_is_client)
+                    _screen.like_or_un_like_dialog(self.clicked)
                     self.icon_color = (.75, .75, .75, 1) if self.clicked else (1, 0, .2, 1)
                     self.clicked = not self.clicked
             Label:
@@ -135,7 +136,7 @@ Builder.load_string('''
 '''
 )
 
-class ViewPostPage(MDScreen):
+class CommentPage(MDScreen):
     name = 'comment_page'
     username = StringProperty('') 
     user_image = StringProperty('') 
@@ -145,10 +146,14 @@ class ViewPostPage(MDScreen):
     def on_comments(self, a, b):
         self.rv.data = [{'username': x.split('-')[0], 'code': x.split('-')[1], 'size_hint_x': .35} for x in self.comments]
     
-    def like_or_un_like(self, liked, is_client):
-        if is_client:
-            client_un_like(self.parent.app.user['username'], self.code) if liked else client_like(self.parent.app.user['username'], self.code)
-            add_liked_data(self.code)
-        else:
-            estab_un_like(self.parent.app.user['username'], self.code) if liked else estab_like(self.parent.app.user['username'], self.code)
-            remove_liked_data(self.code)
+    def like_or_un_like(self, liked):
+        user_un_like(self.parent.app.user['username'], self.code) if liked else user_like(self.parent.app.user['username'], self.code)
+        self.dialog.dimiss()
+
+    def like_or_un_like_dialog(self, liked):
+        self.dialog = MDDialog(
+            text='Salvando seu like...',
+            on_open=lambda x: self.like_or_un_like(liked)
+        )
+        
+        
