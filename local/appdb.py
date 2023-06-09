@@ -66,20 +66,4 @@ def save_posts_data(posts):
 ''')
     conn.commit()
     
-def get_posts_data(randomize_list):
-    posts = []
-    cursor.execute('select * from posts;')
-    for line in cursor.fetchall():
-        posts.append({
-            'username': line[0],
-            'id': str(line[1]),
-            'text': line[2],
-            'image': str(line[3]),
-            'likes': line[4],
-            'timestamp': line[5],
-            'height': 300
-        })
-    if randomize_list:
-        return random.sample(posts, len(posts))
-    return posts
 

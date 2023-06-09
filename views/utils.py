@@ -570,12 +570,7 @@ Builder.load_string('''
         pos_hint: {'right': .9, 'top': .28}
         theme_icon_color: 'Custom'
         icon: "heart"
-        icon_color: (.75, .75, .75, 1) if root.liked else (1, 0, .2, 1)
-        clicked: root.liked
-        on_release:
-
-            self.icon_color = (.75, .75, .75, 1) if not self.clicked else (1, 0, .2, 1)
-            self.clicked = not self.clicked
+        icon_color: (.75, .75, .75, 1) if not root.liked else (1, 0, .2, 1)
     MDIconButton:
         pos_hint: {'right': 1, 'top': .28}
         theme_icon_color: 'Custom'
@@ -784,9 +779,12 @@ class Post(MDRelativeLayout):
         return super().on_touch_down(touch)
 
 class CpfCnpjTextInput(MDFloatLayout):
-    picker = MDDatePicker()
-    def date_picker(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.picker = MDDatePicker()
         self.picker.bind(on_cancel=lambda a, b: self.picker.dismiss(), on_save=self.save_date)
+
+    def date_picker(self):
         self.picker.open()
         
     def save_date(self, instance, value, date_range):

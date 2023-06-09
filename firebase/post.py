@@ -2,14 +2,14 @@ import datetime
 from .db import DB
 from .utils import encode_image
 
-def new_post(id, username, text, image=None):
+def new_post(id, username, text, image=""):
     key = f'{username}-{id}'
     if key in list_posts(): return False
     DB.document(f"posts/{key}").set({
         "id": id,
         "username": username,
         "text": text,
-        "image": image if image == None else encode_image(image),
+        "image": image if image == "" else encode_image(image),
         "timestamp": str(datetime.datetime.today()).split(".")[0],
         "likes": 0,
         "comments": []

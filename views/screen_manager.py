@@ -1,6 +1,11 @@
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.clock import Clock
 from control.control import logout, get_post, get_saved_data
+from .posts_page import PostsPage
+from .search_page import SearchPage
+from .theme_config_page import ThemeConfigPage
+from .client_profile_page import ClientProfilePage
+from .comment_page import ViewPostPage
 
 class ScreenManager(MDScreenManager):
     client_pages = False
@@ -17,25 +22,28 @@ class ScreenManager(MDScreenManager):
         def change_current(dt): self.current = 'client_or_estab_page'
         Clock.schedule_once(change_current, 2)
     
+    def load_user_pages(self):
+        for i in [
+            PostsPage(),
+            SearchPage(),
+            ThemeConfigPage(),
+            ClientProfilePage(),
+            ViewPostPage()
+        ]: 
+            self.add_widget(i)
+
     def load_client_pages(self):
         if not self.client_pages:
-            from .posts_page import PostsPage
-            from .search_page import SearchPage
-            from .theme_config_page import ThemeConfigPage
-            from .client_profile_page import ClientProfilePage
-            from .comment_page import ViewPostPage
+            self.load_user_pages()
             for i in [
-                PostsPage(),
-                SearchPage(),
-                ThemeConfigPage(),
-                ClientProfilePage(),
-                ViewPostPage()
+                ClientProfilePage()
             ]: 
                 self.add_widget(i)
             self.client_pages = True
     
     def load_estab_pages(self):
         if not self.estab_pages:
+            self.load_user_pages()
             for i in [
             ]: 
                 self.add_widget(i)
@@ -59,26 +67,24 @@ class ScreenManager(MDScreenManager):
             self.login_pages = True
     
     def load_screens(self, user):
-        client = user['image'] == None
-        estab = user['image_code'] == None
         if user['username'] == '===++UserDefault++===':
             self.load_login_pages()
-        elif client and not estab:
+        elif not user['can_post']:
             self.load_client_pages()
             self.logged_user_is_client = True
-        elif estab and not client:
+        elif user['can_post'] :
             self.load_estab_pages()
             self.logged_user_is_client = False
         
     def load_view_post_page(self, id, username, image, text, comments):
-        page = self.get_screen('view_post_page')
+        page = self.get_screen('comment_page')
         page.code = f'{username}-{id}'
         page.username = username
         page.user_image = image
         page.text = text
         print(f'{username}-{id}')
         page.comments = get_post(f'{username}-{id}')['comments']
-        self.current = 'view_post_page'
+        self.current = 'comment_page'
     
     def load_profile_page(self, username=False):
         if username == False:

@@ -3,7 +3,7 @@ from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import ListProperty, BooleanProperty
 from kivymd.uix.dialog import MDDialog
-from control.control import get_posts_from_db, update_posts
+from control.control import get_posts_from_server
 
 Builder.load_string('''
 #:import TopSearchBar views.utils
@@ -43,14 +43,12 @@ class PostsPage(MDScreen):
     data = ListProperty()
     updated = BooleanProperty(False)
     def get_posts(self, random=True):
-        if not self.updated:
-            update_posts()
-            self.updated = True
+        if not self.updated: self.updated = True
         self.dialog.dismiss()
-        self.ids._rv.data = get_posts_from_db(False)
+        self.ids._rv.data = get_posts_from_server()
     
     def on_pre_enter(self, *args):
-        self.ids._rv.data = get_posts_from_db(False)
+        self.ids._rv.data = get_posts_from_server()
         return super().on_pre_enter(*args)
 
     def on_data(self, a, b):

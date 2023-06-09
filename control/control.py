@@ -1,7 +1,9 @@
 from firebase.user import new_client_user, new_estab_user, get_user, list_users, delete_user, update_user
-from firebase.post import new_post, get_post
+from firebase.post import new_post, get_post, list_posts
 from local.appdb import *
 from firebase.gmail import AuthenticationMail
+
+USER = get_user(get_user_data()['username'])
 
 def send_email_code(email):
     for i in range(5):
@@ -108,21 +110,15 @@ def check_estab_sign_up_inputs(username, email, password, cnpj, cpf, birth_date)
     
 def sign_up_estab(username, email, password, cnpj, cpf, birth_date):
     user = new_estab_user(username, email, cpf, birth_date, cnpj, None, password, 'Sou novo no app!', None)
-    #save_user_data(user)
     return user
 
-def update_posts():
-    posts = []
-    local_posts = [f'{i["username"]}-{i["id"]}' for i in get_posts_data(True)]
-    for post in list_posts():
-        if post not in local_posts:
-            print('Loading', post)
-            posts.append(get_post(post))
-    save_posts_data(posts)
-    
-def get_posts_from_db(random):
-    print(random)
-    return get_posts_data(random)
+def get_posts_from_server():
+    posts = list_posts(False)
+    for post in posts:
+        post['id'] = str(post['id'])
+        post['height'] = 300
+        post['liked'] = f"{post['username']}-{post['id']}" in USER['liked']
+    return posts 
         
 def get_local_user_data():
     return get_user_data()
