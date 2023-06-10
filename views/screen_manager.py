@@ -1,11 +1,19 @@
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.clock import Clock
-from control.control import logout, get_post, get_saved_data, get_user
+from control.control import logout, get_post, get_user, get_saved_data, get_user_data
 from .posts_page import PostsPage
 from .search_page import SearchPage
 from .theme_config_page import ThemeConfigPage
 from .client_profile_page import ClientProfilePage
 from .comment_page import CommentPage
+from .client_login_page import ClientLoginPage
+from .client_or_estab_page import ClientOrEstabPage
+from .client_sign_up_page import ClientSignUpPage
+from .estab_login_page import EstabLoginPage
+from .estab_sign_up_page import EstabSignUpPage
+from .user_account_configuration_page import UserAccountConfigurationPage
+from .follow_estabs_page import FollowEstabsPage
+from .image_selection_page import ImageSelectionPage
 
 class ScreenManager(MDScreenManager):
     client_pages = False
@@ -27,7 +35,6 @@ class ScreenManager(MDScreenManager):
             PostsPage(),
             SearchPage(),
             ThemeConfigPage(),
-            ClientProfilePage(),
             CommentPage()
         ]: 
             self.add_widget(i)
@@ -36,7 +43,7 @@ class ScreenManager(MDScreenManager):
         if not self.client_pages:
             self.load_user_pages()
             for i in [
-                ClientProfilePage()
+                ClientProfilePage(),
             ]: 
                 self.add_widget(i)
             self.client_pages = True
@@ -51,17 +58,16 @@ class ScreenManager(MDScreenManager):
     
     def load_login_pages(self):
         if not self.login_pages:
-            from .client_login_page import ClientLoginPage
-            from .client_or_estab_page import ClientOrEstabPage
-            from .client_sign_up_page import ClientSignUpPage
-            from .estab_login_page import EstabLoginPage
-            from .estab_sign_up_page import EstabSignUpPage
             for i in [
+                ImageSelectionPage(),
+                UserAccountConfigurationPage(),
                 ClientOrEstabPage(),
                 EstabLoginPage(),
                 ClientSignUpPage(),
                 ClientLoginPage(),
-                EstabSignUpPage()
+                EstabSignUpPage(),
+                FollowEstabsPage(),
+                
             ]: 
                 self.add_widget(i)
             self.login_pages = True
@@ -75,15 +81,23 @@ class ScreenManager(MDScreenManager):
         elif user['can_post'] :
             self.load_estab_pages()
             self.logged_user_is_client = False
+    
+    def load_user_config_page(self, client):
+        page = self.get_screen('user_account_configuration_page')
+        page.client = client
+        page.username = self.app.user['username']
+        self.current = 'user_account_configuration_page'
         
-    def load_view_post_page(self, id, username, image, text, comments):
+    def load_comment_page(self, id, username, image, text):
         page = self.get_screen('comment_page')
         page.code = f'{username}-{id}'
+        post = get_post(page.code)
         page.username = username
         page.user_image = image
         page.text = text
-        print(f'{username}-{id}')
-        page.comments = get_post(f'{username}-{id}')['comments']
+        page.likes = post['likes']
+        page.comments = post['comments']
+        page.liked = page.code in get_user(self.app.user['username'])['liked']
         self.current = 'comment_page'
     
     def load_profile_page(self, username=False):

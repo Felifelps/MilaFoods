@@ -41,17 +41,20 @@ Builder.load_string('''
 class PostsPage(MDScreen):
     name = 'posts_page'
     data = ListProperty()
-    def get_posts(self, random=True):
-        self.dialog.dismiss()
-        self.ids._rv.data = get_posts_from_server()
-
-    def on_data(self, a, b):
-        self.ids._rv.data = self.data
-    
-    def on_enter(self, *args):
+    updated = False
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.dialog = MDDialog(
             text='Atualizando posts...',
-            on_open=lambda x: self.get_posts()
+            on_open=lambda x: self.get_posts(True)
         )
-        self.dialog.open()
+        
+    def get_posts(self, random):
+        self.dialog.dismiss()
+        self.ids._rv.data = get_posts_from_server(random)
+    
+    def on_enter(self, *args):
+        if not self.updated:
+            self.dialog.open()
+            self.updated = True
         return super().on_enter(*args)

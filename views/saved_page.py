@@ -48,7 +48,6 @@ Builder.load_string(
                 SavedPost:
                 SavedPost:
                 SavedPost:
-            
         BottomBar:
         LateralMenu:
             id: _lm

@@ -35,7 +35,7 @@ def new_client_user(username, email, password, description, image_code=0):
         "validated": True
     })
     list_users()
-    return user.get().to_dict()   
+    return get_user(username)   
 
 def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, description, image=None):
     if username in ALL_USERS: return False
@@ -68,7 +68,7 @@ def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, descri
         image
     )
     list_users()
-    return user.get().to_dict()
+    return get_user(username)
 
 def user_like(username, post_id):
     update_post(post_id, {'likes': firestore.Increment(1)})

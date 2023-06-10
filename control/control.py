@@ -1,5 +1,5 @@
-from firebase.user import new_client_user, new_estab_user, get_user, list_users, delete_user, update_user, user_like, user_save, user_comment, user_un_like
-from firebase.post import new_post, get_post, list_posts
+from firebase.user import *
+from firebase.post import *
 from local.appdb import *
 from firebase.gmail import AuthenticationMail
 import random
@@ -111,11 +111,12 @@ def check_estab_sign_up_inputs(username, email, password, cnpj, cpf, birth_date)
     
 def sign_up_estab(username, email, password, cnpj, cpf, birth_date):
     user = new_estab_user(username, email, cpf, birth_date, cnpj, None, password, 'Sou novo no app!', None)
+    save_user_data(user)
     return user
 
-def get_posts_from_server(randomize=True):
+def get_posts_from_server(randomize):
     posts = list_posts(False)
-    user = get_user(USER['username'])
+    user = get_user(get_user_data()['username'])
     save_user_data(user)
     for post in posts:
         post['id'] = str(post['id'])

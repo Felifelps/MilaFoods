@@ -3,7 +3,7 @@ from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
 from kivy.core.window import Window
 from kivy.properties import DictProperty
-from control.control import get_user_data, get_saved_data
+from control.control import get_user_data, get_saved_data, update_user, update_post, list_users, list_posts
 Window.size = (340, 600)
 
 class MilaFoods(MDApp):

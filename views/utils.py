@@ -777,7 +777,7 @@ class SelectImageButton(MDIconButton):
 class Post(MDRelativeLayout):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            self.manager.load_view_post_page(self.id, self.username, self.image, self.text, [])
+            self.manager.load_comment_page(self.id, self.username, self.image, self.text)
         return super().on_touch_down(touch)
 
 class CpfCnpjTextInput(MDFloatLayout):

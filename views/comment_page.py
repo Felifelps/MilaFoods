@@ -1,7 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
-from kivy.properties import StringProperty, ListProperty
-from control.control import user_like, user_un_like
+from kivy.properties import StringProperty, ListProperty, BooleanProperty, NumericProperty
+from control.control import user_like, user_un_like, user_comment
 from kivymd.uix.dialog import MDDialog
 
 Builder.load_string('''
@@ -14,9 +14,12 @@ Builder.load_string('''
 #:import ProfileButton views.utils
 #:import join os.path.join
 <EmojiButton@MDIconButton>:
+    screen: self.parent.screen
     code: 1
-    pos_hint: {'center_x': .2 + (0.075 * (self.code - 1)), 'center_y': .375}
-    icon: join('views', 'data', 'emojis', f'{self.code}.png')
+    pos_hint: {'center_x': .2 + (0.1 * (self.code - 1)), 'center_y': .375}
+    icon: join('views', 'data', 'emojis', f'{int(self.code)}.png')
+    on_press:
+        self.screen.open_comment_dialog(self.code)
 
 <Comment@RelativeLayout>:
     size_hint: .35, .1
@@ -35,12 +38,13 @@ Builder.load_string('''
         pos_hint: {'x': .2, 'center_y': .825}
         color: 0, 0, 0, 1
     MDIconButton:
-        pos_hint: {'center_x': .65, 'center_y': .375}
+        pos_hint: {'center_x': .85, 'center_y': .5}
         size_hint: .3, .5
-        icon: join('views', 'data', 'profile_images', f'{root.code}.png')
+        icon: join('views', 'data', 'emojis', f'{int(root.code)}.png')
     
 <CommentBar@MDRelativeLayout>:
     md_bg_color: .3, .3, .3, 1
+    screen: None
     MDIconButton:
         pos_hint: {'x': .02, 'center_y': .5}
         icon: join('views', 'data', 'profile_images', '1.png')
@@ -103,12 +107,16 @@ Builder.load_string('''
                 pos_hint: {'right': 1, 'top': .6}
                 theme_icon_color: 'Custom'
                 icon: "heart"
-                icon_color: .75, .75, .75, 1
-                clicked: _screen.code in app.liked
+                icon_color: (.75, .75, .75, 1) if not _screen.liked else (1, 0, .2, 1)
                 on_release:
-                    _screen.like_or_un_like_dialog(self.clicked)
-                    self.icon_color = (.75, .75, .75, 1) if self.clicked else (1, 0, .2, 1)
-                    self.clicked = not self.clicked
+                    _screen.like_or_un_like_dialog()
+            Label:
+                text: str(_screen.likes)
+                color: .1, .1, .1, 1
+                size_hint: None, None
+                size: self.texture_size
+                font_size: '13sp'
+                pos_hint: {'right': .85, 'center_y': .555}
             Label:
                 text: _screen.text
                 color: .1, .1, .1, 1
@@ -130,6 +138,7 @@ Builder.load_string('''
                     height: self.minimum_height
                     spacing: dp(10)
             CommentBar:
+                screen: _screen
                 pos_hint: {'y': 0}
                 size_hint: 1, .125
         BottomBar:
@@ -142,18 +151,39 @@ class CommentPage(MDScreen):
     user_image = StringProperty('') 
     text = StringProperty('') 
     code = StringProperty('') 
-    comments = ListProperty([]) 
+    comments = ListProperty([])
+    liked = BooleanProperty()
+    likes = NumericProperty()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.like_dialog = MDDialog(
+            text='Salvando seu like...',
+            on_open=lambda x: self.like_or_un_like()
+        )
+        self.comment_dialog = MDDialog(
+            text='Comentando...',
+            on_open=lambda x: self.comment()
+        )
+        
     def on_comments(self, a, b):
         self.rv.data = [{'username': x.split('-')[0], 'code': x.split('-')[1], 'size_hint_x': .35} for x in self.comments]
     
-    def like_or_un_like(self, liked):
-        user_un_like(self.parent.app.user['username'], self.code) if liked else user_like(self.parent.app.user['username'], self.code)
-        self.dialog.dimiss()
+    def like_or_un_like(self):
+        user_un_like(self.parent.app.user['username'], self.code) if self.liked else user_like(self.parent.app.user['username'], self.code)
+        self.likes += -1 if self.liked else 1
+        self.liked = not self.liked
+        self.manager.get_screen('posts_page').get_posts(False)
+        self.like_dialog.dismiss()
 
-    def like_or_un_like_dialog(self, liked):
-        self.dialog = MDDialog(
-            text='Salvando seu like...',
-            on_open=lambda x: self.like_or_un_like(liked)
-        )
+    def like_or_un_like_dialog(self):
+        self.like_dialog.open()
+    
+    def comment(self):
+        user_comment(self.parent.app.user['username'], self.code, self.image_code)
+        self.comments = self.comments + [f"{self.parent.app.user['username']}-{self.image_code}"]
+        self.comment_dialog.dismiss()
         
+    def open_comment_dialog(self, image_code):
+        self.image_code = image_code
+        self.comment_dialog.open()
         
