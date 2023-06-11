@@ -4,8 +4,6 @@ from local.appdb import *
 from firebase.gmail import AuthenticationMail
 import random
 
-USER = get_user(get_user_data()['username'])
-
 def send_email_code(email):
     for i in range(5):
         try:
@@ -85,7 +83,7 @@ def login_estab(cpf_or_cnpj, password):
             save_user_data(get_user(user['username']))
             return True
     return 'Usuário não encontrado'
-    
+
 def check_estab_sign_up_inputs(username, email, password, cnpj, cpf, birth_date):
     if username == '' or email == '' or password == '' or (cnpj != None and len(cnpj) < 14 and cpf == None) or (cpf != None and len(cpf) < 11 and cnpj == None) or (cpf != None and 'Selecione' in birth_date):
         return 'Todos os campos devem ser preenchidos'

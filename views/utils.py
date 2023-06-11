@@ -176,6 +176,7 @@ Builder.load_string('''
         padding_x: dp(15)
         padding_y: dp(18)
         input_filter: 'int'
+        multiline: False
     Label:
         size_hint: .8, .125
         pos_hint: {'center_x': .5, 'top': .45}
@@ -205,7 +206,7 @@ Builder.load_string('''
         color: .6, .6, .6, 1
         font_size: '12.5sp'
         on_ref_press: 
-            print('reenviar')
+            root.screen.resend_code()
 
 <LateralMenuBase>:
     id: _lm

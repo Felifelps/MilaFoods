@@ -6,15 +6,16 @@ Builder.load_string('''
 #:import Background views.utils
 #:import join os.path.join
 
-<EmojiButton@MDIconButton>:
+<ProfileImageButton@MDIconButton>:
     code: 1
     icon_size: '115sp'
     icon: join('views', 'data', 'profile_images', f'{int(self.code)}.png')
     on_press:
-        self.parent.screen.save_profile_image(self.code)
+        self.parent.screen.back(str(self.code))
 
 <ImageSelectionPage>:
     id: _screen
+    back_to: 'user_account_configuration_page'
     Background:
         id: _bg
     RelativeLayout:
@@ -33,40 +34,40 @@ Builder.load_string('''
                 adaptive_height: True
                 spacing: 10, 20
                 screen: _screen
-                EmojiButton:
-                EmojiButton:
+                ProfileImageButton:
+                ProfileImageButton:
                     code: 2
-                EmojiButton:
+                ProfileImageButton:
                     code: 3
-                EmojiButton:
+                ProfileImageButton:
                     code: 4
-                EmojiButton:
+                ProfileImageButton:
                     code: 5
-                EmojiButton:
+                ProfileImageButton:
                     code: 6
-                EmojiButton:
+                ProfileImageButton:
                     code: 7
-                EmojiButton:
+                ProfileImageButton:
                     code: 8
-                EmojiButton:
+                ProfileImageButton:
                     code: 9
-                EmojiButton:
+                ProfileImageButton:
                     code: 10
-                EmojiButton:
+                ProfileImageButton:
                     code: 11
-                EmojiButton:
+                ProfileImageButton:
                     code: 12
-                EmojiButton:
+                ProfileImageButton:
                     code: 13
-                EmojiButton:
+                ProfileImageButton:
                     code: 14
-                EmojiButton:
+                ProfileImageButton:
                     code: 15
 '''
 )
 class ImageSelectionPage(MDScreen):
-    name = 'image_selection_page'
-    def back(self): self.manager.current = 'posts_page'
-    
-    def save_profile_image(self, code):
-        print(code)
+    name = 'image_selection_page'  
+    def back(self, icon='image'):
+        self.manager.get_screen(self.back_to).selected_image = icon
+        self.manager.current = self.back_to
+        
