@@ -59,6 +59,7 @@ class ScreenManager(MDScreenManager):
     def load_login_pages(self):
         if not self.login_pages:
             for i in [
+                UserAccountConfigurationPage(),
                 ClientOrEstabPage(),
                 EstabLoginPage(),
                 ClientSignUpPage(),
@@ -66,7 +67,6 @@ class ScreenManager(MDScreenManager):
                 EstabSignUpPage(),
                 FollowEstabsPage(),
                 ImageSelectionPage(),
-                UserAccountConfigurationPage(),
             ]: 
                 self.add_widget(i)
             self.login_pages = True

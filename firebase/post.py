@@ -18,7 +18,6 @@ def new_post(id, username, text, image=""):
     return True
 
 def update_post(key, data):
-    """Updates a client object of the database"""
     DB.document(f"posts/{key}").update(data)
 
 def get_post(key):
@@ -30,7 +29,6 @@ def list_posts(only_key=True, username=False):
     return [(post.id if only_key else post.to_dict()) for post in DB.collection(f"posts").stream() if username in post.id]
 
 def delete_post(key):
-    """Deletes a post object of the database"""
     DB.document(f"posts/{key}").delete()
     split = key.split('-')
     DB.document(f"estabs/{split[0]}/posts/{split[1]}").delete()

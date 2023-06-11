@@ -98,6 +98,9 @@ class ClientSignUpPage(MDScreen):
             on_open=lambda x: self.send_code()
         )
         self.dialog.open()
+    
+    def resend_code(self): 
+        self.check_inputs(*self.data)
         
     def check_code(self, code):
         if str(self.code) == code:

@@ -108,7 +108,7 @@ def check_estab_sign_up_inputs(username, email, password, cnpj, cpf, birth_date)
     return True
     
 def sign_up_estab(username, email, password, cnpj, cpf, birth_date):
-    user = new_estab_user(username, email, cpf, birth_date, cnpj, None, password, 'Sou novo no app!', None)
+    user = new_estab_user(username, email, cpf, birth_date, cnpj, None, password, 'Sou novo no app!')
     save_user_data(user)
     return user
 

@@ -50,13 +50,13 @@ Alô {receiver}, seu código de autenticação para o app é:
         #Load smtp
         if not AuthenticationMail.smtp_connection_is_done: AuthenticationMail.load_smtp()
         
-        body = "Responda apenas com 'É' se for, e 'Não' se não for validado, ok? Lembrando que é em até um dia depois daqui."
+        body = "Responda apenas com 'S' se for, e 'N' se não for validado, ok? Lembrando que é em até um dia depois daqui."
         if cnpj != None:
             body += "\nhttps://solucoes.receita.fazenda.gov.br/Servicos/cnpjreva/cnpjreva_solicitacao.asp"
             body += f"\nDados => CNPJ: {cnpj}"
         elif cpf != None:
             body += "\nhttps://servicos.receita.fazenda.gov.br/Servicos/CPF/ConsultaSituacao/ConsultaPublica.asp"
-            body += f"\nDados => CPF: {cpf} Data de Nascimentp: {birth_date}"
+            body += f"\nDados => CPF: {cpf} Data de Nascimento: {birth_date}"
         else:
             raise Exception("Attribute error")
         email = EmailMessage()
@@ -80,8 +80,8 @@ Alô {receiver}, seu código de autenticação para o app é:
             print(email.subject, email.text)
             if cpf_or_cnpj in email.subject:
                 text = email.text.split()[0].lower()
-                if 'é' == text: return True
-                elif 'não' == text: return False
+                if 's' == text: return True
+                elif 'n' == text: return False
         return None
 
                 

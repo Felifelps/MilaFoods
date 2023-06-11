@@ -86,5 +86,5 @@ class EstabLoginPage(MDScreen):
         if isinstance(estab, str): return Snackbar(text=estab).open()
         self.manager.app.update_user()
         Snackbar(text='Logado com sucesso').open()
-        self.manager.load_client_pages()
-        self.manager.current = 'posts_page'
+        self.manager.load_estab_pages()
+        self.manager.load_user_config_page(False)

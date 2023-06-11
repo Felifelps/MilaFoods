@@ -2,7 +2,7 @@ from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty
 from kivymd.uix.dialog import MDDialog
-from control.control import get_user, save_user_data, update_user
+from control.control import get_user, save_user_data, update_user, upload_image
 
 Builder.load_string(
 '''
@@ -71,13 +71,12 @@ Builder.load_string(
             pos_hint: {'center_x': .5, 'center_y': .15}
             on_press:
                 _screen.dialog.open()
-                app.root.current = 'follow_estabs_page'
 '''
 )
 
 class UserAccountConfigurationPage(MDScreen):
     name = 'user_account_configuration_page'
-    client = BooleanProperty()
+    client = BooleanProperty(False)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dialog = MDDialog(
@@ -87,10 +86,17 @@ class UserAccountConfigurationPage(MDScreen):
     
     def save_definitions(self):
         if self.client:
-            update_user(self.manager.app.user['username'], {'image_code': self.selected_image, 'description': self.ids._bio.text})
+            update_user(
+                self.manager.app.user['username'], 
+                {
+                    'image_code': self.selected_image, 
+                    'description': self.ids._bio.text
+                }
+            )
         else:
-            pass
-        self.dialog.dismiss()
+            upload_image(self.manager.app.user['username'], self.icon if self.icon not in ['account', 'image'] else None)
         save_user_data(get_user(self.manager.app.user['username']))
+        self.dialog.dismiss()
         self.manager.app.update_user()
+        self.manager.current = 'follow_estabs'
             

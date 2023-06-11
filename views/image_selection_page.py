@@ -70,4 +70,3 @@ class ImageSelectionPage(MDScreen):
     def back(self, icon='image'):
         self.manager.get_screen(self.back_to).selected_image = icon
         self.manager.current = self.back_to
-        

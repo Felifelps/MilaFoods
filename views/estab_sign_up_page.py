@@ -94,6 +94,9 @@ class EstabSignUpPage(MDScreen):
         )
         self.dialog.open()
     
+    def resend_code(self):
+        self.check_inputs(self.data[0], self.data[1], self.data[2], self.ids._cpf_cnpj)
+        
     def send_code(self, email):
         self.dialog.dismiss()
         self.code = send_email_code(email)

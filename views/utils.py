@@ -766,9 +766,10 @@ class SelectImageButton(MDIconButton):
         super().__init__(*args, **kwargs)
         
     def select_path(self, path):
-        for extension in ['png', 'jpg']:
+        for extension in ['png', 'jpg', 'jpeg']:
             if extension in path: 
-                self.icon = os.path.join(path) 
+                self.icon = os.path.join(path)
+                print(self.icon)
                 return self.file_manager.close()
         Snackbar(text='Escolha uma imagem').open()
     
