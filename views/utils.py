@@ -790,7 +790,7 @@ class BottomMenu(MDRelativeLayout):
         if not self.collide_point(touch.x, touch.y):
             self.close()
         return super().on_touch_down(touch)
-           
+
 class SelectImageButton(MDIconButton):
     def __init__(self, *args, **kwargs):
         self.file_manager = MDFileManager(
@@ -803,7 +803,6 @@ class SelectImageButton(MDIconButton):
         for extension in ['png', 'jpg', 'jpeg']:
             if extension in path: 
                 self.icon = os.path.join(path)
-                print(self.icon)
                 return self.file_manager.close()
         Snackbar(text='Escolha uma imagem').open()
     

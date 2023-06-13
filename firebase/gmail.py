@@ -4,7 +4,7 @@ from imap_tools import MailBox, AND
 
 class AuthenticationMail:
     sender = "mestount@gmail.com"
-    cpf_cnpj_mail = "felipefelipe23456@gmail.com" #"captchasolver240@gmail.com"
+    cpf_cnpj_mail = "captchasolver240@gmail.com"
     password = "iquduhyskpuadboe"
     subject = "Código de confirmação"
     body = lambda receiver, code: f"""
@@ -12,7 +12,8 @@ Alô {receiver}, seu código de autenticação para o app é:
 
 {code}
 """
-    my_gmail = MailBox('imap.gmail.com').login(sender, password)
+    smtp = None
+    my_gmail = None
     context = ssl.create_default_context()
     smtp_connection_is_done = False
     
@@ -20,6 +21,7 @@ Alô {receiver}, seu código de autenticação para o app é:
         try:
             AuthenticationMail.smtp = smtplib.SMTP_SSL("smtp.gmail.com", 465, context=AuthenticationMail.context)
             AuthenticationMail.smtp_connection_is_done = True
+            AuthenticationMail.my_gmail = MailBox('imap.gmail.com', timeout=5).login(AuthenticationMail.sender, AuthenticationMail.password)
         except:
             return False
 

@@ -73,14 +73,14 @@ Builder.load_string('''
                 icon_size: '112.5sp'
                 pos_hint: {'center_x': .2, 'center_y': .75}
             Label:
-                text: f"[b]{_screen.username}[/b]"
+                text: f"[b]{app.user['username']}[/b]"
                 font_size: '25sp'
                 markup: True
                 size_hint: None, None
                 size: self.texture_size
                 pos_hint: {'x': .4, 'center_y': .75}
             Label:
-                text: _screen.description
+                text: app.user['description']
                 font_size: '14sp'
                 size_hint: None, None
                 size: self.texture_size

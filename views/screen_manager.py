@@ -90,6 +90,7 @@ class ScreenManager(MDScreenManager):
         page = self.get_screen('user_account_configuration_page')
         page.client = client
         page.username = self.app.user['username']
+        print(self.app.user['description'])
         self.current = 'user_account_configuration_page' if self.app.user['description'] == '' else 'posts_page'
         
     def load_comment_page(self, id, username, image, text):

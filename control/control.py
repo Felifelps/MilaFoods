@@ -34,7 +34,7 @@ def login_client(username, password):
         return 'Os campos devem ser preenchidos'
     if len(username) < 6:
         return 'O username deve conter 6 ou mais caracteres'
-    for i in '''@#$%¨*()!"'.?/:;}]{[º^~´`\\|°=+-<>''':
+    for i in '''@#$%¨*()!"'?/:;}]{[º^~´`\\|°=+-<>''':
         if i in username:
             return 'Caracteres inválidos para username'
     if len(password) < 6:

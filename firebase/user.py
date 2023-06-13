@@ -2,9 +2,10 @@ import os
 from .db import DB, firestore
 from .post import update_post, new_post
 from .utils import encode_image, decode_image
-
-USERS = DB.collection("users")
-ALL_USERS = [i.id for i in USERS.stream()]
+try:
+    USERS = DB.collection("users")
+except Exception as e:
+    input(e)
 
 def list_users(all=False):
     if all:

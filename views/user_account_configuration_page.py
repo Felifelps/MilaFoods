@@ -5,8 +5,7 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.snackbar import Snackbar
 from control.control import get_user, save_user_data, update_user, upload_image
 
-Builder.load_string(
-'''
+Builder.load_string('''
 #:import BasicButton views.utils
 #:import BasicLabel views.utils
 #:import BasicTextInput views.utils
@@ -30,12 +29,14 @@ Builder.load_string(
         SelectImageButton:
             id: _image_button
             pos_hint: {'center_x': .5 if not _screen.client else 10, 'center_y': .8}
-            size_hint: .4, .2
             icon_size: '125sp'
         MDIconButton:
             pos_hint: {'center_x': .5 if _screen.client else 10, 'center_y': .8}
             icon_size: '125sp'
             icon: _screen.selected_image if not _screen.selected_image.isdigit() else join('views', 'data', 'profile_images', f'{int(_screen.selected_image)}.png')
+            on_icon:
+                self.icon = _screen.selected_image if not _screen.selected_image.isdigit() else join('views', 'data', 'profile_images', f'{int(_screen.selected_image)}.png')
+                pos_hint: {'center_x': .5 if _screen.client else 10, 'center_y': .8}
             on_press:
                 app.root.get_screen('image_selection_page').back_to = _screen.name
                 app.root.current = 'image_selection_page'
