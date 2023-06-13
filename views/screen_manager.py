@@ -15,12 +15,11 @@ from .user_account_configuration_page import UserAccountConfigurationPage
 from .follow_estabs_page import FollowEstabsPage
 from .image_selection_page import ImageSelectionPage
 from .saved_page import SavedPage
+from .estab_profile_page import EstabProfilePage
 
 class ScreenManager(MDScreenManager):
-    client_pages = False
     login_pages = False
     user_pages = False
-    estab_pages = False
     logged_user_is_client = False
     def __init__(self, app, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -39,58 +38,38 @@ class ScreenManager(MDScreenManager):
                 SearchPage(),
                 ThemeConfigPage(),
                 CommentPage(),
-                SavedPage()
+                SavedPage(),
+                ClientProfilePage(),
+                EstabProfilePage(),
             ]: 
                 self.add_widget(i)
             self.user_pages = True
-
-    def load_client_pages(self):
-        if not self.client_pages:
-            self.load_user_pages()
-            for i in [
-                ClientProfilePage(),
-            ]: 
-                self.add_widget(i)
-            self.client_pages = True
-    
-    def load_estab_pages(self):
-        if not self.estab_pages:
-            self.load_user_pages()
-            for i in [
-            ]: 
-                self.add_widget(i)
-            self.estab_pages = True
     
     def load_login_pages(self):
         if not self.login_pages:
             for i in [
                 ClientOrEstabPage(),
+                UserAccountConfigurationPage(),
+                ImageSelectionPage(),
                 EstabLoginPage(),
                 ClientSignUpPage(),
                 ClientLoginPage(),
                 EstabSignUpPage(),
-                UserAccountConfigurationPage(),
                 FollowEstabsPage(),
-                ImageSelectionPage(),
             ]: 
                 self.add_widget(i)
             self.login_pages = True
     
     def load_screens(self, user):
         if user['username'] == '===++UserDefault++===':
-            self.load_login_pages()
-        elif not user['can_post']:
-            self.load_client_pages()
-            self.logged_user_is_client = True
-        elif user['can_post'] :
-            self.load_estab_pages()
-            self.logged_user_is_client = False
+            return self.load_login_pages()
+        self.logged_user_is_client = not user['can_post']
+        self.load_user_pages()
     
     def load_user_config_page(self, client):
         page = self.get_screen('user_account_configuration_page')
         page.client = client
         page.username = self.app.user['username']
-        print(self.app.user['description'])
         self.current = 'user_account_configuration_page' if self.app.user['description'] == '' else 'posts_page'
         
     def load_comment_page(self, id, username, image, text):
@@ -109,30 +88,34 @@ class ScreenManager(MDScreenManager):
     
     def load_profile_page(self, username=False):
         if username == False:
-            if self.logged_user_is_client:
-                page = self.get_screen('client_profile_page')
-                page.username = self.app.user['username']
-                page.image_code = self.app.user['image_code']
-                page.description = self.app.user['description']
-                page.saved = get_user(self.app.user['username'])['saved']
-                self.current = 'client_profile_page'
+            if self.app.user['can_post']:
+                self.load_estab_profile_page(self.app.user)
                 return True
             else:
-                pass
-        client = get_user(username)
-        if isinstance(client, dict):
-            self.load_client_profile_page(client)
+                self.load_client_profile_page(self.app.user, get_user(self.app.user['username'])['saved'])
+                return True
+        user = get_user(username)
+        if user['can_post']:
+            self.load_estab_profile_page(user)
         else:
-            self.load_estab_profile_page(get_user(username))
+            self.load_client_profile_page(user)
 
-    def load_client_profile_page(self, data):
+    def load_client_profile_page(self, data, saved=False):
         page = self.get_screen('client_profile_page')
         page.username = data['username']
         page.image_code = data['image_code']
         page.description = data['description']
-        page.saved = data['saved']
+        page.saved = data['saved'] if saved == False else saved
         self.current = 'client_profile_page'
         
-    def load_estab_profile_page(self, username):
-        pass
+    def load_estab_profile_page(self, data):
+        page = self.get_screen('estab_profile_page')
+        page.username = data['username']
+        print(data['image'])
+        page.image = str(data['image'])
+        page.description = data['description']
+        page.n_of_posts = data['n_of_posts']
+        page.n_of_followers = data['n_of_followers']
+        page.tel = data['tel']
+        self.current = 'estab_profile_page'
     

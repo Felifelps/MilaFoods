@@ -51,6 +51,7 @@ Builder.load_string('''
             font_size: '18sp'
         BasicTextInput:
             id: _bio
+            type: 'description'
             pos_hint: {'center_x': .5, 'center_y': .44 if not _screen.client else .375}
             size_hint_y: .16 + (.15 if _screen.client else 0)
             text: 'Sou novo no app!'

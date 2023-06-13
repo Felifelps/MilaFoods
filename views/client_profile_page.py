@@ -20,7 +20,8 @@ Builder.load_string('''
 
 <SavedArea>:
     size_hint: 1, .4
-    pos_hint: {'top': .5}
+    screen: None
+    pos_hint: {'center_x': .4 if self.screen != None and self.screen.username == app.user['username'] else 10, 'top': .5}
     scroll_view_blur: 0
     rv: _rv
     BasicLabel:
@@ -57,8 +58,8 @@ Builder.load_string('''
 
 <ClientProfilePage>:
     id: _screen
-    username: 'Username'
-    description: 'Bio'
+    username: app.user['username']
+    description: app.user['description']
     image_code: 0
     sa: _sa
     Background:
@@ -73,14 +74,14 @@ Builder.load_string('''
                 icon_size: '112.5sp'
                 pos_hint: {'center_x': .2, 'center_y': .75}
             Label:
-                text: f"[b]{app.user['username']}[/b]"
+                text: f"[b]{_screen.username}[/b]"
                 font_size: '25sp'
                 markup: True
                 size_hint: None, None
                 size: self.texture_size
                 pos_hint: {'x': .4, 'center_y': .75}
             Label:
-                text: app.user['description']
+                text: _screen.description
                 font_size: '14sp'
                 size_hint: None, None
                 size: self.texture_size
@@ -91,11 +92,11 @@ Builder.load_string('''
                 pos_hint: {'x': .025, 'y': .48}
             SavedArea:
                 id: _sa
+                screen: _screen
             
         BottomBar:
         LateralMenu:
             id: _lm
-
 '''
 )
 
@@ -119,4 +120,5 @@ class SavedArea(MDRelativeLayout):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             self.parent.parent.parent.manager.current = 'saved_page'
+            return True
         return super().on_touch_down(touch)

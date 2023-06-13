@@ -13,6 +13,7 @@ Builder.load_string('''
 #:import Post views.utils
 #:import ProfileButton views.utils
 #:import join os.path.join
+
 <EmojiButton@MDIconButton>:
     screen: self.parent.screen
     code: 1
