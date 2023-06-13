@@ -239,7 +239,7 @@ Builder.load_string('''
             on_press: 
                 _lm.close()
         MDIconButton:
-            icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
+            icon: ('account-circle' if str(app.user['image_code']) == '0' else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")) if not app.user['can_post'] else join('views', 'data', 'user_images', f"{app.user['image']}.png")
             icon_size: '75sp'
             on_press:
                 app.root.load_profile_page()
@@ -336,7 +336,7 @@ Builder.load_string('''
     size_hint: 1, .1
     md_bg_color: app.theme_cls.primary_dark
     MDIconButton:
-        icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
+        icon: ('account-circle' if str(app.user['image_code']) == '0' else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")) if not app.user['can_post'] else join('views', 'data', 'user_images', f"{app.user['image']}.png")
         on_press:
             app.root.load_profile_page()
         pos_hint: {'x': .025, 'center_y': .5}
@@ -381,6 +381,8 @@ Builder.load_string('''
         lm: root.lm
 
 <TopImageAndStarBar@MDRelativeLayout>:
+    screen: None
+    saved: False
     canvas.before:
         Color: 
             rgba: 0, 0, 0, .4
@@ -401,9 +403,11 @@ Builder.load_string('''
     MDIconButton:
         pos_hint: {'right': 1, 'center_y': .5}
         icon_size: '25sp'
+        theme_icon_color: 'Custom'
+        icon_color: (.75, .75, .75, 1) if not root.saved else (.85, .68, .21, 1)
         icon: "star"
         on_press:
-            print('Save')
+            root.screen.save_post()
 
 <TopCentralSearchBar@MDRelativeLayout>:
     lm: None
@@ -529,6 +533,7 @@ Builder.load_string('''
     timestamp: ''
     id: 0
     liked: False
+    saved: False
     likes: 0
     size_hint: 1, None
     manager: app.root
@@ -561,12 +566,8 @@ Builder.load_string('''
     MDIconButton:
         pos_hint: {'center_x': .08, 'center_y': .78}
         theme_icon_color: 'Custom'
-        icon_color: .75, .75, .75, 1
+        icon_color: (.75, .75, .75, 1) if not root.saved else (.85, .68, .21, 1)
         icon: "star"
-        clicked: False
-        on_release:
-            self.icon_color = (.75, .75, .75, 1) if self.clicked else (.85, .68, .21, 1)
-            self.clicked = not self.clicked
     MDIconButton:
         pos_hint: {'right': 1, 'top': .33}
         theme_icon_color: 'Custom'
@@ -580,12 +581,12 @@ Builder.load_string('''
         font_size: '13sp'
         pos_hint: {'right': .85, 'center_y': .255}
     Label:
+        halign: 'justify'
         text: root.text
         color: .1, .1, .1, 1
         size_hint: None, None
         size: self.texture_size
         font_size: '14sp'
-        markup: True
         pos_hint: {'x': .03, 'top': .28}
     MDRectangleFlatIconButton:
         text: "Comentar"
@@ -601,11 +602,14 @@ Builder.load_string('''
         size_hint: .05, .1
         pos_hint: {"center_x": .14, "center_y": .075}
 
-<SavedPost@RelativeLayout>:
+<SavedPost>:
     image: _img
-    username: 'Username'
+    username: ''
+    text: ''
+    id: '0'
     size_hint: None, None
     size: dp(130), dp(150)
+    app: app
     canvas.before:
         Color:
             rgba: .9, .9, .9, 1
@@ -625,7 +629,7 @@ Builder.load_string('''
         markup: True
         pos_hint: {'x': .05, 'center_y': .175}
     Label:
-        text: '[Nome estab]'
+        text: root.text if len(root.text) < 22 else root.text[:22] + '...'
         color: .1, .1, .1, 1
         size_hint: None, None
         size: self.texture_size
@@ -707,11 +711,41 @@ class BasicDropDownItem(MDFillRoundFlatIconButton):
 
 class BasicTextInput(TextInput):
     def insert_text(self, substring, from_undo=False):
-        if self.type == 'cpf' and (len(self.text) + len(substring) > 11 or not substring.isdigit()): 
+        text = self.text + substring
+        text_len = len(text)
+        if self.type == 'cpf' and (text_len > 11 or not substring.isdigit()): 
             return False
-        elif self.type == 'cnpj' and (len(self.text) + len(substring) > 14 or not substring.isdigit()): 
+        elif self.type == 'cnpj' and (text_len > 14 or not substring.isdigit()): 
             return False
+        elif self.type == 'number':
+            if text_len > 15 or not substring.isdigit():
+                return False
+            elif text_len == 2:
+                self.text = f'({text}) '
+                return True
+            elif text_len >= 9:
+                text_list = list(text)
+                if text_len <= 14 and '-' not in text:
+                    text_list.insert(9, '-')
+                elif text_len == 15:
+                    text_list.pop(text_list.index('-'))
+                    text_list.insert(10, '-')
+                self.text = ''.join(text_list)
+                return True
         return super().insert_text(substring, from_undo)
+    
+    def do_backspace(self, from_undo=False, mode='bkspc'):
+        if self.type == 'number':
+            if self.text[-1] == ' ':
+                self.text = self.text.replace('(', '').replace(') ', '')
+            elif len(self.text) == 15:
+                self.text = self.text.replace('-', '')
+                text_list = list(self.text)
+                text_list.insert(9, '-')
+                self.text = ''.join(text_list)
+            elif len(self.text) > 2 and self.text[-2] == '-':
+                self.text = self.text.replace('-', '')
+        return super().do_backspace(from_undo, mode)
     
     def paste(self):
         return super().paste()
@@ -794,3 +828,9 @@ class CpfCnpjTextInput(MDFloatLayout):
     def save_date(self, instance, value, date_range):
         self.date = value.strftime('%d/%m/%Y')
         self.picker.dismiss()
+        
+class SavedPost(MDRelativeLayout):
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos):
+            self.app.root.load_comment_page(self.id, self.username, self.image, self.text)
+        return super().on_touch_down(touch)

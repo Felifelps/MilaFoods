@@ -43,6 +43,7 @@ def login_client(username, password):
     if not user: return 'Crendenciais inválidas'
     if user['password'] == password:
         save_user_data(user)
+
     return user
 
 def check_client_sign_up_inputs(username, email, password):
@@ -62,7 +63,7 @@ def check_client_sign_up_inputs(username, email, password):
     return True
 
 def sign_up_and_login_client(username, email, password):
-    user = new_client_user(username, email, password, 'Sou novo no app!')
+    user = new_client_user(username, email, password, '')
     if not user: return False
     save_user_data(user)
     return user
@@ -80,7 +81,9 @@ def login_estab(cpf_or_cnpj, password):
                     return 'Seus dados não são válidos. Tente recriar a conta.'
                 elif validated:
                     update_user(user['username'], {'validated': True})
-            save_user_data(get_user(user['username']))
+            user = get_user(user['username'])
+            save_user_data(user)
+    
             return True
     return 'Usuário não encontrado'
 
@@ -108,7 +111,7 @@ def check_estab_sign_up_inputs(username, email, password, cnpj, cpf, birth_date)
     return True
     
 def sign_up_estab(username, email, password, cnpj, cpf, birth_date):
-    user = new_estab_user(username, email, cpf, birth_date, cnpj, None, password, 'Sou novo no app!')
+    user = new_estab_user(username, email, cpf, birth_date, cnpj, None, password, '')
     save_user_data(user)
     return user
 
@@ -120,6 +123,7 @@ def get_posts_from_server(randomize):
         post['id'] = str(post['id'])
         post['height'] = 300
         post['liked'] = f"{post['username']}-{post['id']}" in user['liked']
+        post['saved'] = f"{post['username']}-{post['id']}" in user['saved']
     if randomize: random.shuffle(posts)
     return posts 
         
@@ -131,3 +135,10 @@ def logout():
 
 def save_theme(theme):
     alter_theme(theme)
+
+def save_post(post_id):
+    user_save(get_user_data()['username'], post_id)
+
+def un_save_post(post_id):
+    user_un_save(get_user_data()['username'], post_id)
+    

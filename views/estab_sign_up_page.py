@@ -116,7 +116,7 @@ class EstabSignUpPage(MDScreen):
             sign_up_estab(*self.data)
             self.manager.current = 'client_or_estab_page'
             return MDDialog(
-                text='Agora validaremos seus dados.\nEm até um dia útil validaremos sua conta.\n Após esse período, faça login com seus dados no aplicativo.\nObrigado por se inscrever!'
+                text='Agora validaremos seus dados.\nEm até um dia útil validaremos sua conta.\nApós esse período, faça login com seus dados no aplicativo.\nObrigado por se inscrever!'
             ).open()
         Snackbar(text='Código errado').open()
         

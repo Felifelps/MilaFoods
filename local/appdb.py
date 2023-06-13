@@ -5,7 +5,6 @@ cursor = conn.cursor()
 
 def save_user_data(user_data):
     query = 'update user set'
-    total = len(list(user_data.keys())) - 3
     n = 0
     for field, value in user_data.items():
         if isinstance(value, list): continue
@@ -18,24 +17,25 @@ def save_user_data(user_data):
         n += 1
     cursor.execute(query + 'where rowid = 1;')
     conn.commit()
+    
+def save_saved_data(saved_data):
+    for saved in saved_data:
+        cursor.execute(f'''insert into saved (text, image, id, username, likes) values (
+            "{saved['text']}",
+            "{saved['username']}",
+            {saved['id']},
+            "{saved['timestamp']}",
+            "{saved['username']}",
+            {saved['likes']}
+        );              
+        ''')
+    conn.commit()
 
 def get_user_data():
     cursor.execute(f'select * from user')
     columns = list(map(lambda x: x[0], cursor.description))
     data = list(cursor.fetchall())[0]
     return {columns[x]: (data[x].replace("'", "") if isinstance(data[x], str) else data[x]) for x in range(len(columns))}
-
-def get_saved_data():
-    cursor.execute(f'select * from saved')
-    return list(map(lambda x: x[0], cursor.fetchall()))
-
-def add_saved_data(saved):
-    cursor.execute(f'insert into saved values ("{saved}");')
-    conn.commit()
-
-def remove_saved_data(saved):
-    cursor.execute(f'delete from saved where post_id = "{saved}";')
-    conn.commit()
 
 def back_to_default_user():
     cursor.execute('''

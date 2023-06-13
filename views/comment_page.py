@@ -1,7 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.properties import StringProperty, ListProperty, BooleanProperty, NumericProperty
-from control.control import user_like, user_un_like, user_comment
+from control.control import user_like, user_un_like, user_comment, save_post, un_save_post
 from kivymd.uix.dialog import MDDialog
 
 Builder.load_string('''
@@ -75,6 +75,8 @@ Builder.load_string('''
     Background:
     FloatLayout:
         TopImageAndStarBar:
+            screen: _screen
+            saved: _screen.saved
         RelativeLayout:
             pos_hint: {'x': 0, 'top': .9}
             size_hint: 1, .8
@@ -102,7 +104,7 @@ Builder.load_string('''
             Image:
                 pos_hint: {'top': .9}
                 size_hint: 1, .3
-                source: join('views', 'data', 'logo.png') #_screen.image
+                source: join('views', 'data', 'logo.png') 
             MDIconButton:
                 pos_hint: {'right': 1, 'top': .6}
                 theme_icon_color: 'Custom'
@@ -153,6 +155,7 @@ class CommentPage(MDScreen):
     code = StringProperty('') 
     comments = ListProperty([])
     liked = BooleanProperty()
+    saved = BooleanProperty()
     likes = NumericProperty()
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -164,6 +167,20 @@ class CommentPage(MDScreen):
             text='Comentando...',
             on_open=lambda x: self.comment()
         )
+        self.save_dialog = MDDialog(
+            text='Salvando...',
+            on_open=lambda x: self._save_post()
+        )
+    
+    def _save_post(self):
+        if self.saved: un_save_post(self.code)
+        else: save_post(self.code) 
+        self.saved = not self.saved
+        self.manager.get_screen('posts_page').get_posts(False)
+        self.save_dialog.dismiss()
+        
+    def save_post(self):
+        self.save_dialog.open()
         
     def on_comments(self, a, b):
         self.rv.data = [{'username': x.split('-')[0], 'code': x.split('-')[1], 'size_hint_x': .35} for x in self.comments]

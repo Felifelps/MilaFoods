@@ -3,7 +3,7 @@ from kivymd.uix.relativelayout import MDRelativeLayout
 from kivy.animation import Animation
 from kivy.lang import Builder
 from kivy.properties import ListProperty
-from control.control import get_post
+from control.control import get_post, get_user
 
 Builder.load_string('''
 #:import BasicLabel views.utils
@@ -103,14 +103,20 @@ class ClientProfilePage(MDScreen):
     name = 'client_profile_page'
     saved = ListProperty([])
     def on_saved(self, a, b):
-        self.sa.rv.data = [get_post(saved) for saved in self.saved]
+        data = []
+        n = 0
+        for saved in get_user(self.manager.app.user['username'])['saved']:
+            if n == 3: break
+            saved_data = get_post(saved)
+            saved_data['id'] = str(saved_data['id'])
+            saved_data['width'] = 130
+            saved_data['height'] = 130
+            data.append(saved_data)
+            n += 1
+        self.sa.rv.data = data
 
 class SavedArea(MDRelativeLayout):
-    up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.5)
-    down_anim =  Animation(pos_hint={'top': .4}, duration=0.1, scroll_view_blur=0)
     def on_touch_down(self, touch):
-        if self.collide_point(*touch.pos) and touch.spos[1] > .8 and self.pos_hint['top'] == .9:
-            self.down_anim.start(self)
-        elif self.collide_point(*touch.pos) and self.pos_hint['top'] == .4:
-            self.up_anim.start(self)
+        if self.collide_point(*touch.pos):
+            self.parent.parent.parent.manager.current = 'saved_page'
         return super().on_touch_down(touch)

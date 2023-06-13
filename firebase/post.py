@@ -1,6 +1,6 @@
-import datetime
+import datetime, os
 from .db import DB
-from .utils import encode_image
+from .utils import encode_image, decode_image
 
 def new_post(id, username, text, image=""):
     key = f'{username}-{id}'
@@ -21,7 +21,17 @@ def update_post(key, data):
     DB.document(f"posts/{key}").update(data)
 
 def get_post(key):
-    return DB.document(f"posts/{key}").get().to_dict()
+    post = DB.document(f"posts/{key}").get().to_dict()
+    if post['image'] != '':
+        download_image(post)
+    return post
+
+def download_image(post):
+    post_key = f"{post['username']}-{post['id']}"
+    image_path = os.path.join("data", "post_images", f"{post_key}.{post['image'][0]}")
+    if not os.path.exists(image_path): 
+        decode_image(post['image'][1], f"{post_key}.{post['image'][0]}")
+    return image_path
         
 def list_posts(only_key=True, username=False):
     if not username:

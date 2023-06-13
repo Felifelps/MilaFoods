@@ -64,7 +64,7 @@ def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, descri
     new_post(
         1,
         username,
-        f"{username} acabou de criar sua conta!!"
+        f"Acabei de criar minha conta!!"
     )
     list_users()
     return get_user(username)
@@ -91,7 +91,7 @@ def user_comment(username, post_id, comment_code):
 def user_save(username, post_id):
     update_user(username, {'saved': firestore.ArrayUnion([post_id])})
 
-def client_un_save(username, post_id):
+def user_un_save(username, post_id):
     update_user(username, {'saved': firestore.ArrayRemove([post_id])})
     
 def post(username, text, image):
@@ -117,19 +117,18 @@ def delete_user(username):
     list_users()
     
 def get_user(username):
-    if username not in ALL_USERS:
+    if username not in list_users():
         return False
     user = USERS.document(username).get().to_dict()
-    if user['can_post']:
+    if user['can_post'] and user['image'] != None:
         download_image(user)
     return user
 
 def download_image(user):
-    image_path = os.path.join("data", "user_images", f"{user['username']}.png")
-    if os.path.exists(image_path): return image_path
-    if user['image'] == None: return 
-    decode_image(user["image"][1], "image." + user["image"][0], image_path)
+    image_path = os.path.join("data", "user_images", f"{user['username']}.{user['image'][0]}")
+    if not os.path.exists(image_path): 
+        decode_image(user['image'][1], f"{user['username']}.{user['image'][0]}")
     return image_path
     
 def upload_image(username, image_path):
-    update_user(username, {"image": encode_image(image_path)})
+    update_user(username, {"image": None if image_path == None else encode_image(image_path)})

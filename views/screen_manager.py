@@ -1,6 +1,6 @@
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.clock import Clock
-from control.control import logout, get_post, get_user, get_saved_data, get_user_data
+from control.control import logout, get_post, get_user, get_user_data
 from .posts_page import PostsPage
 from .search_page import SearchPage
 from .theme_config_page import ThemeConfigPage
@@ -14,10 +14,12 @@ from .estab_sign_up_page import EstabSignUpPage
 from .user_account_configuration_page import UserAccountConfigurationPage
 from .follow_estabs_page import FollowEstabsPage
 from .image_selection_page import ImageSelectionPage
+from .saved_page import SavedPage
 
 class ScreenManager(MDScreenManager):
     client_pages = False
     login_pages = False
+    user_pages = False
     estab_pages = False
     logged_user_is_client = False
     def __init__(self, app, *args, **kwargs):
@@ -31,13 +33,16 @@ class ScreenManager(MDScreenManager):
         Clock.schedule_once(change_current, 2)
     
     def load_user_pages(self):
-        for i in [
-            PostsPage(),
-            SearchPage(),
-            ThemeConfigPage(),
-            CommentPage()
-        ]: 
-            self.add_widget(i)
+        if not self.user_pages:
+            for i in [
+                PostsPage(),
+                SearchPage(),
+                ThemeConfigPage(),
+                CommentPage(),
+                SavedPage()
+            ]: 
+                self.add_widget(i)
+            self.user_pages = True
 
     def load_client_pages(self):
         if not self.client_pages:
@@ -59,12 +64,12 @@ class ScreenManager(MDScreenManager):
     def load_login_pages(self):
         if not self.login_pages:
             for i in [
-                UserAccountConfigurationPage(),
                 ClientOrEstabPage(),
                 EstabLoginPage(),
                 ClientSignUpPage(),
                 ClientLoginPage(),
                 EstabSignUpPage(),
+                UserAccountConfigurationPage(),
                 FollowEstabsPage(),
                 ImageSelectionPage(),
             ]: 
@@ -85,7 +90,7 @@ class ScreenManager(MDScreenManager):
         page = self.get_screen('user_account_configuration_page')
         page.client = client
         page.username = self.app.user['username']
-        self.current = 'user_account_configuration_page'
+        self.current = 'user_account_configuration_page' if self.app.user['description'] == '' else 'posts_page'
         
     def load_comment_page(self, id, username, image, text):
         page = self.get_screen('comment_page')
@@ -96,7 +101,9 @@ class ScreenManager(MDScreenManager):
         page.text = text
         page.likes = post['likes']
         page.comments = post['comments']
-        page.liked = page.code in get_user(self.app.user['username'])['liked']
+        user = get_user(self.app.user['username'])
+        page.liked = page.code in user['liked']
+        page.saved = page.code in user['saved']
         self.current = 'comment_page'
     
     def load_profile_page(self, username=False):
@@ -106,7 +113,7 @@ class ScreenManager(MDScreenManager):
                 page.username = self.app.user['username']
                 page.image_code = self.app.user['image_code']
                 page.description = self.app.user['description']
-                page.saved = get_saved_data()
+                page.saved = get_user(self.app.user['username'])['saved']
                 self.current = 'client_profile_page'
                 return True
             else:
