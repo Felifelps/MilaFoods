@@ -29,7 +29,7 @@ Builder.load_string('''
     MDIconButton:
         pos_hint: {'x': 0, 'center_y': .5}
         icon_size: '35sp'
-        icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
+        icon: 'account-circle' #if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
         theme_icon_color: "Custom"
         icon_color: 'black'
         on_press:

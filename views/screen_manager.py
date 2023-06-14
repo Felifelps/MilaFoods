@@ -112,7 +112,6 @@ class ScreenManager(MDScreenManager):
         if isinstance(data, str): data = get_user(data)
         page = self.get_screen('estab_profile_page')
         page.username = data['username']
-        print(data['image'])
         page.image = str(data['image'])
         page.description = data['description']
         page.n_of_posts = data['n_of_posts']

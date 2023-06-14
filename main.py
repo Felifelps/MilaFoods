@@ -8,6 +8,7 @@ Window.size = (340, 600)
 
 class MilaFoods(MDApp):
     user = DictProperty(get_user_data())
+    posts = []
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
@@ -22,7 +23,6 @@ class MilaFoods(MDApp):
 
     def update_user(self): 
         data = get_user_data()
-        print(data)
         data['tel'] = str(data['tel'])
         self.user = data
 

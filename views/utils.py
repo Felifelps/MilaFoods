@@ -239,7 +239,7 @@ Builder.load_string('''
             on_press: 
                 _lm.close()
         MDIconButton:
-            icon: ('account-circle' if str(app.user['image_code']) == '0' else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")) if not app.user['can_post'] else join('views', 'data', 'user_images', f"{app.user['image']}.png")
+            icon: 'account-circle' #if str(app.user['image_code']) == '0' else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")) if not app.user['can_post'] else join('views', 'data', 'user_images', f"{app.user['image']}.png")
             icon_size: '75sp'
             on_press:
                 app.root.load_profile_page()
@@ -332,13 +332,13 @@ Builder.load_string('''
     size_hint: 1, .1
     md_bg_color: app.theme_cls.primary_dark
     MDIconButton:
-        icon: ('account-circle' if str(app.user['image_code']) == '0' else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")) if not app.user['can_post'] else join('views', 'data', 'user_images', f"{app.user['image']}.png")
+        icon: 'account-circle' #if str(app.user['image_code']) == '0' else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")) if not app.user['can_post'] else join('views', 'data', 'user_images', f"{app.user['image']}.png")
         on_press:
             app.root.load_profile_page()
         pos_hint: {'x': .025, 'center_y': .5}
         icon_size: '40sp'
     Label:
-        text: f'[b]{root.title}[/b]'
+        text: root.title
         markup: True
         size_hint: None, None
         size: self.texture_size
@@ -425,7 +425,7 @@ Builder.load_string('''
     MDIconButton:
         pos_hint: {'x': .025, 'center_y': .5}
         icon_size: '40sp'
-        icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
+        icon: 'account-circle' #if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
         on_press:
             app.root.load_profile_page()
     MDTextField:

@@ -3,6 +3,7 @@ from kivymd.uix.relativelayout import MDRelativeLayout
 from kivy.animation import Animation
 from kivy.lang import Builder
 from control.control import get_user_posts, get_user
+from kivymd.uix.dialog import MDDialog
 
 Builder.load_string('''
 #:import BasicLabel views.utils
@@ -172,7 +173,18 @@ Builder.load_string('''
 
 class EstabProfilePage(MDScreen):
     name = 'estab_profile_page'
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dialog = MDDialog(
+            text='Carregando o perfil...',
+            on_open=lambda x: self.load_posts()
+        )
+
     def on_pre_enter(self, *args):
+        self.dialog.open()
+        return super().on_pre_enter(*args)
+    
+    def load_posts(self):
         data = []
         user_data = get_user(self.manager.app.user['username'])
         for post in get_user_posts(self.username):
@@ -182,7 +194,7 @@ class EstabProfilePage(MDScreen):
             post['saved'] = f"{post['username']}-{post['id']}" in user_data['saved']
             data.append(post)
         self.ids._pa.rv.data = data
-        return super().on_pre_enter(*args)
+        self.dialog.dismiss()
 
 class PostsArea(MDRelativeLayout):
     up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.5)
