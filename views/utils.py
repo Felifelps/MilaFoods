@@ -578,8 +578,8 @@ Builder.load_string('''
         font_size: '13sp'
         pos_hint: {'right': .85, 'center_y': .255}
     Label:
+        text: root.text if len(root.text) < 41 else root.text[:40] + '...'
         halign: 'justify'
-        text: root.text
         color: .1, .1, .1, 1
         size_hint: None, None
         size: self.texture_size

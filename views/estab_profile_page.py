@@ -176,11 +176,11 @@ class EstabProfilePage(MDScreen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dialog = MDDialog(
-            text='Carregando o perfil...',
+            text='Carregando posts...',
             on_open=lambda x: self.load_posts()
         )
 
-    def on_pre_enter(self, *args):
+    def on_enter(self, *args):
         self.dialog.open()
         return super().on_pre_enter(*args)
     

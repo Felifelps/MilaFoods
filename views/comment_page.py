@@ -23,7 +23,6 @@ Builder.load_string('''
         self.screen.open_comment_dialog(self.code)
 
 <Comment@RelativeLayout>:
-    size_hint: .35, .1
     username: 'username'
     code: 1
     MDIconButton:
@@ -36,12 +35,14 @@ Builder.load_string('''
             app.root.load_profile_page(root.username)
     Label:
         text: root.username
-        pos_hint: {'x': .2, 'center_y': .825}
+        pos_hint: {'x': .175, 'center_y': .825}
+        size_hint: None, None
+        size: self.texture_size
         color: 0, 0, 0, 1
-    MDIconButton:
-        pos_hint: {'center_x': .85, 'center_y': .5}
-        size_hint: .3, .5
-        icon: join('views', 'data', 'emojis', f'{int(root.code)}.png')
+    MDIcon:
+        pos_hint: {'center_x': .3, 'center_y': .45}
+        icon_size: '22.5sp'
+        source: join('views', 'data', 'emojis', f'{int(root.code)}.png')
     
 <CommentBar@MDRelativeLayout>:
     md_bg_color: .3, .3, .3, 1
@@ -121,13 +122,15 @@ Builder.load_string('''
                 font_size: '13sp'
                 pos_hint: {'right': .85, 'center_y': .555}
             Label:
-                text: _screen.text
+                text: f"[ref='name']{_screen.text if len(_screen.text) < 22 else _screen.text[:20] + '...'}[/ref]"
                 color: .1, .1, .1, 1
                 size_hint: None, None
                 size: self.texture_size
                 font_size: '14sp'
                 markup: True
                 pos_hint: {'x': .03, 'top': .575}
+                on_ref_press:
+                    _screen.open_text(_screen.text)
             RecycleView:
                 id: _rv
                 viewclass: 'Comment'
@@ -173,6 +176,11 @@ class CommentPage(MDScreen):
             on_open=lambda x: self._save_post()
         )
     
+    def open_text(self, text):
+        MDDialog(
+            text=text
+        ).open()
+    
     def _save_post(self):
         if self.saved: un_save_post(self.code)
         else: save_post(self.code) 
@@ -184,7 +192,7 @@ class CommentPage(MDScreen):
         self.save_dialog.open()
         
     def on_comments(self, a, b):
-        self.rv.data = [{'username': x.split('-')[0], 'code': x.split('-')[1], 'size_hint_x': .35} for x in self.comments]
+        self.rv.data = [{'username': x.split('-')[0], 'code': x.split('-')[1], 'size_hint_x': 1} for x in self.comments]
     
     def like_or_un_like(self):
         user_un_like(self.parent.app.user['username'], self.code) if self.liked else user_like(self.parent.app.user['username'], self.code)
