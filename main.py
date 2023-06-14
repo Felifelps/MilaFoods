@@ -20,7 +20,11 @@ class MilaFoods(MDApp):
         self.root.load_screens(self.user)
         return super().on_start()
 
-    def update_user(self): self.user = get_user_data() 
+    def update_user(self): 
+        data = get_user_data()
+        print(data)
+        data['tel'] = str(data['tel'])
+        self.user = data
 
 if __name__ == '__main__':
     asyncio.run(MilaFoods().async_run())

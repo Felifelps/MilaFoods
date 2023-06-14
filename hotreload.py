@@ -1,14 +1,14 @@
 from kaki.app import App
-from kivymd.factory_registers import Factory
+from main import ScreenManager, MilaFoods
 
-class Live(App):
+class Live(App, MilaFoods):
     CLASSES = {
-        "ClientProfilePage": "views.client_profile_page"
+        "ScreenManager": "main.ScreenManager"
     }
     AUTORELOADER_PATHS = [
         (".", {"recursive": True}),
     ]
     def build_app(self):
-        return Factory.ScreenManager()
+        return ScreenManager(self)
 
 Live().run()

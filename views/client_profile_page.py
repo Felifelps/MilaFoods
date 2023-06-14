@@ -21,7 +21,7 @@ Builder.load_string('''
 <SavedArea>:
     size_hint: 1, .4
     screen: None
-    pos_hint: {'center_x': .4 if self.screen != None and self.screen.username == app.user['username'] else 10, 'top': .5}
+    pos_hint: {'center_x': .5 if self.screen != None and self.screen.username == app.user['username'] else 10, 'top': .5}
     scroll_view_blur: 0
     rv: _rv
     BasicLabel:
@@ -86,10 +86,6 @@ Builder.load_string('''
                 size_hint: None, None
                 size: self.texture_size
                 pos_hint: {'x': .05, 'top': .65}
-            BasicButton:
-                text: 'Editar Perfil'
-                md_bg_color: app.theme_cls.primary_dark
-                pos_hint: {'x': .025, 'y': .48}
             SavedArea:
                 id: _sa
                 screen: _screen

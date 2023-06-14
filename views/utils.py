@@ -285,10 +285,6 @@ Builder.load_string('''
             color: 0, 0, 0, 1
             font_name: join('views', 'data', 'Graduate-Regular.ttf')
         BasicIconButton:
-            text: "Carrinho"            
-            icon: "cart"
-            size_hint: 1, .1
-        BasicIconButton:
             text: "Trocar de conta"            
             icon: "account-convert"
             size_hint: 1, .1
@@ -354,6 +350,7 @@ Builder.load_string('''
 <TopImageBar@MDRelativeLayout>:
     lm: None
     np: None
+    new_post: False
     canvas.before:
         Color: 
             rgba: 0, 0, 0, .4
@@ -372,7 +369,7 @@ Builder.load_string('''
         source: join('views', 'data', 'label.png')
         pos_hint: {'center_x': .3, 'center_y': .5}
     MDIconButton:
-        pos_hint: {'right': .85 if root.np != None else 0, 'center_y': .5}
+        pos_hint: {'right': .85 if root.new_post else 0, 'center_y': .5}
         icon_size: '25sp'
         icon: "plus"
         on_press:
@@ -530,8 +527,8 @@ Builder.load_string('''
     username: 'Username'
     text: 'description'
     image: join('views', 'data', 'logo.png')
+    user_image: ''
     timestamp: ''
-    id: 0
     liked: False
     saved: False
     likes: 0
@@ -548,7 +545,7 @@ Builder.load_string('''
         icon_size: '35sp'
         theme_icon_color: 'Custom'
         icon_color: .1, .1, .1, 1
-        icon: "account-circle" if root.image == 'None' else root.image
+        icon: "account-circle"
         on_press:
             root.manager.load_estab_profile_page(root.username)
     Label:
@@ -717,7 +714,7 @@ class BasicTextInput(TextInput):
             return False
         elif self.type == 'cnpj' and (text_len > 14 or not substring.isdigit()): 
             return False
-        elif self.type == 'description' and text_len > 300: 
+        elif self.type == 'description' and (text_len > 300 or text.count('\n') > 4):
             return False
         elif self.type == 'number':
             if text_len > 15 or not substring.isdigit():
@@ -792,7 +789,7 @@ class BottomMenu(MDRelativeLayout):
         if not self.collide_point(touch.x, touch.y):
             self.close()
         return super().on_touch_down(touch)
-
+           
 class SelectImageButton(MDIconButton):
     def __init__(self, *args, **kwargs):
         self.file_manager = MDFileManager(
@@ -805,6 +802,7 @@ class SelectImageButton(MDIconButton):
         for extension in ['png', 'jpg', 'jpeg']:
             if extension in path: 
                 self.icon = os.path.join(path)
+                print(self.icon)
                 return self.file_manager.close()
         Snackbar(text='Escolha uma imagem').open()
     

@@ -1,6 +1,5 @@
-import os
-from .db import DB, firestore
-from .post import update_post, new_post
+from .db import DB, firestore, os
+from .post import list_posts, new_post, get_post, update_post
 from .utils import encode_image, decode_image
 try:
     USERS = DB.collection("users")
@@ -13,6 +12,14 @@ def list_users(all=False):
     global ALL_USERS
     ALL_USERS = [i.id for i in USERS.stream()]
     return ALL_USERS
+
+def get_user(username):
+    if username not in list_users():
+        return False
+    user = USERS.document(username).get().to_dict()
+    if user['can_post'] and user['image'] != None:
+        download_image(user)
+    return user
 
 def new_client_user(username, email, password, description):
     if username in ALL_USERS: return False
@@ -70,6 +77,14 @@ def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, descri
     list_users()
     return get_user(username)
 
+def get_user_posts(username):
+    posts = []
+    for post_key in list_posts():
+       if username == post_key.split('-')[0]:
+            post = get_post(post_key)
+            posts.append(post)  
+    return posts
+
 def user_like(username, post_id):
     update_post(post_id, {'likes': firestore.Increment(1)})
     update_user(username, {'liked': firestore.ArrayUnion([post_id])})
@@ -116,14 +131,6 @@ def delete_user(username):
     """Deletes a client object of the database"""
     USERS.document(username).delete()
     list_users()
-    
-def get_user(username):
-    if username not in list_users():
-        return False
-    user = USERS.document(username).get().to_dict()
-    if user['can_post'] and user['image'] != None:
-        download_image(user)
-    return user
 
 def download_image(user):
     image_path = os.path.join("data", "user_images", f"{user['username']}.{user['image'][0]}")

@@ -92,7 +92,7 @@ Builder.load_string('''
                 icon_size: '35sp'
                 theme_icon_color: 'Custom'
                 icon_color: 0, 0, 0, 1
-                icon: 'account-circle' if _screen.user_image == 'None' else _screen.user_image
+                icon: 'account-circle'
                 on_press:
                     app.root.load_estab_profile_page(_screen.username)
             Label:

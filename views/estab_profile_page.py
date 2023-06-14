@@ -2,7 +2,7 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivy.animation import Animation
 from kivy.lang import Builder
-from kivy.properties import StringProperty, NumericProperty
+from control.control import get_user_posts, get_user
 
 Builder.load_string('''
 #:import BasicLabel views.utils
@@ -79,16 +79,16 @@ Builder.load_string('''
         on_press: 
             app.root.current = 'menu_page'
     RecycleView:
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, self.parent.scroll_view_blur
+            Rectangle:
+                size: self.width, self.height*2
+                pos: self.x, self.y
         id: _rv
         viewclass: 'Post'
         size_hint: 1, 2
         pos_hint: {'top': .675}
-        canvas.before:
-        Color:
-            rgba: 0, 0, 0, self.parent.scroll_view_blur
-        Rectangle:
-            size: self.width, self.height*2
-            pos: self.x, self.y
         RecycleBoxLayout:
             id: _box
             orientation: 'vertical'
@@ -112,35 +112,33 @@ Builder.load_string('''
         TopImageBar:
             lm: _lm
             np: _np
+            new_post: _screen.username == app.user['username']
         MDFloatLayout:
             id: _estab
             MDIconButton:
                 icon: join('views', 'data', 'logo.png') if _screen.image == 'None' else join('views', 'data', 'user_images', _screen.image)
-                icon_size: '75sp'
-                x: dp(10)
-                center_y: root.height - dp(175)
+                icon_size: '85sp'
+                pos_hint: {'x': .0, 'center_y': .75}
             Label:
                 text: _screen.username
                 font_size: '25sp'
                 size_hint: None, None
                 size: self.texture_size
-                pos: dp(10), root.height - dp(250)
+                pos_hint: {'x': .05, 'center_y': .625}
             Label:
                 text: _screen.description
                 font_size: '14sp'
                 size_hint: None, None
                 size: self.texture_size
-                pos: dp(10), root.height - dp(285)
+                pos_hint: {'x': .05, 'top': .575}
             BasicButton:
                 size_hint_x: .275
-                center_x: root.width/2 - dp(5)
-                center_y: root.height - dp(200)
+                pos_hint: {'center_x': .5, 'center_y': .7}
                 text: 'Seguir'
                 md_bg_color: app.theme_cls.primary_dark
             BasicButton:
                 size_hint_x: .275
-                center_x: root.width - dp(60)
-                center_y: root.height - dp(200)
+                pos_hint: {'right': .98, 'center_y': .7}
                 text: 'Whatsapp'
                 md_bg_color: app.theme_cls.primary_dark
             Label:
@@ -150,8 +148,7 @@ Builder.load_string('''
                 font_size: '12.5sp'
                 size_hint: None, None
                 size: self.texture_size
-                center_y: root.height - dp(155)
-                center_x: root.width - dp(58)
+                pos_hint: {'center_x': .5, 'center_y': .775}
             Label:
                 text: f'[size=20sp]{_screen.n_of_followers}[/size]\\nSeguidores'
                 halign: 'center'
@@ -159,12 +156,12 @@ Builder.load_string('''
                 font_size: '12.5sp'
                 size_hint: None, None
                 size: self.texture_size
-                center_y: root.height - dp(155)
-                center_x: root.width/2
+                pos_hint: {'center_x': .82, 'center_y': .775}
             PostsArea:
                 id: _pa
 
         BottomBar:
+
         LateralMenu:
             id: _lm
         NewPost:
@@ -175,6 +172,17 @@ Builder.load_string('''
 
 class EstabProfilePage(MDScreen):
     name = 'estab_profile_page'
+    def on_pre_enter(self, *args):
+        data = []
+        user_data = get_user(self.manager.app.user['username'])
+        for post in get_user_posts(self.username):
+            post['id'] = str(post['id'])
+            post['height'] = 300
+            post['liked'] = f"{post['username']}-{post['id']}" in user_data['liked']
+            post['saved'] = f"{post['username']}-{post['id']}" in user_data['saved']
+            data.append(post)
+        self.ids._pa.rv.data = data
+        return super().on_pre_enter(*args)
 
 class PostsArea(MDRelativeLayout):
     up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.5)

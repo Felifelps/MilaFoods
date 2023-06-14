@@ -109,6 +109,7 @@ class ScreenManager(MDScreenManager):
         self.current = 'client_profile_page'
         
     def load_estab_profile_page(self, data):
+        if isinstance(data, str): data = get_user(data)
         page = self.get_screen('estab_profile_page')
         page.username = data['username']
         print(data['image'])
@@ -116,6 +117,6 @@ class ScreenManager(MDScreenManager):
         page.description = data['description']
         page.n_of_posts = data['n_of_posts']
         page.n_of_followers = data['n_of_followers']
-        page.tel = data['tel']
+        page.tel = str(data['tel'])
         self.current = 'estab_profile_page'
     
