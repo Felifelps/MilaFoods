@@ -41,9 +41,10 @@ Builder.load_string('''
         size: self.texture_size
         color: 0, 0, 0, 1
     MDIcon:
-        icon_size: '22.5sp'
+        icon_size: '35sp'
         source: join('views', 'data', 'emojis', f'{int(root.code)}.png')
-        size_hint: None, 1
+        size_hint_y: 1
+
     
 <CommentBar@MDRelativeLayout>:
     md_bg_color: .3, .3, .3, 1

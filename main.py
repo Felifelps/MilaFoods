@@ -1,10 +1,12 @@
+
+from kivy.core.window import Window
+Window.size = (340, 600)
+
 import asyncio
 from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
-from kivy.core.window import Window
 from kivy.properties import DictProperty
 from control.control import get_user_data
-Window.size = (340, 600)
 
 class MilaFoods(MDApp):
     user = DictProperty(get_user_data())
@@ -26,5 +28,14 @@ class MilaFoods(MDApp):
         data['tel'] = str(data['tel'])
         self.user = data
 
+main = {
+    'hi': {'1': 2}
+}
+main.update({
+    'hi': {'1': 3}
+})
+print(main)
 if __name__ == '__main__':
     asyncio.run(MilaFoods().async_run())
+
+

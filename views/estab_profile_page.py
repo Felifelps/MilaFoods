@@ -2,8 +2,9 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivy.animation import Animation
 from kivy.lang import Builder
-from control.control import get_user_posts, get_user
+from control.control import get_user_posts, get_user, user_follow, user_un_follow
 from kivymd.uix.dialog import MDDialog
+import webbrowser
 
 Builder.load_string('''
 #:import BasicLabel views.utils
@@ -142,6 +143,8 @@ Builder.load_string('''
                 pos_hint: {'right': .98, 'center_y': .7}
                 text: 'Whatsapp'
                 md_bg_color: app.theme_cls.primary_dark
+                on_press:
+                    root.open_zap()
             Label:
                 text: f'[size=20sp]{_screen.n_of_posts}[/size]\\nPublicações'
                 halign: 'center'
@@ -173,35 +176,54 @@ Builder.load_string('''
 
 class EstabProfilePage(MDScreen):
     name = 'estab_profile_page'
+    loaded_posts = {}
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dialog = MDDialog(
-            text='Carregando posts...',
+            text='Atualizando posts...',
             on_open=lambda x: self.load_posts()
         )
 
     def on_enter(self, *args):
-        self.dialog.open()
+        if self.username not in self.loaded_posts.keys():
+            self.dialog.open()
+        else:
+            self.ids._pa.rv.data = self.loaded_posts[self.username]
         return super().on_pre_enter(*args)
+
+    def on_leave(self, *args):
+        self.ids._pa.close()
+        return super().on_leave(*args)
     
     def load_posts(self):
-        data = []
+        self.ids._pa.rv.data = []
         user_data = get_user(self.manager.app.user['username'])
         for post in get_user_posts(self.username):
             post['id'] = str(post['id'])
             post['height'] = 300
             post['liked'] = f"{post['username']}-{post['id']}" in user_data['liked']
             post['saved'] = f"{post['username']}-{post['id']}" in user_data['saved']
-            data.append(post)
-        self.ids._pa.rv.data = data
+            self.ids._pa.rv.data.append(post)
+        self.loaded_posts[self.username] = self.ids._pa.rv.data
         self.dialog.dismiss()
+    
+    def open_zap(self):
+        if len(self.tel) < 10:
+            return MDDialog(text='Esta conta não tem número cadastrado')
+        webbrowser.open('https://wa.me/55' + self.tel)
 
 class PostsArea(MDRelativeLayout):
     up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.5)
     down_anim =  Animation(pos_hint={'top': .4}, duration=0.1, scroll_view_blur=0)
+    def open(self):
+        self.up_anim.start(self)
+
+    def close(self):
+        self.down_anim.start(self)
+
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos) and touch.spos[1] > .8 and self.pos_hint['top'] == .9 and not self.ids.menu_button.collide_point(*touch.pos):
-            self.down_anim.start(self)
+            self.close()
         elif self.collide_point(*touch.pos) and self.pos_hint['top'] == .4 and not self.ids.menu_button.collide_point(*touch.pos):
-            self.up_anim.start(self)
+            self.open()
         return super().on_touch_down(touch)

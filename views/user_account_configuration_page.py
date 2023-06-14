@@ -100,11 +100,15 @@ class UserAccountConfigurationPage(MDScreen):
                 }
             )
         else:
+            tel = ''
+            for n in self.ids._number.text:
+                if n.isdigit():
+                    tel += n
             upload_image(self.manager.app.user['username'], self.ids._image_button.icon if self.ids._image_button.icon not in ['account', 'image'] else None)
             update_user(
                 self.manager.app.user['username'], 
                 {
-                    'tel': self.ids._number.text, 
+                    'tel': tel, 
                     'description': self.ids._bio.text
                 }
             )

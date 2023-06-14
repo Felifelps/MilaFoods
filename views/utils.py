@@ -541,13 +541,12 @@ Builder.load_string('''
             size: self.width, self.height
             pos: 0, 0
     MDIconButton:
+        id: _account_button
         pos_hint: {'center_x': .085, 'center_y': .925}
         icon_size: '35sp'
         theme_icon_color: 'Custom'
         icon_color: .1, .1, .1, 1
         icon: "account-circle"
-        on_press:
-            root.manager.load_estab_profile_page(root.username)
     Label:
         text: root.username
         color: .1, .1, .1, 1
@@ -812,7 +811,10 @@ class SelectImageButton(MDIconButton):
 class Post(MDRelativeLayout):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            self.manager.load_comment_page(self.id, self.username, self.image, self.text)
+            if self.to_local(*touch.pos)[1] <= 255:
+                self.manager.load_comment_page(self.id, self.username, self.image, self.text)
+            else:
+                self.manager.load_profile_page(self.username)
         return super().on_touch_down(touch)
 
 class CpfCnpjTextInput(MDFloatLayout):
