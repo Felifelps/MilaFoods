@@ -22,27 +22,28 @@ Builder.load_string('''
     on_press:
         self.screen.open_comment_dialog(self.code)
 
-<Comment@RelativeLayout>:
+<Comment@BoxLayout>:
     username: 'username'
     code: 1
+    spacing: 2
     MDIconButton:
-        pos_hint: {'x': 0, 'center_y': .5}
         icon_size: '35sp'
+        size_hint_y: 1 
         icon: 'account-circle' #if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
         theme_icon_color: "Custom"
         icon_color: 'black'
         on_press:
             app.root.load_profile_page(root.username)
     Label:
+        id: _label
         text: root.username
-        pos_hint: {'x': .175, 'center_y': .825}
-        size_hint: None, None
+        size_hint: None, 1
         size: self.texture_size
         color: 0, 0, 0, 1
     MDIcon:
-        pos_hint: {'center_x': .3, 'center_y': .45}
         icon_size: '22.5sp'
         source: join('views', 'data', 'emojis', f'{int(root.code)}.png')
+        size_hint: None, 1
     
 <CommentBar@MDRelativeLayout>:
     md_bg_color: .3, .3, .3, 1
