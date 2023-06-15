@@ -117,6 +117,7 @@ class ScreenManager(MDScreenManager):
         page.description = data['description']
         page.n_of_posts = data['n_of_posts']
         page.n_of_followers = data['n_of_followers']
+        page.following = page.username in data['following']
         page.tel = str(data['tel'])
         self.current = 'estab_profile_page'
     

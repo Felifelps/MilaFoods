@@ -70,7 +70,6 @@ def sign_up_and_login_client(username, email, password):
 def login_estab(cpf_or_cnpj, password):
     users = list_users(True)
     for user in users:
-        print(user)
         if user['can_post'] and (user['cpf'] == cpf_or_cnpj or user['cnpj'] == cpf_or_cnpj) and user['password'] == password:
             if not user['validated']:
                 validated = check_if_a_account_was_validated(cpf_or_cnpj)
@@ -82,7 +81,7 @@ def login_estab(cpf_or_cnpj, password):
                 elif validated:
                     update_user(user['username'], {'validated': True})
             save_username(user['username'])
-            return user['username']
+            return user
     return 'Usuário não encontrado'
 
 def check_estab_sign_up_inputs(username, email, password, cnpj, cpf, birth_date):

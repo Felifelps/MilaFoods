@@ -84,7 +84,7 @@ class EstabLoginPage(MDScreen):
         estab = login_estab(cpf_cnpj, password)
         self.dialog.dismiss()
         if isinstance(estab, str): return Snackbar(text=estab).open()
-        self.manager.app.update_user(estab)
+        self.manager.app.update_user(estab['username'])
         Snackbar(text='Logado com sucesso').open()
         self.manager.load_user_pages()
         self.manager.load_user_config_page(False)

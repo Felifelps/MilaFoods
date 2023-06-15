@@ -108,6 +108,7 @@ Builder.load_string('''
     n_of_followers: app.user['n_of_followers']
     n_of_posts: app.user['n_of_posts']
     tel: app.user['tel']
+    following: False
     Background:
         id: _bg
     RelativeLayout:
@@ -116,7 +117,6 @@ Builder.load_string('''
             np: _np
             new_post: _screen.username == app.user['username']
         MDFloatLayout:
-            id: _estab
             MDIconButton:
                 icon: join('views', 'data', 'logo.png') if _screen.image == 'None' else join('views', 'data', 'user_images', _screen.image)
                 icon_size: '85sp'
@@ -136,15 +136,17 @@ Builder.load_string('''
             BasicButton:
                 size_hint_x: .275
                 pos_hint: {'center_x': .5, 'center_y': .7}
-                text: 'Seguir'
+                text: 'Seguindo' if _screen.following else 'Seguir'
                 md_bg_color: app.theme_cls.primary_dark
+                on_press:
+                    _screen.follow_dialog.open()
             BasicButton:
                 size_hint_x: .275
                 pos_hint: {'right': .98, 'center_y': .7}
                 text: 'Whatsapp'
                 md_bg_color: app.theme_cls.primary_dark
                 on_press:
-                    root.open_zap()
+                    _screen.open_zap()
             Label:
                 text: f'[size=20sp]{_screen.n_of_posts}[/size]\\nPublicações'
                 halign: 'center'
@@ -183,6 +185,10 @@ class EstabProfilePage(MDScreen):
             text='Atualizando posts...',
             on_open=lambda x: self.load_posts()
         )
+        self.follow_dialog = MDDialog(
+            text=('Deixando de seguir' if self.following else 'Seguindo') + f' {self.username}...',
+            on_open=lambda x: self.follow()
+        )
         self.unregistered_dialog = MDDialog(text='Esta conta não tem número cadastrado')
 
     def on_enter(self, *args):
@@ -197,7 +203,14 @@ class EstabProfilePage(MDScreen):
         return super().on_leave(*args)
     
     def follow(self):
-        pass
+        if self.following:
+            user_un_follow(self.manager.app.username, self.username)
+        else:
+            user_follow(self.manager.app.username, self.username)
+        self.following = not self.following
+        self.n_of_followers += 1 if self.following else -1
+        print(self.following)
+        self.follow_dialog.dismiss()
     
     def load_posts(self):
         self.ids._pa.rv.data = []

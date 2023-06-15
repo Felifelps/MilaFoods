@@ -113,6 +113,6 @@ class UserAccountConfigurationPage(MDScreen):
                 }
             )
         self.dialog.dismiss()
-        self.manager.app.update_user()
+        self.manager.app.update_user(self.manager.app.user['username'])
         self.manager.current = 'follow_estabs_page'
             

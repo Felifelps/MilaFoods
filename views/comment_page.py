@@ -166,7 +166,7 @@ class CommentPage(MDScreen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.like_dialog = MDDialog(
-            text='Salvando seu like...',
+            text='Salvando avaliação...',
             on_open=lambda x: self.like_or_un_like()
         )
         self.comment_dialog = MDDialog(

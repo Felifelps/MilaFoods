@@ -78,12 +78,8 @@ def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, descri
     return get_user(username)
 
 def get_user_posts(username):
-    posts = []
-    for post_key in list_posts():
-       if username == post_key.split('-')[0]:
-            post = get_post(post_key)
-            posts.append(post)  
-    return posts
+    posts = [i.id for i in DB.collection(f"users/{username}/posts").stream()]
+    return [get_post(i) for i in posts]
 
 def user_like(username, post_id):
     update_post(post_id, {'likes': firestore.Increment(1)})

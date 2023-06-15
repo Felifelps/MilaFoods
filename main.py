@@ -14,6 +14,7 @@ class MilaFoods(MDApp):
     user = DictProperty()
     posts = []
     following = []
+    lateral_menu_is_active = False
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         

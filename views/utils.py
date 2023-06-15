@@ -14,6 +14,7 @@ from kivymd.uix.pickers import MDDatePicker
 from kivy.properties import StringProperty, ListProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
+from kivy.clock import Clock
 import os
 
 Builder.load_string('''
@@ -34,6 +35,30 @@ Builder.load_string('''
     theme_icon_color: "Custom"
     icon_color: "black"
     halign: 'left'
+
+<FollowButton@FloatLayout>:
+    username: 'username'
+    image_code: 0
+    image: ''
+    spacing: 2
+    following: False
+    MDIconButton:
+        icon_size: '35sp'
+        pos_hint: {'x': .05}
+        icon: 'account-circle' 
+        theme_icon_color: "Custom"
+        icon_color: 'black'
+        on_press:
+            app.root.load_profile_page(root.username)
+    Label:
+        id: _label
+        text: root.username
+        pos_hint: {'x': .25}
+        size: self.texture_size
+        color: 0, 0, 0, 1
+    BasicButton:
+        text: 'Seguindo' if root.following else 'Seguir'
+        pos_hint: {'right': .995}
 
 <ProfileButton@MDIconButton>:
     image: 'None'
@@ -225,6 +250,8 @@ Builder.load_string('''
             size: self.width*1.25, self.height
             
 <LateralMenu@LateralMenuBase>:
+    id: lm
+    app: app
     MDRelativeLayout:  
         md_bg_color: app.theme_cls.primary_dark
         size_hint: 1, .3
@@ -237,7 +264,7 @@ Builder.load_string('''
             pos_hint: {'right': 1, 'top': 1}
             icon: "close"
             on_press: 
-                _lm.close()
+                lm.close()
         MDIconButton:
             icon: 'account-circle' #if str(app.user['image_code']) == '0' else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")) if not app.user['can_post'] else join('views', 'data', 'user_images', f"{app.user['image']}.png")
             icon_size: '75sp'
@@ -533,7 +560,7 @@ Builder.load_string('''
     saved: False
     likes: 0
     size_hint: 1, None
-    manager: app.root
+    app: app
     canvas.before:
         Color:
             rgba: .98, .98, .98, 1
@@ -749,8 +776,6 @@ class BasicTextInput(TextInput):
         return super().paste()
 
 class LateralMenuBase(MDBoxLayout):
-    open_animation = Animation(pos_hint={'x': 0}, bg_opacity=0.5, duration=0.1)
-    close_animation = Animation(pos_hint={'x': -2}, bg_opacity=0, duration=0.1)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dialog = MDDialog(
@@ -760,19 +785,34 @@ class LateralMenuBase(MDBoxLayout):
                 MDFlatButton(text='Sair', on_press=self.change_account)
             ]
         )
-        
+        self.open_animation = Animation(
+            pos_hint={'x': 0}, 
+            bg_opacity=0.5, 
+            duration=0.1
+        )
+        self.close_animation = Animation(
+            pos_hint={'x': -2}, 
+            bg_opacity=0, 
+            duration=0.1
+        )
+
+    def app_state(self, state):
+        self.app.lateral_menu_is_active = state
+
     def change_account(self, *args):
         self.parent.parent.manager.logout()
         self.dialog.dismiss()
     
     def open(self): 
         self.open_animation.start(self)
+        Clock.schedule_once(lambda dt: self.app_state(True), 0.1) 
 
     def close(self): 
         self.close_animation.start(self)
+        Clock.schedule_once(lambda dt: self.app_state(False), 0.1)    
 
     def on_touch_down(self, touch):
-        if not self.collide_point(*touch.pos): 
+        if not self.collide_point(*touch.pos) and self.app.lateral_menu_is_active: 
             self.close()
         return super().on_touch_down(touch)
 
@@ -810,11 +850,11 @@ class SelectImageButton(MDIconButton):
         
 class Post(MDRelativeLayout):
     def on_touch_down(self, touch):
-        if self.collide_point(*touch.pos):
+        if self.collide_point(*touch.pos) and not self.app.lateral_menu_is_active:
             if self.to_local(*touch.pos)[1] <= 255:
-                self.manager.load_comment_page(self.id, self.username, self.image, self.text)
+                self.app.root.load_comment_page(self.id, self.username, self.image, self.text)
             else:
-                self.manager.load_profile_page(self.username)
+                self.app.root.load_profile_page(self.username)
         return super().on_touch_down(touch)
 
 class CpfCnpjTextInput(MDFloatLayout):

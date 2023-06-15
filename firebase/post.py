@@ -14,7 +14,7 @@ def new_post(id, username, text, image=""):
         "likes": 0,
         "comments": []
     })
-    DB.document(f"estabs/{username}/posts/{key}").set({"id": id})
+    DB.document(f"users/{username}/posts/{key}").set({"id": id})
     return True
 
 def update_post(key, data):

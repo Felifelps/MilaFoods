@@ -77,7 +77,7 @@ Alô {receiver}, seu código de autenticação para o app é:
     
     def check_cpf_or_cnpj_confirmation(cpf_or_cnpj):
         #Load smtp
-        if not AuthenticationMail.smtp_connection_is_done: AuthenticationMail.load_smtp()
+        AuthenticationMail.load_smtp()
         for email in AuthenticationMail.my_gmail.fetch(AND(from_=AuthenticationMail.cpf_cnpj_mail)):
             print(email.subject, email.text)
             if cpf_or_cnpj in email.subject:
