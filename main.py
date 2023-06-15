@@ -5,36 +5,33 @@ Window.size = (340, 600)
 import asyncio
 from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
-from kivy.properties import DictProperty
-from control.control import get_user_data
+from kivy.properties import StringProperty, DictProperty
+from control.control import get_username, get_user, get_theme
 
 class MilaFoods(MDApp):
-    user = DictProperty(get_user_data())
+    username = StringProperty(get_username())
+    theme = StringProperty(get_theme())
+    user = DictProperty()
     posts = []
+    following = []
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         
     def build(self):
         self.theme_cls.theme_style = 'Dark'
-        self.theme_cls.primary_palette = self.user['theme']
+        self.theme_cls.primary_palette = self.theme
         return ScreenManager(self)
 
     def on_start(self):
-        self.root.load_screens(self.user)
-        return super().on_start()
+        self.root.load_screens()
+        return super().on_start() 
+    
+    def update_user(self, username):
+        print(username)
+        self.username = username
+        user = get_user(self.username)
+        self.user = {} if user == False else user
 
-    def update_user(self): 
-        data = get_user_data()
-        data['tel'] = str(data['tel'])
-        self.user = data
-
-main = {
-    'hi': {'1': 2}
-}
-main.update({
-    'hi': {'1': 3}
-})
-print(main)
 if __name__ == '__main__':
     asyncio.run(MilaFoods().async_run())
 

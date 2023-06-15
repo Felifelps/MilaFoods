@@ -42,9 +42,8 @@ def login_client(username, password):
     user = get_user(username)
     if not user: return 'Crendenciais inválidas'
     if user['password'] == password:
-        save_user_data(user)
-
-    return user
+        save_username(username)
+    return f'Logged:{username}'
 
 def check_client_sign_up_inputs(username, email, password):
     if username == '' or email == '' or password == '':
@@ -65,12 +64,13 @@ def check_client_sign_up_inputs(username, email, password):
 def sign_up_and_login_client(username, email, password):
     user = new_client_user(username, email, password, '')
     if not user: return False
-    save_user_data(user)
+    save_username(username)
     return user
 
 def login_estab(cpf_or_cnpj, password):
     users = list_users(True)
     for user in users:
+        print(user)
         if user['can_post'] and (user['cpf'] == cpf_or_cnpj or user['cnpj'] == cpf_or_cnpj) and user['password'] == password:
             if not user['validated']:
                 validated = check_if_a_account_was_validated(cpf_or_cnpj)
@@ -81,10 +81,8 @@ def login_estab(cpf_or_cnpj, password):
                     return 'Seus dados não são válidos. Tente recriar a conta.'
                 elif validated:
                     update_user(user['username'], {'validated': True})
-            user = get_user(user['username'])
-            save_user_data(user)
-    
-            return True
+            save_username(user['username'])
+            return user['username']
     return 'Usuário não encontrado'
 
 def check_estab_sign_up_inputs(username, email, password, cnpj, cpf, birth_date):
@@ -112,13 +110,13 @@ def check_estab_sign_up_inputs(username, email, password, cnpj, cpf, birth_date)
     
 def sign_up_estab(username, email, password, cnpj, cpf, birth_date):
     user = new_estab_user(username, email, cpf, birth_date, cnpj, None, password, '')
-    save_user_data(user)
+    if not user: return False
+    save_username(username)
     return user
 
 def get_posts_from_server(randomize):
     posts = list_posts(False)
-    user = get_user(get_user_data()['username'])
-    save_user_data(user)
+    user = get_user(get_username())
     for post in posts:
         post['id'] = str(post['id'])
         post['height'] = 300
@@ -126,9 +124,6 @@ def get_posts_from_server(randomize):
         post['saved'] = f"{post['username']}-{post['id']}" in user['saved']
     if randomize: random.shuffle(posts)
     return posts 
-        
-def get_local_user_data():
-    return get_user_data()
 
 def logout():
     back_to_default_user()
@@ -137,8 +132,8 @@ def save_theme(theme):
     alter_theme(theme)
 
 def save_post(post_id):
-    user_save(get_user_data()['username'], post_id)
+    user_save(get_username(), post_id)
 
 def un_save_post(post_id):
-    user_un_save(get_user_data()['username'], post_id)
+    user_un_save(get_username(), post_id)
     

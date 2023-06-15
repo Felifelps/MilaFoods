@@ -183,6 +183,7 @@ class EstabProfilePage(MDScreen):
             text='Atualizando posts...',
             on_open=lambda x: self.load_posts()
         )
+        self.unregistered_dialog = MDDialog(text='Esta conta não tem número cadastrado')
 
     def on_enter(self, *args):
         if self.username not in self.loaded_posts.keys():
@@ -194,6 +195,9 @@ class EstabProfilePage(MDScreen):
     def on_leave(self, *args):
         self.ids._pa.close()
         return super().on_leave(*args)
+    
+    def follow(self):
+        pass
     
     def load_posts(self):
         self.ids._pa.rv.data = []
@@ -209,7 +213,7 @@ class EstabProfilePage(MDScreen):
     
     def open_zap(self):
         if len(self.tel) < 10:
-            return MDDialog(text='Esta conta não tem número cadastrado')
+            return self.unregistered_dialog.open()
         webbrowser.open('https://wa.me/55' + self.tel)
 
 class PostsArea(MDRelativeLayout):

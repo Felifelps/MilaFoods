@@ -1,6 +1,6 @@
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.clock import Clock
-from control.control import logout, get_post, get_user, get_user_data
+from control.control import logout, get_post, get_user
 from .posts_page import PostsPage
 from .search_page import SearchPage
 from .theme_config_page import ThemeConfigPage
@@ -60,16 +60,17 @@ class ScreenManager(MDScreenManager):
                 self.add_widget(i)
             self.login_pages = True
     
-    def load_screens(self, user):
-        if user['username'] == '===++UserDefault++===':
+    def load_screens(self):
+        if self.app.username == '===NoUser===':
             return self.load_login_pages()
-        self.logged_user_is_client = not user['can_post']
+        self.app.update_user(self.app.username)
+        self.logged_user_is_client = not self.app.user['can_post']
         self.load_user_pages()
     
     def load_user_config_page(self, client):
         page = self.get_screen('user_account_configuration_page')
         page.client = client
-        page.username = self.app.user['username']
+        page.username = self.app.username
         self.current = 'user_account_configuration_page' if self.app.user['description'] == '' else 'posts_page'
         
     def load_comment_page(self, id, username, image, text):
@@ -81,7 +82,7 @@ class ScreenManager(MDScreenManager):
         page.text = text
         page.likes = post['likes']
         page.comments = post['comments']
-        user = get_user(self.app.user['username'])
+        user = get_user(self.app.username)
         page.liked = page.code in user['liked']
         page.saved = page.code in user['saved']
         self.current = 'comment_page'
@@ -92,7 +93,7 @@ class ScreenManager(MDScreenManager):
                 self.load_estab_profile_page(self.app.user)
                 return True
             else:
-                self.load_client_profile_page(self.app.user, get_user(self.app.user['username'])['saved'])
+                self.load_client_profile_page(self.app.user, get_user(self.app.username)['saved'])
                 return True
         user = get_user(username)
         if user['can_post']:

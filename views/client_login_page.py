@@ -77,9 +77,9 @@ class ClientLoginPage(MDScreen):
     
     def login_client(self, username, password):
         client = login_client(username, password)
-        if isinstance(client, str): return Snackbar(text=client).open()
-        self.manager.app.update_user()
+        if isinstance(client, str) and 'Logged' not in client: return Snackbar(text=client).open()
+        self.manager.app.update_user(client.split(':')[1])
         Snackbar(text='Logado com sucesso').open()
-        self.manager.load_client_pages()
+        self.manager.load_user_pages()
         self.manager.load_user_config_page(True)
     

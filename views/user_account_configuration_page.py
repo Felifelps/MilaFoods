@@ -3,7 +3,7 @@ from kivy.lang import Builder
 from kivy.properties import BooleanProperty
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.snackbar import Snackbar
-from control.control import get_user, save_user_data, update_user, upload_image
+from control.control import get_user, update_user, upload_image
 
 Builder.load_string('''
 #:import BasicButton views.utils
@@ -112,7 +112,6 @@ class UserAccountConfigurationPage(MDScreen):
                     'description': self.ids._bio.text
                 }
             )
-        save_user_data(get_user(self.manager.app.user['username']))
         self.dialog.dismiss()
         self.manager.app.update_user()
         self.manager.current = 'follow_estabs_page'

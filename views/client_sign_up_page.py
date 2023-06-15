@@ -107,7 +107,7 @@ class ClientSignUpPage(MDScreen):
             client = sign_up_and_login_client(*self.data)
             if not client:
                 return Snackbar(text='Credenciais inválidas').open()
-            self.manager.app.update_user()
+            self.manager.app.update_user(client['username'])
             self.manager.load_client_pages()
             self.manager.load_user_config_page(True)
             return Snackbar(text='Conta criada!').open()
