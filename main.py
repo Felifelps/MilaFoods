@@ -28,7 +28,6 @@ class MilaFoods(MDApp):
         return super().on_start() 
     
     def update_user(self, username):
-        print(username)
         self.username = username
         user = get_user(self.username)
         self.user = {} if user == False else user

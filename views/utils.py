@@ -36,15 +36,16 @@ Builder.load_string('''
     icon_color: "black"
     halign: 'left'
 
-<FollowButton@FloatLayout>:
+<FollowButton@BoxLayout>:
     username: 'username'
-    image_code: 0
+    image_code: ''
     image: ''
     spacing: 2
     following: False
     MDIconButton:
         icon_size: '35sp'
-        pos_hint: {'x': .05}
+        pos_hint: {'x': 0, 'center_y': .5}
+        size_hint: .2, 1
         icon: 'account-circle' 
         theme_icon_color: "Custom"
         icon_color: 'black'
@@ -53,17 +54,18 @@ Builder.load_string('''
     Label:
         id: _label
         text: root.username
-        pos_hint: {'x': .25}
-        size: self.texture_size
+        size_hint: .4, 1
         color: 0, 0, 0, 1
+        halign: 'left'
     BasicButton:
         text: 'Seguindo' if root.following else 'Seguir'
-        pos_hint: {'right': .995}
+        pos_hint: {'right': .995, 'center_y': .5}
+        size_hint: .1, None
 
 <ProfileButton@MDIconButton>:
     image: 'None'
     username: 'Username'
-    icon: 'account-circle' if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
+    icon: 'account-circle' #if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
     icon_size: '50sp'
     on_press:
         app.root.current = 'client_profile_page'
@@ -95,6 +97,7 @@ Builder.load_string('''
     md_bg_color: app.theme_cls.primary_color
     theme_text_color: "Custom"
     text_color: .9, .9, .9, 1
+    elevation: 0
 
 <BasicTextInput>:
     type: ''
