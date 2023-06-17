@@ -16,6 +16,7 @@ from .follow_estabs_page import FollowEstabsPage
 from .image_selection_page import ImageSelectionPage
 from .saved_page import SavedPage
 from .estab_profile_page import EstabProfilePage
+from .estab_account_edit_page import EstabAccountEditPage
 
 class ScreenManager(MDScreenManager):
     login_pages = False
@@ -34,6 +35,7 @@ class ScreenManager(MDScreenManager):
     def load_user_pages(self):
         if not self.user_pages:
             for i in [
+                EstabAccountEditPage(),
                 PostsPage(),
                 SearchPage(),
                 ThemeConfigPage(),
@@ -90,21 +92,18 @@ class ScreenManager(MDScreenManager):
     def load_profile_page(self, username=False):
         if username == False:
             if self.app.user['can_post']:
-                self.load_estab_profile_page(self.app.user)
-                return True
+                return self.load_estab_profile_page(self.app.user)
             else:
-                self.load_client_profile_page(self.app.user, get_user(self.app.username)['saved'])
-                return True
+                return self.load_client_profile_page(self.app.user, get_user(self.app.username)['saved'])
         user = get_user(username)
         if user['can_post']:
-            self.load_estab_profile_page(user)
-        else:
-            self.load_client_profile_page(user)
+            return self.load_estab_profile_page(user)
+        self.load_client_profile_page(user)
 
     def load_client_profile_page(self, data, saved=False):
         page = self.get_screen('client_profile_page')
         page.username = data['username']
-        page.image_code = data['image_code']
+        page.image_code = str(data['image_code'])
         page.description = data['description']
         page.saved = data['saved'] if saved == False else saved
         self.current = 'client_profile_page'
@@ -117,7 +116,12 @@ class ScreenManager(MDScreenManager):
         page.description = data['description']
         page.n_of_posts = data['n_of_posts']
         page.n_of_followers = data['n_of_followers']
-        page.following = page.username in data['following']
+        page.following = page.username in self.app.user['following']
         page.tel = str(data['tel'])
+        if self.current == 'estab_profile_page':
+            page.dialog.open()
         self.current = 'estab_profile_page'
+        
+    def load_user_edit_page(self, username):
+        print('carregando', username)
     

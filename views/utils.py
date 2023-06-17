@@ -36,12 +36,13 @@ Builder.load_string('''
     icon_color: "black"
     halign: 'left'
 
-<FollowButton@BoxLayout>:
+<FollowButton>:
     username: 'username'
     image_code: ''
     image: ''
     spacing: 2
     following: False
+    app: app
     MDIconButton:
         icon_size: '35sp'
         pos_hint: {'x': 0, 'center_y': .5}
@@ -49,17 +50,15 @@ Builder.load_string('''
         icon: 'account-circle' 
         theme_icon_color: "Custom"
         icon_color: 'black'
-        on_press:
-            app.root.load_profile_page(root.username)
-    Label:
+    MDLabel:
         id: _label
         text: root.username
-        size_hint: .4, 1
+        size_hint: .32 if root.following else .38, 1
         color: 0, 0, 0, 1
         halign: 'left'
     BasicButton:
         text: 'Seguindo' if root.following else 'Seguir'
-        pos_hint: {'right': .995, 'center_y': .5}
+        pos_hint: {'right': .95, 'center_y': .5}
         size_hint: .1, None
 
 <ProfileButton@MDIconButton>:
@@ -435,87 +434,6 @@ Builder.load_string('''
         icon: "star"
         on_press:
             root.screen.save_post()
-
-<TopCentralSearchBar@MDRelativeLayout>:
-    lm: None
-    canvas.before:
-        Color: 
-            rgba: 0, 0, 0, .4
-        RoundedRectangle: 
-            size: self.width, self.height + dp(4)
-            pos: 0, -dp(4)
-        Color: 
-            rgba: 0, 0, 0, .2
-        RoundedRectangle: 
-            size: self.width, self.height + dp(7)
-            pos: 0, -dp(7)
-    pos_hint: {'top': 1}
-    size_hint: 1, .1
-    md_bg_color: app.theme_cls.primary_dark
-    MDIconButton:
-        pos_hint: {'x': .025, 'center_y': .5}
-        icon_size: '40sp'
-        icon: 'account-circle' #if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
-        on_press:
-            app.root.load_profile_page()
-    MDTextField:
-        color_mode: 'custom'
-        line_color_focus: .8, .8, .8, 1
-        text_color_normal: .8, .8, .8, 1
-        text_color_focus: .8, .8, .8, 1
-        font_size: "13sp"
-        hint_text: "Pesquisar"
-        hint_text_color_focus: .8, .8, .8, 0.5
-        hint_text_color_normal: .8, .8, .8, 0.5
-        size_hint: .6, 1
-        pos_hint: {'center_x': .5, 'center_y': .5}
-        on_focus:
-            app.root.current = 'search_page'
-    MDIconButton:
-        pos_hint: {'x': .7, 'center_y': .5}
-        icon: "magnify" 
-        on_press:
-            app.root.current = 'search_page'
-    BarMenuButton:
-        lm: root.lm
-
-<TopActiveSearchBar@MDRelativeLayout>:
-    canvas.before:
-        Color: 
-            rgba: 0, 0, 0, .4
-        RoundedRectangle: 
-            size: self.width, self.height + dp(4)
-            pos: 0, -dp(4)
-        Color: 
-            rgba: 0, 0, 0, .2
-        RoundedRectangle: 
-            size: self.width, self.height + dp(7)
-            pos: 0, -dp(7)
-    pos_hint: {'top': 1}
-    size_hint: 1, .1
-    md_bg_color: app.theme_cls.primary_dark
-    MDTextField:
-        color_mode: 'custom'
-        line_color_focus: .8, .8, .8, 1
-        text_color_normal: .8, .8, .8, 1
-        text_color_focus: .8, .8, .8, 1
-        font_size: "13sp"
-        hint_text: "Pesquisar"
-        hint_text_color_focus: .8, .8, .8, 0.5
-        hint_text_color_normal: .8, .8, .8, 0.5
-        size_hint: .5, 1
-        pos_hint: {'x': .125, 'center_y': .5}
-    MDIconButton:
-        pos_hint: {'x': 0, 'center_y': .5}
-        icon: "magnify"
-    BasicButton:
-        text: 'Cancelar'
-        size_hint: .1, .2
-        pos_hint: {'right': .975, 'center_y': .5}
-        font_size: '10sp'
-        md_bg_color: app.theme_cls.primary_dark
-        on_press:
-            app.root.current = 'posts_page'
     
 <BottomBar@MDRelativeLayout>:
     canvas.before:
@@ -877,4 +795,10 @@ class SavedPost(MDRelativeLayout):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             self.app.root.load_comment_page(self.id, self.username, self.image, self.text)
+        return super().on_touch_down(touch)
+
+class FollowButton(MDBoxLayout):
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos):
+            self.app.root.load_profile_page(self.username)
         return super().on_touch_down(touch)

@@ -60,7 +60,7 @@ Builder.load_string('''
     id: _screen
     username: app.user['username']
     description: app.user['description']
-    image_code: 0
+    image_code: '0'
     sa: _sa
     Background:
         id: _bg

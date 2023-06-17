@@ -109,6 +109,7 @@ Builder.load_string('''
     n_of_posts: app.user['n_of_posts']
     tel: app.user['tel']
     following: False
+    app: app
     Background:
         id: _bg
     RelativeLayout:
@@ -136,10 +137,10 @@ Builder.load_string('''
             BasicButton:
                 size_hint_x: .275
                 pos_hint: {'center_x': .5, 'center_y': .7}
-                text: 'Seguindo' if _screen.following else 'Seguir'
+                text: 'Editar\\nperfil' if _screen.username == app.user['username'] else ('Seguindo' if _screen.following else 'Seguir')
                 md_bg_color: app.theme_cls.primary_dark
                 on_press:
-                    _screen.follow_dialog.open()
+                    _screen.left_button_action()
             BasicButton:
                 size_hint_x: .275
                 pos_hint: {'right': .98, 'center_y': .7}
@@ -165,20 +166,16 @@ Builder.load_string('''
                 pos_hint: {'center_x': .82, 'center_y': .775}
             PostsArea:
                 id: _pa
-
         BottomBar:
-
         LateralMenu:
             id: _lm
         NewPost:
             id: _np
-
 '''
 )
 
 class EstabProfilePage(MDScreen):
     name = 'estab_profile_page'
-    loaded_posts = {}
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dialog = MDDialog(
@@ -186,10 +183,10 @@ class EstabProfilePage(MDScreen):
             on_open=lambda x: self.load_posts()
         )
         self.follow_dialog = MDDialog(
-            text=('Deixando de seguir' if self.following else 'Seguindo') + f' {self.username}...',
             on_open=lambda x: self.follow()
         )
         self.unregistered_dialog = MDDialog(text='Esta conta não tem número cadastrado')
+        self.loaded_posts = {self.app.username: self.app.posts}
 
     def on_enter(self, *args):
         if self.username not in self.loaded_posts.keys():
@@ -202,19 +199,25 @@ class EstabProfilePage(MDScreen):
         self.ids._pa.close()
         return super().on_leave(*args)
     
+    def left_button_action(self):
+        if self.username == self.app.username:
+            self.manager.load_user_edit_page(self.username)
+        else:
+            self.follow_dialog.text = 'Deixando de seguir' if self.following else 'Seguindo' + f' {self.username}...'
+            self.follow_dialog.open()
+    
     def follow(self):
         if self.following:
-            user_un_follow(self.manager.app.username, self.username)
+            user_un_follow(self.app.username, self.username)
         else:
-            user_follow(self.manager.app.username, self.username)
+            user_follow(self.app.username, self.username)
         self.following = not self.following
         self.n_of_followers += 1 if self.following else -1
-        print(self.following)
         self.follow_dialog.dismiss()
     
     def load_posts(self):
         self.ids._pa.rv.data = []
-        user_data = get_user(self.manager.app.user['username'])
+        user_data = get_user(self.app.user['username'])
         for post in get_user_posts(self.username):
             post['id'] = str(post['id'])
             post['height'] = 300
