@@ -35,8 +35,8 @@ class ScreenManager(MDScreenManager):
     def load_user_pages(self):
         if not self.user_pages:
             for i in [
-                EstabAccountEditPage(),
                 PostsPage(),
+                EstabAccountEditPage(),
                 SearchPage(),
                 ThemeConfigPage(),
                 CommentPage(),
