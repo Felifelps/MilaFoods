@@ -75,7 +75,7 @@ class ScreenManager(MDScreenManager):
         page.username = self.app.username
         self.current = 'user_account_configuration_page' if self.app.user['description'] == '' else 'posts_page'
         
-    def load_comment_page(self, id, username, image, text):
+    async def load_comment_page(self, id, username, image, text):
         page = self.get_screen('comment_page')
         page.code = f'{username}-{id}'
         post = get_post(page.code)
@@ -89,7 +89,7 @@ class ScreenManager(MDScreenManager):
         page.saved = page.code in user['saved']
         self.current = 'comment_page'
     
-    def load_profile_page(self, username=False):
+    async def load_profile_page(self, username=False):
         if username == False:
             if self.app.user['can_post']:
                 return self.load_estab_profile_page(self.app.user)
@@ -100,7 +100,7 @@ class ScreenManager(MDScreenManager):
             return self.load_estab_profile_page(user)
         self.load_client_profile_page(user)
 
-    def load_client_profile_page(self, data, saved=False):
+    async def load_client_profile_page(self, data, saved=False):
         page = self.get_screen('client_profile_page')
         page.username = data['username']
         page.image_code = str(data['image_code'])
@@ -108,7 +108,7 @@ class ScreenManager(MDScreenManager):
         page.saved = data['saved'] if saved == False else saved
         self.current = 'client_profile_page'
         
-    def load_estab_profile_page(self, data):
+    async def load_estab_profile_page(self, data):
         if isinstance(data, str): data = get_user(data)
         page = self.get_screen('estab_profile_page')
         page.username = data['username']
@@ -122,6 +122,6 @@ class ScreenManager(MDScreenManager):
             page.dialog.open()
         self.current = 'estab_profile_page'
         
-    def load_user_edit_page(self, username):
+    async def load_user_edit_page(self, username):
         print('carregando', username)
     

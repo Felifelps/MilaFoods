@@ -1,4 +1,4 @@
-from .db import DB, firestore, os
+from .db import DB, firestore_async, os
 from .post import list_posts, new_post, get_post, update_post
 from .utils import encode_image, decode_image
 try:
@@ -6,24 +6,27 @@ try:
 except Exception as e:
     input(e)
 
-def list_users(all=False):
+async def list_users(all=False):
+    users = []
     if all:
-        return [i.to_dict() for i in USERS.stream()]
-    global ALL_USERS
-    ALL_USERS = [i.id for i in USERS.stream()]
-    return ALL_USERS
+        async for i in USERS.stream():
+            users.append(i.to_dict())
+    else:
+        async for i in USERS.stream():
+            users.append(i.id)
+    return users
 
-def get_user(username):
-    if username not in list_users():
+async def get_user(username):
+    if username not in await list_users():
         return False
-    user = USERS.document(username).get().to_dict()
+    user = await USERS.document(username).get().to_dict()
     if user['can_post'] and user['image'] != None:
-        download_image(user)
+        await download_image(user)
     return user
 
-def new_client_user(username, email, password, description):
-    if username in ALL_USERS: return False
-    user = USERS.document(username).set({
+async def new_client_user(username, email, password, description):
+    if username in await list_users(): return False
+    await USERS.document(username).set({
         "username": username,
         "email": email,
         "password": password,
@@ -42,13 +45,13 @@ def new_client_user(username, email, password, description):
         "can_post": False,
         "validated": True
     })
-    list_users()
-    return get_user(username)   
+    await list_users()
+    return await get_user(username)   
 
-def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, description):
-    if username in ALL_USERS: return False
-    user = USERS.document(username)
-    user.set({
+async def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, description):
+    if username in await list_users(): return False
+    user = await USERS.document(username)
+    await user.set({
         "username": username,
         "email": email,
         "password": password,
@@ -67,72 +70,74 @@ def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, descri
         "can_post": True,
         "validated": False
     })
-    user.collection("menu")
-    user.collection("posts")
-    new_post(
+    await user.collection("menu")
+    await user.collection("posts")
+    await new_post(
         1,
         username,
         f"Acabei de criar minha conta!!"
     )
-    list_users()
-    return get_user(username)
+    await list_users()
+    return await get_user(username)
 
-def get_user_posts(username):
-    posts = [i.id for i in DB.collection(f"users/{username}/posts").stream()]
-    return [get_post(i) for i in posts]
+async def get_user_posts(username):
+    posts = []
+    async for i in DB.collection(f"users/{username}/posts").stream():
+        posts.append(i.to_dict())
+    return posts
 
-def user_like(username, post_id):
-    update_post(post_id, {'likes': firestore.Increment(1)})
-    update_user(username, {'liked': firestore.ArrayUnion([post_id])})
+async def user_like(username, post_id):
+    await update_post(post_id, {'likes': firestore_async.Increment(1)})
+    await update_user(username, {'liked': firestore_async.ArrayUnion([post_id])})
 
-def user_un_like(username, post_id):
-    update_post(post_id, {'likes': firestore.Increment(-1)})
-    update_user(username, {'liked': firestore.ArrayRemove([post_id])})
+async def user_un_like(username, post_id):
+    await update_post(post_id, {'likes': firestore_async.Increment(-1)})
+    await update_user(username, {'liked': firestore_async.ArrayRemove([post_id])})
 
-def user_follow(username, following_username):
-    update_user(username, {'following': firestore.ArrayUnion([following_username])})
-    update_user(following_username, {'n_of_followers': firestore.Increment(1)})
+async def user_follow(username, following_username):
+    await update_user(username, {'following': firestore_async.ArrayUnion([following_username])})
+    await update_user(following_username, {'n_of_followers': firestore_async.Increment(1)})
 
-def user_un_follow(username, following_username):
-    update_user(username, {'following': firestore.ArrayRemove([following_username])})
-    update_user(following_username, {'n_of_followers': firestore.Increment(-1)})
+async def user_un_follow(username, following_username):
+    await update_user(username, {'following': firestore_async.ArrayRemove([following_username])})
+    await update_user(following_username, {'n_of_followers': firestore_async.Increment(-1)})
 
-def user_comment(username, post_id, comment_code):
-    update_post(post_id, {'comments': firestore.ArrayUnion([f'{username}-{comment_code}'])})
+async def user_comment(username, post_id, comment_code):
+    await update_post(post_id, {'comments': firestore_async.ArrayUnion([f'{username}-{comment_code}'])})
 
-def user_save(username, post_id):
-    update_user(username, {'saved': firestore.ArrayUnion([post_id])})
+async def user_save(username, post_id):
+    await update_user(username, {'saved': firestore_async.ArrayUnion([post_id])})
 
-def user_un_save(username, post_id):
-    update_user(username, {'saved': firestore.ArrayRemove([post_id])})
+async def user_un_save(username, post_id):
+    await update_user(username, {'saved': firestore_async.ArrayRemove([post_id])})
     
-def post(username, text, image):
-    user = get_user(username)
+async def post(username, text, image):
+    user = await get_user(username)
     if not user['can_post']: return False
     id = user['n_of_posts'] + 1
-    new_post(id, username, text, image)
+    await new_post(id, username, text, image)
     print(f'Posted {username}-{id}')
-    update_user(username, {"n_of_posts": id})
+    await update_user(username, {"n_of_posts": id})
     
-def update_user(username, data):
+async def update_user(username, data):
     """Updates a client object of the database"""
-    USERS.document(username).update(data)
+    await USERS.document(username).update(data)
     
-def save_post(username, timestamp, estab_username):
-    update_user(username, {
+async def save_post(username, timestamp, estab_username):
+    await update_user(username, {
         'saved': [f'{timestamp}-{estab_username}']
     })
     
-def delete_user(username):
+async def delete_user(username):
     """Deletes a client object of the database"""
-    USERS.document(username).delete()
-    list_users()
+    await USERS.document(username).delete()
+    await list_users()
 
-def download_image(user):
+async def download_image(user):
     image_path = os.path.join("data", "user_images", f"{user['username']}.{user['image'][0]}")
     if not os.path.exists(image_path): 
         decode_image(user['image'][1], f"{user['username']}.{user['image'][0]}")
     return image_path
     
-def upload_image(username, image_path):
-    update_user(username, {"image": None if image_path == None else encode_image(image_path)})
+async def upload_image(username, image_path):
+    await update_user(username, {"image": None if image_path == None else encode_image(image_path)})

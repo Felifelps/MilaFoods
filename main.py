@@ -23,19 +23,26 @@ class MilaFoods(MDApp):
         return ScreenManager(self)
 
     def on_start(self):
-        self.update_user(self.username)
-        self.update_posts()
         self.root.load_screens()
-        return super().on_start() 
+        return super().on_start()
+
+    async def async_run(self, async_lib=None):
+        await self.update_user(self.username)
+        await self.update_posts()
+        return await super().async_run(async_lib)
     
-    def update_user(self, username):
+    async def update_user(self, username):
         self.username = username
-        user = get_user(self.username)
-        user['tel'] = str(user['tel'])
-        self.user = {} if user == False else user
+        user = await get_user(self.username)
+        if user:
+            self.user = user
+            self.user['tel'] = str(self.user['tel'])
+            return 
+        self.user = {}
         
-    def update_posts(self):
-        self.posts = get_user_posts(self.username)
+        
+    async def update_posts(self):
+        self.posts = await get_user_posts(self.username)
         for post in self.posts:
             post['id'] = str(post['id'])
             post['height'] = 300
