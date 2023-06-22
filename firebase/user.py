@@ -19,7 +19,8 @@ async def list_users(all=False):
 async def get_user(username):
     if username not in await list_users():
         return False
-    user = await USERS.document(username).get().to_dict()
+    user = await USERS.document(username).get()
+    user = user.to_dict()
     if user['can_post'] and user['image'] != None:
         await download_image(user)
     return user

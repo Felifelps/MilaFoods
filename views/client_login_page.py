@@ -2,6 +2,7 @@ from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivymd.uix.snackbar import Snackbar
 from control.control import login_client
+import asyncio
 
 Builder.load_string(
 '''
@@ -9,7 +10,6 @@ Builder.load_string(
 #:import BasicLabel views.utils
 #:import BasicTextInput views.utils
 #:import Background views.utils
-#:import asyncio.
 
 <ClientLoginPage>:
     id: _screen
@@ -76,11 +76,14 @@ class ClientLoginPage(MDScreen):
         for i in self.textinputs: i.text = ''
         return super().on_pre_enter(*args)
     
-    async def login_client(self, username, password):
+    async def _login_client(self, username, password):
         client = await login_client(username, password)
         if isinstance(client, str) and 'Logged' not in client: return Snackbar(text=client).open()
         await self.manager.app.update_user(client.split(':')[1])
         Snackbar(text='Logado com sucesso').open()
         self.manager.load_user_pages()
         self.manager.load_user_config_page(True)
+    
+    def login_client(self, username, password):
+        asyncio.ensure_future(self._login_client(username, password))
     
