@@ -6,10 +6,7 @@ import random
 
 async def send_email_code(email):
     for i in range(5):
-        try:
-            return await AuthenticationMail.send_code_email(email)
-        except Exception as e:
-            print(e)
+        return await AuthenticationMail.send_code_email(email)
     return False
 
 async def send_validate_cpf_or_cnpj_email(cnpj, cpf, birth_date):

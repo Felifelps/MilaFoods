@@ -3,6 +3,7 @@ from kivymd.uix.snackbar import Snackbar
 from control.control import sign_up_and_login_client, send_email_code, check_client_sign_up_inputs
 from kivy.lang import Builder
 from kivymd.uix.dialog import MDDialog
+import asyncio
 
 Builder.load_string('''
 #:import BasicButton views.utils
@@ -81,15 +82,16 @@ class ClientSignUpPage(MDScreen):
     
     def send_code(self):
         self.dialog.dismiss()
-        self.code = send_email_code(self.data[1])
+        self.code = asyncio.ensure_future(send_email_code(self.data[1]))
+        print(self.code)
         if not self.code:
             return MDDialog(
                 text='Falha de conexão, tente novamente :('
             ).open()
         self.ids._ccm.open()
         
-    def check_inputs(self, username, email, password):
-        valid = check_client_sign_up_inputs(username, email, password)
+    async def _check_inputs(self, username, email, password):
+        valid = await check_client_sign_up_inputs(username, email, password)
         if isinstance(valid, str): 
             return Snackbar(text=valid).open()
         self.data = [username, email, password]
@@ -98,16 +100,19 @@ class ClientSignUpPage(MDScreen):
             on_open=lambda x: self.send_code()
         )
         self.dialog.open()
+
+    def check_inputs(self, username, email, password):
+        asyncio.ensure_future(self._check_inputs(username, email, password))
     
-    def resend_code(self): 
-        self.check_inputs(*self.data)
+    async def resend_code(self): 
+        await self._check_inputs(*self.data)
         
-    def check_code(self, code):
+    async def check_code(self, code):
         if str(self.code) == code:
-            client = sign_up_and_login_client(*self.data)
+            client = await sign_up_and_login_client(*self.data)
             if not client:
                 return Snackbar(text='Credenciais inválidas').open()
-            self.manager.app.update_user(client['username'])
+            await self.manager.app.update_user(client['username'])
             self.manager.load_client_pages()
             self.manager.load_user_config_page(True)
             return Snackbar(text='Conta criada!').open()

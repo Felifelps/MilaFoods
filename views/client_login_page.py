@@ -72,6 +72,7 @@ Builder.load_string(
 )
 class ClientLoginPage(MDScreen):
     name = 'client_login_page'
+
     def on_pre_enter(self, *args):
         for i in self.textinputs: i.text = ''
         return super().on_pre_enter(*args)

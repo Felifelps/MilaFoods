@@ -99,6 +99,9 @@ Builder.load_string('''
 class ClientProfilePage(MDScreen):
     name = 'client_profile_page'
     saved = ListProperty([])
+    async def __init__(self, *args, **kwargs):
+        await super().__init__(*args, **kwargs)
+        
     def on_saved(self, a, b):
         data = []
         n = 0

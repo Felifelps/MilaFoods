@@ -40,7 +40,6 @@ class MilaFoods(MDApp):
             return 
         self.user = {}
         
-        
     async def update_posts(self):
         self.posts = await get_user_posts(self.username)
         for post in self.posts:
