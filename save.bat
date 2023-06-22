@@ -25,6 +25,7 @@ EXIT /B 0
 :saving
 git commit -m "%commit%"
 git push https://github.com/Felifelps/MilaFoods %~1
+echo %~1
 echo Saved
 pause
 exit
