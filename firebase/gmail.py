@@ -27,7 +27,7 @@ Alô {receiver}, seu código de autenticação para o app é:
 
     async def send_code_email(receiver):
         #Load smtp
-        if not AuthenticationMail.smtp_connection_is_done: AuthenticationMail.load_smtp()
+        if not AuthenticationMail.smtp_connection_is_done: await AuthenticationMail.load_smtp()
 
         #Random access code
         AuthenticationMail.code = random.randint(10000, 99999)

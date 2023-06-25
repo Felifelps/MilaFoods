@@ -104,9 +104,9 @@ class ClientSignUpPage(MDScreen):
         super().__init__(*args, **kwargs)
         def test_time():
             self.times += 1
-            print(self.code)
+            print(self.code.result())
             print(f'waiting: {self.times*5} seconds')
-        self.code_function = lambda dt: test_time() if not isinstance(self.code, int) else Clock.unschedule(self.code_function) == self.code_send()
+        self.code_function = lambda dt: test_time() if not isinstance(self.code.result(), int) else Clock.unschedule(self.code_function) == self.code_send()
     
     def send_code(self):
         self.ids._spinner.active = True
