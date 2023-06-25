@@ -68,6 +68,13 @@ Builder.load_string(
             markup: True
             on_ref_press:
                 app.root.current = 'client_sign_up_page'
+    MDSpinner:
+        id: _spinner
+        size_hint: None, None
+        size: dp(46), dp(46)
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        color: .5, .5, .5, 1
+        active: False
 '''
 )
 class ClientLoginPage(MDScreen):
@@ -80,7 +87,9 @@ class ClientLoginPage(MDScreen):
     async def _login_client(self, username, password):
         client = await login_client(username, password)
         if isinstance(client, str) and 'Logged' not in client: return Snackbar(text=client).open()
+        self.ids._spinner.active = True
         await self.manager.app.update_user(client.split(':')[1])
+        self.ids._spinner.active = False
         Snackbar(text='Logado com sucesso').open()
         self.manager.load_user_pages()
         self.manager.load_user_config_page(True)

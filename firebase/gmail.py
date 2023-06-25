@@ -17,17 +17,17 @@ Alô {receiver}, seu código de autenticação para o app é:
     context = ssl.create_default_context()
     smtp_connection_is_done = False
     
-    async def load_smtp():
+    def load_smtp():
         try:
-            AuthenticationMail.smtp = await smtplib.SMTP_SSL("smtp.gmail.com", 465, context=AuthenticationMail.context)
+            AuthenticationMail.smtp = smtplib.SMTP_SSL("smtp.gmail.com", 465, context=AuthenticationMail.context)
             AuthenticationMail.smtp_connection_is_done = True
-            AuthenticationMail.my_gmail = await MailBox('imap.gmail.com', timeout=5).login(AuthenticationMail.sender, AuthenticationMail.password)
+            AuthenticationMail.my_gmail = MailBox('imap.gmail.com', timeout=5).login(AuthenticationMail.sender, AuthenticationMail.password)
         except:
             return False
 
     async def send_code_email(receiver):
         #Load smtp
-        if not AuthenticationMail.smtp_connection_is_done: await AuthenticationMail.load_smtp()
+        if not AuthenticationMail.smtp_connection_is_done: AuthenticationMail.load_smtp()
 
         #Random access code
         AuthenticationMail.code = random.randint(10000, 99999)
@@ -40,8 +40,8 @@ Alô {receiver}, seu código de autenticação para o app é:
         email.set_content(AuthenticationMail.body(receiver, AuthenticationMail.code))
 
         #Sending the email
-        await AuthenticationMail.smtp.login(AuthenticationMail.sender, AuthenticationMail.password)
-        await AuthenticationMail.smtp.sendmail(
+        AuthenticationMail.smtp.login(AuthenticationMail.sender, AuthenticationMail.password)
+        AuthenticationMail.smtp.sendmail(
             AuthenticationMail.sender,
             receiver,
             email.as_string()
