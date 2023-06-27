@@ -1,10 +1,9 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
-from kivy.properties import ListProperty
+import asyncio
 from control.control import get_user, get_post
 
-Builder.load_string(
-'''
+Builder.load_string('''
 #:import TopTitleBar views.utils
 #:import BottomBar views.utils
 #:import BasicLabel views.utils
@@ -12,6 +11,7 @@ Builder.load_string(
 #:import LateralMenu views.utils
 #:import join os.path.join
 #:import SavedPost views.utils
+#:import BasicSpinner views.utils
             
 <SavedPage>:
     id: _screen
@@ -52,19 +52,29 @@ Builder.load_string(
         BottomBar:
         LateralMenu:
             id: _lm
+    BasicSpinner:
+        id: _spinner
 '''
 )
 
 class SavedPage(MDScreen):
     name = 'saved_page'
     def on_pre_enter(self, *args):
-        data = []
-        for saved in get_user(self.manager.app.user['username'])['saved']:
-            saved_data = get_post(saved)
-            saved_data['id'] = str(saved_data['id'])
-            saved_data['width'] = 130
-            saved_data['height'] = 130
-            data.append(saved_data)
-        self.ids._rv.data = data
+        asyncio.ensure_future(self._load_data())
         return super().on_pre_enter(*args)
+        
+    async def _load_data(self):
+        self.ids._spinner.active = True
+        await self.manager.app.update_user(self.manager.app.username)
+        self.ids._rv.data = []
+        for saved in self.manager.app.user['saved']:
+            saved_data = await get_post(saved)
+            saved_data.update({
+                'id': str(saved_data['id']),
+                'width': 130,
+                'height': 130,
+                'image': str(saved_data['image'])
+            })
+            self.ids._rv.data.append(saved_data)
+        self.ids._spinner.active = False
     

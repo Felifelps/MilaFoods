@@ -107,7 +107,7 @@ Builder.load_string('''
     image: str(app.user['image'])
     n_of_followers: app.user['n_of_followers']
     n_of_posts: app.user['n_of_posts']
-    tel: app.user['tel']
+    tel: str(app.user['tel'])
     following: False
     app: app
     Background:

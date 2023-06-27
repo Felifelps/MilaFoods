@@ -12,6 +12,7 @@ Builder.load_string('''
 #:import BasicTextInput views.utils
 #:import Background views.utils
 #:import CodeConfirmMenu views.utils
+#:import BasicSpinner views.utils
 
 <ClientSignUpPage>:
     id: _screen
@@ -37,7 +38,6 @@ Builder.load_string('''
             pos_hint: {'x': .1, 'center_y': .55}
         BasicTextInput:
             id: _username
-            text: 'cavalo'
             hint_text: 'Digite seu username'
             pos_hint: {'center_x': .5, 'center_y': .5}
             disabled: _spinner.active
@@ -46,7 +46,6 @@ Builder.load_string('''
             pos_hint: {'center_x': .175, 'center_y': .45}
         BasicTextInput:
             id: _email
-            text: 'felipefelipe23456@gmail.com'
             hint_text: 'exemplo@email.com'
             pos_hint: {'center_x': .5, 'center_y': .4}
             disabled: _spinner.active
@@ -55,7 +54,6 @@ Builder.load_string('''
             pos_hint: {'center_x': .175, 'center_y': .35}
         BasicTextInput:
             id: _password
-            text: 'felipe'
             hint_text: "minhaSenha1!"
             password: True
             password_mask: '*'
@@ -81,15 +79,8 @@ Builder.load_string('''
         CodeConfirmMenu:
             id: _ccm
             screen: _screen
-    MDSpinner:
+    BasicSpinner:
         id: _spinner
-        size_hint: None, None
-        size: dp(46), dp(46)
-        pos_hint: {'center_x': .5, 'center_y': .5}
-        color: .5, .5, .5, 1
-        active: False
-        elevation: 2
-    
 '''
 )
 
@@ -102,26 +93,20 @@ class ClientSignUpPage(MDScreen):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        def test_time():
-            self.times += 1
-            print(self.code.result())
-            print(f'waiting: {self.times*5} seconds')
-        self.code_function = lambda dt: test_time() if not isinstance(self.code.result(), int) else Clock.unschedule(self.code_function) == self.code_send()
+        self.fail_connection_dialog = MDDialog(text='Falha de conexão, tente novamente :(')
+        
+    def check_if_code_is_done(self):
+        self.ids._spinner.active = False
+        if not self.code.done():
+            return self.fail_connection_dialog.open()
+        Snackbar(text='Código enviado').open()
+        self.ids._ccm.open()
     
     def send_code(self):
         self.ids._spinner.active = True
         self.code = asyncio.ensure_future(send_email_code(self.data[1]))
-        self.times = 0
-        Clock.schedule_interval(self.code_function, 5)
-        
-    def code_send(self):
-        self.ids._spinner.active = False
-        Snackbar(text='Código enviado').open()
-        if not self.code:
-            return MDDialog(
-                text='Falha de conexão, tente novamente :('
-            ).open()
-        self.ids._ccm.open()
+        self.code.add_done_callback(lambda a: self.check_if_code_is_done())
+        Clock.schedule_once(lambda a: self.check_if_code_is_done(), 300)
         
     async def _check_inputs(self, username, email, password):
         valid = await check_client_sign_up_inputs(username, email, password)
@@ -134,17 +119,22 @@ class ClientSignUpPage(MDScreen):
     def check_inputs(self, username, email, password):
         asyncio.ensure_future(self._check_inputs(username, email, password))
     
-    async def resend_code(self): 
-        await self._check_inputs(*self.data)
+    def resend_code(self):
+        self.check_inputs(*self.data)
+    
+    def check_code(self, code):
+        asyncio.ensure_future(self._check_code(code))
         
-    async def check_code(self, code):
-        if str(self.code) == code:
+    async def _check_code(self, code):
+        if str(self.code.result()) == code:
+            self.ids._spinner.active = True
             client = await sign_up_and_login_client(*self.data)
             if not client:
                 return Snackbar(text='Credenciais inválidas').open()
             await self.manager.app.update_user(client['username'])
             self.manager.load_client_pages()
             self.manager.load_user_config_page(True)
+            self.ids._spinner.active = False
             return Snackbar(text='Conta criada!').open()
         Snackbar(text='Código errado').open()
         

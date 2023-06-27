@@ -3,7 +3,8 @@ from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import ListProperty
 from kivymd.uix.dialog import MDDialog
-from control.control import get_posts_from_server
+from control.control import get_posts_from_server, get_user
+import asyncio
 
 Builder.load_string('''
 #:import BottomBar views.utils
@@ -62,19 +63,22 @@ Builder.load_string('''
             id: bar
             lm: _lm
             screen: _screen
-        RecycleView:
-            id: _rv
-            viewclass: 'Post'
+        MDScrollViewRefreshLayout:
+            id: _refresh_layout
             pos_hint: {'center_x': .5, 'top': .875}
             size_hint: .98, .8
-            RecycleBoxLayout:
-                id: _box
-                orientation: 'vertical'
-                default_size: None, dp(56)
-                default_size_hint: 1, None
-                size_hint_y: None
-                height: self.minimum_height
-                spacing: dp(10)
+            refresh_callback: lambda *args: _screen.get_posts_from_server()
+            root_layout: root
+            RecycleView:
+                id: _rv
+                viewclass: 'Post'
+                RecycleBoxLayout:
+                    orientation: 'vertical'
+                    default_size: None, dp(56)
+                    default_size_hint: 1, None
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(10)
         BottomBar:
         LateralMenu:
             id: _lm
@@ -83,27 +87,39 @@ Builder.load_string('''
 
 class PostsPage(MDScreen):
     name = 'posts_page'
-    data = ListProperty()
-    updated = False
+    posts = []
     loaded = False
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.dialog = MDDialog(
-            text='Atualizando posts...',
-            on_open=lambda x: self.get_posts(True)
-        )
+        self.get_posts_from_server()
         
-    def get_posts(self, random):
-        self.dialog.dismiss()
-        self.ids._rv.data = get_posts_from_server(random)
-    
     def on_enter(self, *args):
-        if not self.updated:
-            self.dialog.open()
-            self.updated = True
         self.loaded = True
         return super().on_enter(*args)
 
     def on_leave(self, *args):
         self.loaded = False
         return super().on_leave(*args)
+    
+    def user_like_or_save_update(self, liked):
+        asyncio.ensure_future(self._user_like_or_save_update(liked))
+        
+    def get_posts_from_server(self):
+        asyncio.ensure_future(self._get_posts_from_server())
+        
+    async def _get_posts_from_server(self): 
+        self.ids._rv.data = await get_posts_from_server()
+        self.posts = self.ids._rv.data
+        self.ids._refresh_layout.refresh_done()
+    
+    async def _user_like_or_save_update(self, liked):
+        await self.manager.app.update_user(self.manager.app.username)
+        self.ids._rv.data = []
+        for post in self.posts:
+            post.update({
+                'liked': f"{post['username']}-{post['id']}" in self.manager.app.user['liked'],
+                'saved': f"{post['username']}-{post['id']}" in self.manager.app.user['saved'],
+                'likes': liked
+            })
+            self.ids._rv.data.append(post)
+        

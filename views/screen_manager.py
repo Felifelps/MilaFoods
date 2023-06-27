@@ -1,3 +1,4 @@
+import asyncio
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.clock import Clock
 from control.control import logout, get_post, get_user
@@ -63,9 +64,12 @@ class ScreenManager(MDScreenManager):
             self.login_pages = True
     
     def load_screens(self):
+        asyncio.ensure_future(self._load_screens())
+        
+    async def _load_screens(self):
         if self.app.username == '===NoUser===':
             return self.load_login_pages()
-        self.app.update_user(self.app.username)
+        await self.app.update_user(self.app.username)
         self.logged_user_is_client = not self.app.user['can_post']
         self.load_user_pages()
     
@@ -74,31 +78,37 @@ class ScreenManager(MDScreenManager):
         page.client = client
         page.username = self.app.username
         self.current = 'user_account_configuration_page' if self.app.user['description'] == '' else 'posts_page'
-        
-    async def load_comment_page(self, id, username, image, text):
+    
+    def load_comment_page(self, id, username, image, text):
+        asyncio.ensure_future(self._load_comment_page(id, username, image, text))
+    
+    async def _load_comment_page(self, id, username, image, text):
         page = self.get_screen('comment_page')
         page.code = f'{username}-{id}'
-        post = get_post(page.code)
+        post = await get_post(page.code)
         page.username = username
         page.user_image = image
         page.text = text
         page.likes = post['likes']
         page.comments = post['comments']
-        user = get_user(self.app.username)
+        user = await get_user(self.app.username)
         page.liked = page.code in user['liked']
         page.saved = page.code in user['saved']
         self.current = 'comment_page'
     
-    async def load_profile_page(self, username=False):
+    def load_profile_page(self, username=False):
+        asyncio.ensure_future(self._load_profile_page(username))
+    
+    async def _load_profile_page(self, username):
         if username == False:
             if self.app.user['can_post']:
-                return self.load_estab_profile_page(self.app.user)
+                return await self.load_estab_profile_page(self.app.user)
             else:
-                return self.load_client_profile_page(self.app.user, get_user(self.app.username)['saved'])
-        user = get_user(username)
+                return await self.load_client_profile_page(self.app.user, self.app.user['saved'])
+        user = await get_user(username)
         if user['can_post']:
-            return self.load_estab_profile_page(user)
-        self.load_client_profile_page(user)
+            return await self.load_estab_profile_page(user)
+        await self.load_client_profile_page(user)
 
     async def load_client_profile_page(self, data, saved=False):
         page = self.get_screen('client_profile_page')

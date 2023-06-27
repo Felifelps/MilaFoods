@@ -3,6 +3,8 @@ from kivy.lang import Builder
 from kivy.properties import StringProperty, ListProperty, BooleanProperty, NumericProperty
 from control.control import user_like, user_un_like, user_comment, save_post, un_save_post
 from kivymd.uix.dialog import MDDialog
+from kivymd.uix.snackbar import Snackbar
+import asyncio
 
 Builder.load_string('''
 #:import TopImageAndStarBar views.utils
@@ -12,6 +14,7 @@ Builder.load_string('''
 #:import LateralMenu views.utils
 #:import Post views.utils
 #:import ProfileButton views.utils
+#:import BasicSpinner views.utils
 #:import join os.path.join
 
 <EmojiButton@MDIconButton>:
@@ -20,12 +23,12 @@ Builder.load_string('''
     pos_hint: {'center_x': .2 + (0.1 * (self.code - 1)), 'center_y': .375}
     icon: join('views', 'data', 'emojis', f'{int(self.code)}.png')
     on_press:
-        self.screen.open_comment_dialog(self.code)
+        self.screen.comment(self.code)
 
 <Comment@BoxLayout>:
     username: 'username'
     code: 1
-    spacing: 2
+    spacing: dp(10)
     MDIconButton:
         icon_size: '35sp'
         size_hint_y: 1 
@@ -41,7 +44,7 @@ Builder.load_string('''
         size: self.texture_size
         color: 0, 0, 0, 1
     MDIcon:
-        icon_size: '35sp'
+        icon_size: '40sp'
         source: join('views', 'data', 'emojis', f'{int(root.code)}.png')
         size_hint_y: 1
 
@@ -115,7 +118,7 @@ Builder.load_string('''
                 icon: "heart"
                 icon_color: (.75, .75, .75, 1) if not _screen.liked else (1, 0, .2, 1)
                 on_release:
-                    _screen.like_or_un_like_dialog()
+                    _screen.like_or_un_like()
             Label:
                 text: str(_screen.likes)
                 color: .1, .1, .1, 1
@@ -150,6 +153,8 @@ Builder.load_string('''
                 pos_hint: {'y': 0}
                 size_hint: 1, .125
         BottomBar:
+    BasicSpinner:
+        id: _spinner
 '''
 )
 
@@ -165,53 +170,50 @@ class CommentPage(MDScreen):
     likes = NumericProperty()
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.like_dialog = MDDialog(
-            text='Salvando avaliação...',
-            on_open=lambda x: self.like_or_un_like()
-        )
-        self.comment_dialog = MDDialog(
-            text='Comentando...',
-            on_open=lambda x: self.comment()
-        )
-        self.save_dialog = MDDialog(
-            text='Salvando...',
-            on_open=lambda x: self._save_post()
-        )
+        self.text_dialog = MDDialog(text="")
+        self.snackbar = Snackbar(text="")
     
     def open_text(self, text):
-        MDDialog(
-            text=text
-        ).open()
+        self.text_dialog.text = text
+        self.text_dialog.open()
     
-    def _save_post(self):
-        if self.saved: un_save_post(self.code)
-        else: save_post(self.code) 
+    async def _save_post(self):
+        if self.saved: await un_save_post(self.code)
+        else: await save_post(self.code) 
         self.saved = not self.saved
-        self.manager.get_screen('posts_page').get_posts(False)
-        self.save_dialog.dismiss()
+        self.manager.get_screen('posts_page').user_like_or_save_update(self.likes)
+        self.snackbar.text = 'Post salvo'
+        self.snackbar.open()
+        self.ids._spinner.active = False
         
     def save_post(self):
-        self.save_dialog.open()
+        self.ids._spinner.active = True
+        asyncio.ensure_future(self._save_post())
         
     def on_comments(self, a, b):
         self.rv.data = [{'username': x.split('-')[0], 'code': x.split('-')[1], 'size_hint_x': 1} for x in self.comments]
     
     def like_or_un_like(self):
-        user_un_like(self.parent.app.user['username'], self.code) if self.liked else user_like(self.parent.app.user['username'], self.code)
+        self.ids._spinner.active = True
+        asyncio.ensure_future(self._like_or_un_like())
+    
+    async def _like_or_un_like(self):
+        if self.liked:
+            await user_un_like(self.parent.app.user['username'], self.code)
+        else:
+            await user_like(self.parent.app.user['username'], self.code)
         self.likes += -1 if self.liked else 1
         self.liked = not self.liked
-        self.manager.get_screen('posts_page').get_posts(False)
-        self.like_dialog.dismiss()
-
-    def like_or_un_like_dialog(self):
-        self.like_dialog.open()
+        self.manager.get_screen('posts_page').user_like_or_save_update(self.likes)
+        self.ids._spinner.active = False
     
-    def comment(self):
-        user_comment(self.parent.app.user['username'], self.code, self.image_code)
-        self.comments = self.comments + [f"{self.parent.app.user['username']}-{self.image_code}"]
-        self.comment_dialog.dismiss()
+    def comment(self, image_code):
+        self.ids._spinner.active = True
+        asyncio.ensure_future(self._comment(image_code))
         
-    def open_comment_dialog(self, image_code):
-        self.image_code = image_code
-        self.comment_dialog.open()
+    async def _comment(self, image_code):  
+        await user_comment(self.parent.app.user['username'], self.code, image_code)
+        self.comments = self.comments + [f"{self.parent.app.user['username']}-{image_code}"]
+        self.ids._spinner.active = False
+        
         

@@ -4,24 +4,29 @@ from local.appdb import *
 from firebase.gmail import AuthenticationMail
 import random
 
+Email = AuthenticationMail()
+
 async def send_email_code(email):
-    for i in range(5):
-        return await AuthenticationMail.send_code_email(email)
+    for i in range(30): #300 seconds tiemout
+        try:
+            return await Email.send_code_email(email)
+        except Exception as e: 
+            print(e)
     return False
 
 async def send_validate_cpf_or_cnpj_email(cnpj, cpf, birth_date):
-    for i in range(5):
+    for i in range(30): #300 seconds tiemout
         try:
-            await AuthenticationMail.send_cpf_or_cnpj_email(cnpj, cpf, birth_date)
+            await Email.send_cpf_or_cnpj_email(cnpj, cpf, birth_date)
             return True
         except Exception as e:
             print(e)
     return False
 
 async def check_if_a_account_was_validated(cpf_or_cnpj):
-    for i in range(5):
+    for i in range(30): #300 seconds tiemout
         try:
-            return await AuthenticationMail.check_cpf_or_cnpj_confirmation(cpf_or_cnpj)
+            return await Email.check_cpf_or_cnpj_confirmation(cpf_or_cnpj)
         except Exception as e:
             print(e)
     return False
@@ -105,21 +110,23 @@ async def check_estab_sign_up_inputs(username, email, password, cnpj, cpf, birth
     return True
     
 async def sign_up_estab(username, email, password, cnpj, cpf, birth_date):
-    user = await new_estab_user(username, email, cpf, birth_date, cnpj, None, password, '')
-    if not user: return False
-    save_username(username)
-    return user
+    return await new_estab_user(username, email, cpf, birth_date, cnpj, None, password, '')
 
-async def get_posts_from_server(randomize):
-    posts = await list_posts(False)
+async def get_posts_from_server():
+    random_posts = await update_posts(await list_posts(False))
+    random.shuffle(random_posts)
+    return random_posts
+
+async def update_posts(posts):
     user = await get_user(get_username())
     for post in posts:
-        post['id'] = str(post['id'])
-        post['height'] = 300
-        post['liked'] = f"{post['username']}-{post['id']}" in user['liked']
-        post['saved'] = f"{post['username']}-{post['id']}" in user['saved']
-    if randomize: random.shuffle(posts)
-    return posts 
+        post.update({
+            'id': str(post['id']),
+            'height': 300,
+            'liked': f"{post['username']}-{post['id']}" in user['liked'],
+            'saved': f"{post['username']}-{post['id']}" in user['saved']
+        })
+    return posts
 
 def logout():
     back_to_default_user()
@@ -128,8 +135,8 @@ def save_theme(theme):
     alter_theme(theme)
 
 async def save_post(post_id):
-    await user_save(await get_username(), post_id)
+    await user_save(get_username(), post_id)
 
 async def un_save_post(post_id):
-    await user_un_save(await get_username(), post_id)
+    await user_un_save(get_username(), post_id)
     

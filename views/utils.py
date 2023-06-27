@@ -21,6 +21,13 @@ Builder.load_string('''
 #:import join os.path.join
 #:import colors kivymd.color_definitions.colors
 
+<BasicSpinner@MDSpinner>:
+    size_hint: None, None
+    size: dp(46), dp(46)
+    pos_hint: {'center_x': .5, 'center_y': .5}
+    color: .5, .5, .5, 1
+    active: False
+
 <BasicLabel@Label>:
     font_name: join('views', 'data', 'Graduate-Regular.ttf')
     font_size: '12.5sp'
@@ -186,7 +193,7 @@ Builder.load_string('''
         theme_text_color: 'Custom'
         text_color: .3, .3, .3, 1
         font_size: '17.5sp'
-    TextInput:
+    BasicTextInput:
         id: _code
         canvas.before:
             Color:
@@ -204,6 +211,7 @@ Builder.load_string('''
         padding_y: dp(18)
         input_filter: 'int'
         multiline: False
+        type: 'code'
     Label:
         size_hint: .8, .125
         pos_hint: {'center_x': .5, 'top': .45}
@@ -585,6 +593,7 @@ Builder.load_string('''
     text: ''
     date: 'Selecione sua data de nascimento'
     allow_date: True
+    disabled: False
     BasicLabel:
         text: 'Digite seu CPF ou CNPJ'
         pos_hint: {'x': .12, 'center_y': .9}
@@ -592,6 +601,7 @@ Builder.load_string('''
     BasicTextInput:
         id: _cpf 
         type: 'cpf'
+        disabled: root.disabled
         on_text:
             root.text = self.text
         hint_text: 'Digite seu CPF'
@@ -600,6 +610,7 @@ Builder.load_string('''
     BasicTextInput:
         id: _cnpj
         type: 'cnpj'
+        disabled: root.disabled
         on_text:
             root.text = self.text
             root.date = 'Selecione sua data de nascimento'
@@ -610,7 +621,7 @@ Builder.load_string('''
         id: _date
         text: root.date
         size_hint: .8, .3
-        disabled: not root.cpf
+        disabled: not root.cpf or root.disabled
         pos_hint: {'x': .1, 'center_y': (.25 if root.allow_date else 10)}
         on_release: root.date_picker()
     BasicDropDownItem:
@@ -619,6 +630,7 @@ Builder.load_string('''
         font_size: '12.5sp'
         pos_hint: {'right': .9, 'center_y': .65}
         items: ['CPF','CNPJ']
+        disabled: root.disabled
         on_text:
             root.cpf = not root.cpf
 ''')
@@ -662,6 +674,8 @@ class BasicTextInput(TextInput):
         elif self.type == 'cnpj' and (text_len > 14 or not substring.isdigit()): 
             return False
         elif self.type == 'description' and (text_len > 300 or text.count('\n') > 4):
+            return False
+        elif self.type == 'code' and text_len > 5:
             return False
         elif self.type == 'number':
             if text_len > 15 or not substring.isdigit():

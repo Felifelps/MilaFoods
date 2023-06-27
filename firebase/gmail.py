@@ -1,57 +1,49 @@
 from email.message import EmailMessage
-import ssl, smtplib, random
+import ssl, smtplib, random, asyncio
 from imap_tools import MailBox, AND
 
 class AuthenticationMail:
     sender = "mestount@gmail.com"
-    cpf_cnpj_mail = "captchasolver240@gmail.com"
+    cpf_cnpj_mail = "felipe.ferreira39@aluno.ce.gov.br"#"captchasolver240@gmail.com"
     password = "iquduhyskpuadboe"
     subject = "Código de confirmação"
-    body = lambda receiver, code: f"""
+    body = lambda self, receiver, code: f"""
 Alô {receiver}, seu código de autenticação para o app é:
 
 {code}
 """
-    smtp = None
-    my_gmail = None
-    context = ssl.create_default_context()
-    smtp_connection_is_done = False
+    def __init__(self):
+        self.context = ssl.create_default_context()
+        self.smtp = self.load_smtp()
+        self.smtp.login(self.sender, self.password)
+        self.my_gmail = self.load_gmail()
     
-    def load_smtp():
-        try:
-            AuthenticationMail.smtp = smtplib.SMTP_SSL("smtp.gmail.com", 465, context=AuthenticationMail.context)
-            AuthenticationMail.smtp_connection_is_done = True
-            AuthenticationMail.my_gmail = MailBox('imap.gmail.com', timeout=5).login(AuthenticationMail.sender, AuthenticationMail.password)
-        except:
-            return False
+    def load_smtp(self):
+        return smtplib.SMTP_SSL("smtp.gmail.com", 465, context=self.context)
+        
+    def load_gmail(self):
+        return MailBox('imap.gmail.com', timeout=5).login(self.sender, self.password)
 
-    async def send_code_email(receiver):
-        #Load smtp
-        if not AuthenticationMail.smtp_connection_is_done: await AuthenticationMail.load_smtp()
-
+    async def send_code_email(self, receiver):
         #Random access code
-        AuthenticationMail.code = random.randint(10000, 99999)
+        self.code = random.randint(10000, 99999)
 
         #Email creating
         email = EmailMessage()
-        email["From"] = AuthenticationMail.sender
+        email["From"] = self.sender
         email["To"] = receiver
-        email["Subject"] = AuthenticationMail.subject
-        email.set_content(AuthenticationMail.body(receiver, AuthenticationMail.code))
+        email["Subject"] = self.subject
+        email.set_content(self.body(receiver, self.code))
 
         #Sending the email
-        AuthenticationMail.smtp.login(AuthenticationMail.sender, AuthenticationMail.password)
-        AuthenticationMail.smtp.sendmail(
-            AuthenticationMail.sender,
+        self.smtp.sendmail(
+            self.sender,
             receiver,
             email.as_string()
         )
-        return AuthenticationMail.code
+        return self.code
         
-    async def send_cpf_or_cnpj_email(cnpj, cpf, birth_date):
-        #Load smtp
-        if not AuthenticationMail.smtp_connection_is_done: await AuthenticationMail.load_smtp()
-        
+    async def send_cpf_or_cnpj_email(self, cnpj, cpf, birth_date):
         body = "Responda apenas com 'S' se for, e 'N' se não for validado, ok? Lembrando que é em até um dia depois daqui."
         if cnpj != None:
             body += "\nhttps://solucoes.receita.fazenda.gov.br/Servicos/cnpjreva/cnpjreva_solicitacao.asp"
@@ -62,23 +54,20 @@ Alô {receiver}, seu código de autenticação para o app é:
         else:
             raise Exception("Attribute error")
         email = EmailMessage()
-        email["From"] = AuthenticationMail.sender
-        email["To"] = AuthenticationMail.cpf_cnpj_mail
+        email["From"] = self.sender
+        email["To"] = self.cpf_cnpj_mail
         email["Subject"] = (cpf if cnpj == None else cnpj)
         email.set_content(body)
 
         #Sending the email
-        await AuthenticationMail.smtp.login(AuthenticationMail.sender, AuthenticationMail.password)
-        await AuthenticationMail.smtp.sendmail(
-            AuthenticationMail.sender,
-            AuthenticationMail.cpf_cnpj_mail,
+        self.smtp.sendmail(
+            self.sender,
+            self.cpf_cnpj_mail,
             email.as_string()
         )
     
-    async def check_cpf_or_cnpj_confirmation(cpf_or_cnpj):
-        #Load smtp
-        await AuthenticationMail.load_smtp()
-        for email in await AuthenticationMail.my_gmail.fetch(AND(from_=AuthenticationMail.cpf_cnpj_mail)):
+    async def check_cpf_or_cnpj_confirmation(self, cpf_or_cnpj):
+        for email in self.my_gmail.fetch(AND(from_=self.cpf_cnpj_mail)):
             if cpf_or_cnpj in email.subject:
                 text = email.text.split()[0].lower()
                 if 's' == text: return True

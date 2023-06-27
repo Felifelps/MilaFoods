@@ -3,6 +3,7 @@ from kivymd.uix.snackbar import Snackbar
 from kivy.lang import Builder
 from control.control import login_estab
 from kivymd.uix.dialog import MDDialog
+import asyncio
 
 Builder.load_string('''
 #:import join os.path.join
@@ -12,6 +13,7 @@ Builder.load_string('''
 #:import BasicDropDownItem views.utils
 #:import Background views.utils
 #:import CpfCnpjTextInput views.utils
+#:import BasicSpinner views.utils
             
 <EstabLoginPage>:
     id: _screen
@@ -57,13 +59,15 @@ Builder.load_string('''
             size_hint_x: .8
             pos_hint: {'center_x': .5, 'center_y': .26}
             on_press:
-                _screen.login_estab(_cpf_cnpj.text, _password.text)
+                _screen.check_login_data(_cpf_cnpj.text, _password.text)
         BasicLabel:
             text: 'Não tem uma conta? [color=#0000ff][ref=create_account]Crie aqui!![/ref][/color]'
             pos_hint: {'center_x': .5, 'center_y': .025}
             markup: True
             on_ref_press:
                 app.root.current = 'estab_sign_up_page'
+    BasicSpinner:
+        id: _spinner
 '''
 )
 
@@ -73,18 +77,17 @@ class EstabLoginPage(MDScreen):
         for i in self.textinputs: i.text, i.date = '', 'Selecione sua data de nascimento'
         return super().on_pre_enter(*args)
     
-    def login_estab(self, cpf_cnpj, password):
-        self.dialog = MDDialog(
-            text='Checando os dados da conta...',
-            on_open=lambda a: self.check_login_data(cpf_cnpj, password)
-        )
-        self.dialog.open()
-        
     def check_login_data(self, cpf_cnpj, password):
-        estab = login_estab(cpf_cnpj, password)
-        self.dialog.dismiss()
+        Snackbar(text='Checando os dados da conta...').open()
+        self.ids._spinner.active = True
+        asyncio.ensure_future(self._check_login_data(cpf_cnpj, password))
+        
+    async def _check_login_data(self, cpf_cnpj, password):
+        estab = await login_estab(cpf_cnpj, password)
+        self.ids._spinner.active = False
         if isinstance(estab, str): return Snackbar(text=estab).open()
-        self.manager.app.update_user(estab['username'])
+        await self.manager.app.update_user(estab['username'])
+        self.manager.current = 'user_account_configuration_page' if estab['description'] == 'Sou novo no app!' else 'posts_page'  
         Snackbar(text='Logado com sucesso').open()
         self.manager.load_user_pages()
         self.manager.load_user_config_page(False)

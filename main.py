@@ -5,7 +5,7 @@ import asyncio
 from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
 from kivy.properties import StringProperty, DictProperty
-from control.control import get_username, get_user, get_theme, get_user_posts
+from control.control import get_username, get_user, get_theme, post,list_users, update_user
 
 class MilaFoods(MDApp):
     username = StringProperty(get_username())
@@ -24,29 +24,36 @@ class MilaFoods(MDApp):
 
     def on_start(self):
         self.root.load_screens()
+        #asyncio.ensure_future(self.test_post())
         return super().on_start()
+    
+    async def test_post(self):
+        for user in await list_users(True):
+            await update_user(
+                user['username'], 
+                {
+                    'liked': [],
+                    'saved': [],
+                    'following': ['MilaFoods'],
+                    'n_of_posts': 0 if user['can_post'] else None,
+                    'n_of_followers': 0 if user['can_post'] else None,
+                }
+            )
+            print(user['username'])
+        print('done')
 
     async def async_run(self, async_lib=None):
         await self.update_user(self.username)
-        await self.update_posts()
         return await super().async_run(async_lib)
     
     async def update_user(self, username):
         self.username = username
         user = await get_user(self.username)
-        if user:
+        if user != False:
+            user.update({'tel': str(user['tel'])})
             self.user = user
-            self.user['tel'] = str(self.user['tel'])
             return 
         self.user = {}
-        
-    async def update_posts(self):
-        self.posts = await get_user_posts(self.username)
-        for post in self.posts:
-            post['id'] = str(post['id'])
-            post['height'] = 300
-            post['liked'] = f"{post['username']}-{post['id']}" in self.user['liked']
-            post['saved'] = f"{post['username']}-{post['id']}" in self.user['saved']
 
 if __name__ == '__main__':
     asyncio.run(MilaFoods().async_run())

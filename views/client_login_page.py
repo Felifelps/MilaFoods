@@ -10,6 +10,7 @@ Builder.load_string(
 #:import BasicLabel views.utils
 #:import BasicTextInput views.utils
 #:import Background views.utils
+#:import BasicSpinner views.utils
 
 <ClientLoginPage>:
     id: _screen
@@ -68,13 +69,8 @@ Builder.load_string(
             markup: True
             on_ref_press:
                 app.root.current = 'client_sign_up_page'
-    MDSpinner:
+    BasicSpinner:
         id: _spinner
-        size_hint: None, None
-        size: dp(46), dp(46)
-        pos_hint: {'center_x': .5, 'center_y': .5}
-        color: .5, .5, .5, 1
-        active: False
 '''
 )
 class ClientLoginPage(MDScreen):

@@ -4,6 +4,7 @@ from kivy.animation import Animation
 from kivy.lang import Builder
 from kivy.properties import ListProperty
 from control.control import get_post, get_user
+import asyncio
 
 Builder.load_string('''
 #:import BasicLabel views.utils
@@ -93,27 +94,31 @@ Builder.load_string('''
         BottomBar:
         LateralMenu:
             id: _lm
+    BasicSpinner:
+        
 '''
 )
 
 class ClientProfilePage(MDScreen):
     name = 'client_profile_page'
     saved = ListProperty([])
-    async def __init__(self, *args, **kwargs):
-        await super().__init__(*args, **kwargs)
-        
     def on_saved(self, a, b):
-        data = []
-        n = 0
-        for saved in get_user(self.manager.app.user['username'])['saved']:
-            if n == 3: break
-            saved_data = get_post(saved)
-            saved_data['id'] = str(saved_data['id'])
-            saved_data['width'] = 130
-            saved_data['height'] = 130
-            data.append(saved_data)
-            n += 1
-        self.sa.rv.data = data
+        asyncio.ensure_future(self._load_saved())
+        
+    async def _load_saved(self):
+        self.ids._spinner.active = True
+        await self.manager.app.update_user(self.manager.app.username)
+        self.ids.sa.rv.data = []
+        for saved in self.manager.app.user['saved'][:3]:
+            saved_data = await get_post(saved)
+            saved_data.update({
+                'id': str(saved_data['id']),
+                'width': 130,
+                'height': 130,
+                'image': str(saved_data['image'])
+            })
+            self.ids.sa.rv.data.append(saved_data)
+        self.ids._spinner.active = False
 
 class SavedArea(MDRelativeLayout):
     def on_touch_down(self, touch):

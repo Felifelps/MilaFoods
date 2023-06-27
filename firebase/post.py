@@ -21,7 +21,8 @@ async def update_post(key, data):
     await DB.document(f"posts/{key}").update(data)
 
 async def get_post(key):
-    post = await DB.document(f"posts/{key}").get().to_dict()
+    post = await DB.document(f"posts/{key}").get()
+    post = post.to_dict()
     if post['image'] != '':
         await download_image(post)
     return post
@@ -35,8 +36,8 @@ async def download_image(post):
         
 async def list_posts(only_key=True, username=False):
     if not username:
-        return await [(post.id if only_key else post.to_dict())for post in DB.collection(f"posts").stream()]
-    return await [(post.id if only_key else post.to_dict()) for post in DB.collection(f"posts").stream() if username in post.id]
+        return [(post.id if only_key else post.to_dict()) async for post in DB.collection(f"posts").stream()]
+    return [(post.id if only_key else post.to_dict()) async for post in DB.collection(f"posts").stream() if username in post.id]
 
 async def delete_post(key):
     await DB.document(f"posts/{key}").delete()

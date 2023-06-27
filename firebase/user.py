@@ -51,7 +51,7 @@ async def new_client_user(username, email, password, description):
 
 async def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, description):
     if username in await list_users(): return False
-    user = await USERS.document(username)
+    user = USERS.document(username)
     await user.set({
         "username": username,
         "email": email,
@@ -71,8 +71,8 @@ async def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, 
         "can_post": True,
         "validated": False
     })
-    await user.collection("menu")
-    await user.collection("posts")
+    user.collection("menu")
+    user.collection("posts")
     await new_post(
         1,
         username,
