@@ -17,7 +17,7 @@ from .follow_estabs_page import FollowEstabsPage
 from .image_selection_page import ImageSelectionPage
 from .saved_page import SavedPage
 from .estab_profile_page import EstabProfilePage
-from .estab_account_edit_page import EstabAccountEditPage
+from .image_selection_page import ImageSelectionPage
 
 class ScreenManager(MDScreenManager):
     login_pages = False
@@ -27,17 +27,20 @@ class ScreenManager(MDScreenManager):
         super().__init__(*args, **kwargs)
         self.app = app
         
+    def load_edit_pages(self):
+        if 'user_account_configuration_page' not in self.screen_names:
+            self.add_widget(UserAccountConfigurationPage())
+        if 'image_selection_page' not in self.screen_names:
+            self.add_widget(ImageSelectionPage())
+        
     def logout(self):
-        self.load_login_pages()
         logout()
-        def change_current(dt): self.current = 'client_or_estab_page'
-        Clock.schedule_once(change_current, 2)
-    
+        self.load_login_pages()
+        
     def load_user_pages(self):
         if not self.user_pages:
             for i in [
                 PostsPage(),
-                EstabAccountEditPage(),
                 SearchPage(),
                 ThemeConfigPage(),
                 CommentPage(),
@@ -46,13 +49,14 @@ class ScreenManager(MDScreenManager):
                 EstabProfilePage(),
             ]: 
                 self.add_widget(i)
+            self.load_edit_pages()
             self.user_pages = True
+            self.current = 'posts_page'
     
-    def load_login_pages(self):
+    def load_login_pages(self): 
         if not self.login_pages:
             for i in [
                 ClientOrEstabPage(),
-                UserAccountConfigurationPage(),
                 ImageSelectionPage(),
                 EstabLoginPage(),
                 ClientSignUpPage(),
@@ -61,7 +65,9 @@ class ScreenManager(MDScreenManager):
                 FollowEstabsPage(),
             ]: 
                 self.add_widget(i)
+            self.load_edit_pages()
             self.login_pages = True
+            self.current = 'client_or_estab_page'
     
     def load_screens(self):
         asyncio.ensure_future(self._load_screens())
@@ -132,6 +138,13 @@ class ScreenManager(MDScreenManager):
             page.dialog.open()
         self.current = 'estab_profile_page'
         
-    async def load_user_edit_page(self, username):
-        print('carregando', username)
+    def load_user_edit_page(self, back_to):
+        page = self.get_screen('user_account_configuration_page')
+        page.back_to = back_to
+        page.client = not self.app.user['can_post']
+        if page.client:
+            page.selected_image = str(self.app.user['image_code'])
+        page.username = self.app.username
+        page.bio = self.app.user['description']
+        self.current = 'user_account_configuration_page'
     

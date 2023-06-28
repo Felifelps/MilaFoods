@@ -43,9 +43,9 @@ Builder.load_string('''
         size_hint: None, 1
         size: self.texture_size
         color: 0, 0, 0, 1
-    MDIcon:
-        icon_size: '40sp'
-        source: join('views', 'data', 'emojis', f'{int(root.code)}.png')
+    MDIconButton:
+        icon_size: '25sp'
+        icon: join('views', 'data', 'emojis', f'{int(root.code)}.png')
         size_hint_y: 1
 
     
@@ -181,7 +181,7 @@ class CommentPage(MDScreen):
         if self.saved: await un_save_post(self.code)
         else: await save_post(self.code) 
         self.saved = not self.saved
-        self.manager.get_screen('posts_page').user_like_or_save_update(self.likes)
+        self.manager.get_screen('posts_page').user_like_or_save_update(self.code, self.likes)
         self.snackbar.text = 'Post salvo'
         self.snackbar.open()
         self.ids._spinner.active = False
@@ -204,7 +204,7 @@ class CommentPage(MDScreen):
             await user_like(self.parent.app.user['username'], self.code)
         self.likes += -1 if self.liked else 1
         self.liked = not self.liked
-        self.manager.get_screen('posts_page').user_like_or_save_update(self.likes)
+        self.manager.get_screen('posts_page').user_like_or_save_update(self.code, self.likes)
         self.ids._spinner.active = False
     
     def comment(self, image_code):

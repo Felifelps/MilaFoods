@@ -133,7 +133,7 @@ class ClientSignUpPage(MDScreen):
                 return Snackbar(text='Credenciais inválidas').open()
             await self.manager.app.update_user(client['username'])
             self.manager.load_client_pages()
-            self.manager.load_user_config_page(True)
+            self.manager.load_user_config_page('follow_estabs_page')
             self.ids._spinner.active = False
             return Snackbar(text='Conta criada!').open()
         Snackbar(text='Código errado').open()

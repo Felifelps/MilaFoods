@@ -85,10 +85,10 @@ class ClientLoginPage(MDScreen):
         if isinstance(client, str) and 'Logged' not in client: return Snackbar(text=client).open()
         self.ids._spinner.active = True
         await self.manager.app.update_user(client.split(':')[1])
-        self.ids._spinner.active = False
         Snackbar(text='Logado com sucesso').open()
         self.manager.load_user_pages()
         self.manager.load_user_config_page(True)
+        self.ids._spinner.active = False
     
     def login_client(self, username, password):
         asyncio.ensure_future(self._login_client(username, password))

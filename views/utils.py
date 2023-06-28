@@ -15,7 +15,7 @@ from kivy.properties import StringProperty, ListProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.clock import Clock
-import os
+import os, asyncio
 
 Builder.load_string('''
 #:import join os.path.join
@@ -303,7 +303,7 @@ Builder.load_string('''
             icon: "account"
             size_hint: 1, .1
             on_press: 
-                app.root.current = 'estab_account_edit_page'
+                app.root.load_user_edit_page('posts_page')
         BasicIconButton:
             text: "Salvos"            
             icon: "star"
@@ -673,7 +673,7 @@ class BasicTextInput(TextInput):
             return False
         elif self.type == 'cnpj' and (text_len > 14 or not substring.isdigit()): 
             return False
-        elif self.type == 'description' and (text_len > 300 or text.count('\n') > 4):
+        elif self.type == 'description' and (text_len > 100 or text.count('\n') > 4):
             return False
         elif self.type == 'code' and text_len > 5:
             return False
@@ -706,9 +706,6 @@ class BasicTextInput(TextInput):
             elif len(self.text) > 2 and self.text[-2] == '-':
                 self.text = self.text.replace('-', '')
         return super().do_backspace(from_undo, mode)
-    
-    def paste(self):
-        return super().paste()
 
 class LateralMenuBase(MDBoxLayout):
     def __init__(self, *args, **kwargs):

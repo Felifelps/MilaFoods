@@ -1,7 +1,7 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 import asyncio
-from control.control import get_user, get_post
+from control.control import get_local_saved_posts, get_post
 
 Builder.load_string('''
 #:import TopTitleBar views.utils
@@ -65,16 +65,15 @@ class SavedPage(MDScreen):
         
     async def _load_data(self):
         self.ids._spinner.active = True
-        await self.manager.app.update_user(self.manager.app.username)
         self.ids._rv.data = []
-        for saved in self.manager.app.user['saved']:
-            saved_data = await get_post(saved)
-            saved_data.update({
-                'id': str(saved_data['id']),
+        for key, post in get_local_saved_posts().items():
+            post.update({
+                'id': str(key.split('-')[1]),
+                'username': str(key.split('-')[0]),
                 'width': 130,
                 'height': 130,
-                'image': str(saved_data['image'])
+                'image': str(post['image'])
             })
-            self.ids._rv.data.append(saved_data)
+            self.ids._rv.data.append(post)
         self.ids._spinner.active = False
     

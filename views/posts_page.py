@@ -101,8 +101,8 @@ class PostsPage(MDScreen):
         self.loaded = False
         return super().on_leave(*args)
     
-    def user_like_or_save_update(self, liked):
-        asyncio.ensure_future(self._user_like_or_save_update(liked))
+    def user_like_or_save_update(self, post_key, likes):
+        asyncio.ensure_future(self._user_like_or_save_update(post_key, likes))
         
     def get_posts_from_server(self):
         asyncio.ensure_future(self._get_posts_from_server())
@@ -112,14 +112,16 @@ class PostsPage(MDScreen):
         self.posts = self.ids._rv.data
         self.ids._refresh_layout.refresh_done()
     
-    async def _user_like_or_save_update(self, liked):
+    async def _user_like_or_save_update(self, post_key, likes):
         await self.manager.app.update_user(self.manager.app.username)
-        self.ids._rv.data = []
-        for post in self.posts:
-            post.update({
-                'liked': f"{post['username']}-{post['id']}" in self.manager.app.user['liked'],
-                'saved': f"{post['username']}-{post['id']}" in self.manager.app.user['saved'],
-                'likes': liked
-            })
-            self.ids._rv.data.append(post)
+        for post in self.ids._rv.data:
+            if f"{post['username']}-{post['id']}" == post_key:
+                insert = (self.ids._rv.data.index(post), post)
+                self.ids._rv.data.remove(post)
+                post.update({
+                    'liked': post_key in self.manager.app.user['liked'],
+                    'saved': post_key in self.manager.app.user['saved'],
+                    'likes': likes
+                })
+                self.ids._rv.data.insert(*insert)
         

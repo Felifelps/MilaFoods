@@ -39,8 +39,6 @@ class MilaFoods(MDApp):
                     'n_of_followers': 0 if user['can_post'] else None,
                 }
             )
-            print(user['username'])
-        print('done')
 
     async def async_run(self, async_lib=None):
         await self.update_user(self.username)

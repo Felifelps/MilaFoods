@@ -45,6 +45,7 @@ async def login_client(username, password):
     if not user: return 'Crendenciais inválidas'
     if user['password'] == password:
         save_username(username)
+        await server_saved_to_local(username)
     return f'Logged:{username}'
 
 async def check_client_sign_up_inputs(username, email, password):
@@ -67,6 +68,7 @@ async def sign_up_and_login_client(username, email, password):
     user = await new_client_user(username, email, password, '')
     if not user: return False
     save_username(username)
+    server_saved_to_local(user['username'])
     return user
 
 async def login_estab(cpf_or_cnpj, password):
@@ -83,6 +85,7 @@ async def login_estab(cpf_or_cnpj, password):
                 elif validated:
                     await update_user(user['username'], {'validated': True})
             save_username(user['username'])
+            await server_saved_to_local(user['username'])
             return user
     return 'Usuário não encontrado'
 
@@ -112,10 +115,15 @@ async def check_estab_sign_up_inputs(username, email, password, cnpj, cpf, birth
 async def sign_up_estab(username, email, password, cnpj, cpf, birth_date):
     return await new_estab_user(username, email, cpf, birth_date, cnpj, None, password, '')
 
+async def server_saved_to_local(username):
+    user = await get_user(username)
+    erase_saved_data()
+    for saved in user['saved']:
+        local_save_post(await get_post(saved))
+
 async def get_posts_from_server():
     random_posts = await update_posts(await list_posts(False))
-    random.shuffle(random_posts)
-    return random_posts
+    return random.sample(random_posts, 25) 
 
 async def update_posts(posts):
     user = await get_user(get_username())
@@ -136,7 +144,10 @@ def save_theme(theme):
 
 async def save_post(post_id):
     await user_save(get_username(), post_id)
+    local_save_post(await get_post(post_id))
 
 async def un_save_post(post_id):
     await user_un_save(get_username(), post_id)
+    local_un_save_post(post_id)
+    
     
