@@ -67,6 +67,6 @@ Builder.load_string('''
 )
 class ImageSelectionPage(MDScreen):
     name = 'image_selection_page'  
-    def back(self, icon='image'):
+    def back(self, icon='account-circle'):
         self.manager.get_screen(self.back_to).selected_image = icon
         self.manager.current = self.back_to

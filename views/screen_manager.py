@@ -1,7 +1,7 @@
-import asyncio
+import asyncio, os
 from kivymd.uix.screenmanager import MDScreenManager
 from kivy.clock import Clock
-from control.control import logout, get_post, get_user
+from control.control import logout, get_post, get_user, user_image_was_loaded
 from .posts_page import PostsPage
 from .search_page import SearchPage
 from .theme_config_page import ThemeConfigPage
@@ -85,15 +85,20 @@ class ScreenManager(MDScreenManager):
         page.username = self.app.username
         self.current = 'user_account_configuration_page' if self.app.user['description'] == '' else 'posts_page'
     
-    def load_comment_page(self, id, username, image, text):
-        asyncio.ensure_future(self._load_comment_page(id, username, image, text))
+    def load_comment_page(self, id, username, image, text, user_image):
+        asyncio.ensure_future(self._load_comment_page(id, username, image, text, user_image))
     
-    async def _load_comment_page(self, id, username, image, text):
+    async def _load_comment_page(self, id, username, image, text, user_image):
         page = self.get_screen('comment_page')
         page.code = f'{username}-{id}'
         post = await get_post(page.code)
         page.username = username
-        page.user_image = image
+        page.image = image
+        if user_image == None:
+            user = await get_user(username)
+            page.user_image = user['image']
+        else:
+            page.user_image = user_image
         page.text = text
         page.likes = post['likes']
         page.comments = post['comments']
@@ -144,7 +149,11 @@ class ScreenManager(MDScreenManager):
         page.client = not self.app.user['can_post']
         if page.client:
             page.selected_image = str(self.app.user['image_code'])
+        else:
+            page.ids._image_button.key = os.path.join(os.getcwd(), 'views', 'data', 'user_images', user_image_was_loaded(self.app.username))
+            page.ids._image_button.change_source()
+            page.ids._number.text = self.app.user['tel']
         page.username = self.app.username
-        page.bio = self.app.user['description']
+        page.ids._bio.text = self.app.user['description']
         self.current = 'user_account_configuration_page'
     

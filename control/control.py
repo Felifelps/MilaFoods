@@ -2,7 +2,7 @@ from firebase.user import *
 from firebase.post import *
 from local.appdb import *
 from firebase.gmail import AuthenticationMail
-import random
+import random, os
 
 Email = AuthenticationMail()
 
@@ -132,7 +132,8 @@ async def update_posts(posts):
             'id': str(post['id']),
             'height': 300,
             'liked': f"{post['username']}-{post['id']}" in user['liked'],
-            'saved': f"{post['username']}-{post['id']}" in user['saved']
+            'saved': f"{post['username']}-{post['id']}" in user['saved'],
+            'user_image': user['image']
         })
     return posts
 
@@ -149,5 +150,4 @@ async def save_post(post_id):
 async def un_save_post(post_id):
     await user_un_save(get_username(), post_id)
     local_un_save_post(post_id)
-    
     

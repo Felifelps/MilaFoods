@@ -15,6 +15,7 @@ Builder.load_string('''
 #:import Post views.utils
 #:import ProfileButton views.utils
 #:import BasicSpinner views.utils
+#:import DynamicSourceImage views.utils
 #:import join os.path.join
 
 <EmojiButton@MDIconButton>:
@@ -28,7 +29,7 @@ Builder.load_string('''
 <Comment@BoxLayout>:
     username: 'username'
     code: 1
-    spacing: dp(10)
+    spacing: dp(3)
     MDIconButton:
         icon_size: '35sp'
         size_hint_y: 1 
@@ -53,8 +54,15 @@ Builder.load_string('''
     md_bg_color: .3, .3, .3, 1
     screen: None
     MDIconButton:
-        pos_hint: {'x': .02, 'center_y': .5}
+        pos_hint: {'x': 20, 'center_y': .5}
         icon: join('views', 'data', 'profile_images', '1.png')
+        a: print(self.icon_size)
+    DynamicSourceImage:
+        pos_hint: {'x': .02, 'center_y': .5}
+        size_hint: None, None
+        size: sp(35), sp(35)
+        pattern: '@'
+        key: join('views', 'data', 'user_images', app.user['image'])
     Label:
         text: app.user['username']
         size_hint: None, None
@@ -93,14 +101,14 @@ Builder.load_string('''
                 Rectangle:
                     size: self.width, self.height
                     pos: 0, 0
-            MDIconButton:
-                pos_hint: {'x': 0, 'center_y': .95}
-                icon_size: '35sp'
-                theme_icon_color: 'Custom'
-                icon_color: 0, 0, 0, 1
-                icon: 'account-circle'
+            DynamicSourceImage:
+                pos_hint: {'x': .03, 'center_y': .95}
+                size_hint: None, None
+                size: sp(35), sp(35)
+                pattern: '@'
+                key: join('views', 'data', 'user_images', app.user['image'])
                 on_press:
-                    app.root.load_estab_profile_page(_screen.username)
+                    app.root.load_estab_profile_page(_screen.user_image)
             Label:
                 text: _screen.username
                 color: .1, .1, .1, 1

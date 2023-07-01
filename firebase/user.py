@@ -1,6 +1,6 @@
 from .db import DB, firestore_async, os
 from .post import list_posts, new_post, get_post, update_post
-from .utils import encode_image, decode_image
+from .utils import encode_image, decode_image, user_image_was_loaded
 try:
     USERS = DB.collection("users")
 except Exception as e:
@@ -21,8 +21,12 @@ async def get_user(username):
         return False
     user = await USERS.document(username).get()
     user = user.to_dict()
-    if user['can_post'] and user['image'] != None:
+    if user['can_post'] and user['image'] != '':
         await download_image(user)
+        user.update({'image': f'{user["username"]}.{user["image"][0]}'})
+    else:
+        user.update({'image': 'account-circle.png'})
+    print(user)
     return user
 
 async def new_client_user(username, email, password, description):
@@ -36,7 +40,7 @@ async def new_client_user(username, email, password, description):
         "cnpj": None,
         "tel": None,
         "description": description,
-        "image": None,
+        "image": "",
         "image_code": 0,
         "n_of_posts": None,
         "liked": [],
@@ -61,7 +65,7 @@ async def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, 
         "cnpj": cnpj,
         "tel": tel,
         "description": description,
-        "image": None,
+        "image": "",
         "image_code": None,
         "n_of_posts": 1,
         "liked": [],
@@ -135,10 +139,14 @@ async def delete_user(username):
     await list_users()
 
 async def download_image(user):
-    image_path = os.path.join("data", "user_images", f"{user['username']}.{user['image'][0]}")
-    if not os.path.exists(image_path): 
-        decode_image(user['image'][1], f"{user['username']}.{user['image'][0]}")
-    return image_path
+    if user['image'] == '':
+        return os.path.join("views", "data", "user_images", f"account-circle.png")
+    for i in os.listdir(os.path.join('views', 'data', 'user_images')):
+        if user['username'] in i:
+            os.remove(os.path.join('views', 'data', 'user_images', i))
+            break
+    decode_image(user['image'][1], f"{user['username']}.{user['image'][0]}")
+    return os.path.join("views", "data", "user_images", f"{user['username']}.{user['image'][0]}")
     
 async def upload_image(username, image_path):
-    await update_user(username, {"image": None if image_path == None else encode_image(image_path)})
+    await update_user(username, {"image": '' if image_path == '' else encode_image(image_path)})

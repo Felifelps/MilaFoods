@@ -24,7 +24,7 @@ class MilaFoods(MDApp):
 
     def on_start(self):
         self.root.load_screens()
-        #asyncio.ensure_future(self.test_post())
+        asyncio.ensure_future(self.test_post())
         return super().on_start()
     
     async def test_post(self):
@@ -32,11 +32,7 @@ class MilaFoods(MDApp):
             await update_user(
                 user['username'], 
                 {
-                    'liked': [],
-                    'saved': [],
-                    'following': ['MilaFoods'],
-                    'n_of_posts': 0 if user['can_post'] else None,
-                    'n_of_followers': 0 if user['can_post'] else None,
+                    'tel': ''
                 }
             )
 

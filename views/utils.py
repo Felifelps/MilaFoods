@@ -11,7 +11,7 @@ from kivymd.uix.filemanager import MDFileManager
 from kivymd.uix.snackbar import Snackbar
 from kivymd.uix.dialog import MDDialog 
 from kivymd.uix.pickers import MDDatePicker
-from kivy.properties import StringProperty, ListProperty
+from kivy.properties import StringProperty, ListProperty, BooleanProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.clock import Clock
@@ -275,12 +275,14 @@ Builder.load_string('''
             icon: "close"
             on_press: 
                 lm.close()
-        MDIconButton:
-            icon: 'account-circle' #if str(app.user['image_code']) == '0' else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")) if not app.user['can_post'] else join('views', 'data', 'user_images', f"{app.user['image']}.png")
-            icon_size: '75sp'
+        DynamicSourceImage:
+            pos_hint: {'center_x': .5, 'center_y': .55}
+            size_hint: None, None
+            size: sp(75), sp(75)
+            pattern: '@'
+            key: join('views', 'data', 'user_images', app.user['image'])
             on_press:
                 app.root.load_profile_page()
-            pos_hint: {'center_x': .5, 'center_y': .55}
         Label: 
             text: app.user['username']
             font_size: '20sp'
@@ -345,10 +347,6 @@ Builder.load_string('''
         self.lm.open()
 
 <SelectImageButton>:
-    avatar: True
-    icon: 'account' if self.avatar else 'image'
-    icon_theme_color: 'Primary' if self.avatar else 'Custom'
-    md_bg_color: .3, .3, .3, 3
     on_press: self.file_manager.show('C://')
 
 <TopTitleBar@MDRelativeLayout>:
@@ -368,12 +366,14 @@ Builder.load_string('''
     pos_hint: {'top': 1}
     size_hint: 1, .1
     md_bg_color: app.theme_cls.primary_dark
-    MDIconButton:
-        icon: 'account-circle' #if str(app.user['image_code']) == '0' else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")) if not app.user['can_post'] else join('views', 'data', 'user_images', f"{app.user['image']}.png")
+    DynamicSourceImage:
+        pos_hint: {'x': .025, 'center_y': .5}
+        size_hint: None, None
+        size: sp(40), sp(40)
+        pattern: '@'
+        key: join('views', 'data', 'user_images', app.user['image'])
         on_press:
             app.root.load_profile_page()
-        pos_hint: {'x': .025, 'center_y': .5}
-        icon_size: '40sp'
     Label:
         text: root.title
         markup: True
@@ -482,8 +482,8 @@ Builder.load_string('''
 <Post>:
     username: 'Username'
     text: 'description'
-    image: join('views', 'data', 'logo.png')
-    user_image: ''
+    image: ''
+    user_image: 'account-circle.png'
     timestamp: ''
     liked: False
     saved: False
@@ -496,13 +496,12 @@ Builder.load_string('''
         Rectangle:
             size: self.width, self.height
             pos: 0, 0
-    MDIconButton:
-        id: _account_button
+    DynamicSourceImage:
         pos_hint: {'center_x': .085, 'center_y': .925}
-        icon_size: '35sp'
-        theme_icon_color: 'Custom'
-        icon_color: .1, .1, .1, 1
-        icon: "account-circle"
+        size_hint: None, None
+        size: sp(32.5), sp(32.5)
+        pattern: join('views', 'data', 'user_images', '@')
+        key: root.user_image
     Label:
         text: root.username
         color: .1, .1, .1, 1
@@ -635,16 +634,29 @@ Builder.load_string('''
             root.cpf = not root.cpf
 ''')
 
+class DynamicSourceImage(Image):
+    key = StringProperty('')
+    pattern = '@.png'
+    press = BooleanProperty(False)
+    def on_key(self, a, b):
+        self.change_source()
+        
+    def change_source(self):
+        self.source = self.pattern.replace('@', self.key)
+        self.reload()
+    
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos): self.press = not self.press
+        return super().on_touch_down(touch)
+    
 class BasicListItem(TwoLineAvatarListItem):
     src = StringProperty('')
     def on_src(self, a, b):
         if self.src != "": self.add_widget(ImageLeftWidget(source=self.src))
     
-class Background(Image):
-    theme = StringProperty('Red')
-    def on_theme(self, a, b):
-        self.source = f'background_{self.theme}.png'
-        self.reload()
+class Background(DynamicSourceImage):
+    key = 'Red'
+    pattern = 'background_@.png'
 
 class BasicDropDownItem(MDFillRoundFlatIconButton):
     items = ListProperty([])
@@ -761,19 +773,21 @@ class BottomMenu(MDRelativeLayout):
             self.close()
         return super().on_touch_down(touch)
            
-class SelectImageButton(MDIconButton):
+class SelectImageButton(DynamicSourceImage):
+    pattern = '@'
+    key = os.path.join(os.getcwd(), 'views', 'data', 'user_images', 'account-circle.png')
     def __init__(self, *args, **kwargs):
         self.file_manager = MDFileManager(
             exit_manager=self.exit_file_manager,
             select_path=self.select_path
         )
         super().__init__(*args, **kwargs)
-        
+    
     def select_path(self, path):
         for extension in ['png', 'jpg', 'jpeg']:
             if extension in path: 
-                self.icon = os.path.join(path)
-                print(self.icon)
+                self.key = os.path.join(path)
+                self.change_source()
                 return self.file_manager.close()
         Snackbar(text='Escolha uma imagem').open()
     
@@ -784,7 +798,7 @@ class Post(MDRelativeLayout):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos) and not self.app.lateral_menu_is_active:
             if self.to_local(*touch.pos)[1] <= 255:
-                self.app.root.load_comment_page(self.id, self.username, self.image, self.text)
+                self.app.root.load_comment_page(self.id, self.username, self.image, self.text, self.user_image)
             else:
                 self.app.root.load_profile_page(self.username)
         return super().on_touch_down(touch)
@@ -805,7 +819,7 @@ class CpfCnpjTextInput(MDFloatLayout):
 class SavedPost(MDRelativeLayout):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            self.app.root.load_comment_page(self.id, self.username, self.image, self.text)
+            self.app.root.load_comment_page(self.id, self.username, self.image, self.text, None)
         return super().on_touch_down(touch)
 
 class FollowButton(MDBoxLayout):

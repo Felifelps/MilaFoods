@@ -12,6 +12,7 @@ Builder.load_string('''
 #:import Background views.utils
 #:import LateralMenu views.utils
 #:import Post views.utils
+#:import exists os.path.exists
 
 <PostsBar@MDRelativeLayout>:
     lm: None
@@ -30,10 +31,12 @@ Builder.load_string('''
     pos_hint: {'top': 1}
     size_hint: 1, .1
     md_bg_color: app.theme_cls.primary_dark
-    MDIconButton:
-        pos_hint: {'x': .025, 'center_y': .5}
-        icon_size: '40sp'
-        icon: 'account-circle' #if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
+    DynamicSourceImage:
+        pos_hint: {'x': .04, 'center_y': .5}
+        size_hint: None, None
+        size: sp(40), sp(40)
+        pattern: '@'
+        key: join('views', 'data', 'user_images', app.user['image'])
         on_press:
             app.root.load_profile_page()
     MDTextField:
