@@ -4,7 +4,7 @@ from kivy.animation import Animation
 from kivy.lang import Builder
 from control.control import get_user_posts, get_user, user_follow, user_un_follow
 from kivymd.uix.dialog import MDDialog
-import webbrowser
+import webbrowser, asyncio
 
 Builder.load_string('''
 #:import BasicLabel views.utils
@@ -17,6 +17,7 @@ Builder.load_string('''
 #:import Post views.utils
 #:import BottomMenu views.utils
 #:import SelectImageButton views.utils
+#:import BasicSpinner views.utils
 #:import join os.path.join
 
 <NewPost@BottomMenu>:
@@ -118,10 +119,12 @@ Builder.load_string('''
             np: _np
             new_post: _screen.username == app.user['username']
         MDFloatLayout:
-            MDIconButton:
-                icon: join('views', 'data', 'logo.png') if _screen.image == 'None' else join('views', 'data', 'user_images', _screen.image)
-                icon_size: '85sp'
-                pos_hint: {'x': .0, 'center_y': .75}
+            DynamicSourceImage:
+                pos_hint: {'x': .04, 'center_y': .75}
+                size_hint: None, None
+                size: sp(85), sp(85)
+                pattern: '@'
+                key: root.image
             Label:
                 text: _screen.username
                 font_size: '25sp'
@@ -171,6 +174,8 @@ Builder.load_string('''
             id: _lm
         NewPost:
             id: _np
+    BasicSpinner:
+        id: _spinner
 '''
 )
 
@@ -178,19 +183,12 @@ class EstabProfilePage(MDScreen):
     name = 'estab_profile_page'
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.dialog = MDDialog(
-            text='Atualizando posts...',
-            on_open=lambda x: self.load_posts()
-        )
-        self.follow_dialog = MDDialog(
-            on_open=lambda x: self.follow()
-        )
         self.unregistered_dialog = MDDialog(text='Esta conta não tem número cadastrado')
         self.loaded_posts = {self.app.username: self.app.posts}
 
     def on_enter(self, *args):
         if self.username not in self.loaded_posts.keys():
-            self.dialog.open()
+            self.load_posts()
         else:
             self.ids._pa.rv.data = self.loaded_posts[self.username]
         return super().on_pre_enter(*args)
@@ -201,36 +199,43 @@ class EstabProfilePage(MDScreen):
     
     def left_button_action(self):
         if self.username == self.app.username:
-            self.manager.load_user_edit_page(self.username)
+            self.manager.load_user_edit_page('posts_page')
         else:
-            self.follow_dialog.text = 'Deixando de seguir' if self.following else 'Seguindo' + f' {self.username}...'
-            self.follow_dialog.open()
+            self.follow()
     
     def follow(self):
+        self.ids._spinner.active = True
+        asyncio.ensure_future(self._follow())
+        
+    async def _follow(self):
         if self.following:
-            user_un_follow(self.app.username, self.username)
+            await user_un_follow(self.app.username, self.username)
         else:
-            user_follow(self.app.username, self.username)
+            await user_follow(self.app.username, self.username)
         self.following = not self.following
         self.n_of_followers += 1 if self.following else -1
-        self.follow_dialog.dismiss()
+        self.ids._spinner.active = False
     
     def load_posts(self):
+        self.ids._spinner.active = True
+        asyncio.ensure_future(self._load_posts())
+        
+    async def _load_posts(self):
         self.ids._pa.rv.data = []
-        user_data = get_user(self.app.user['username'])
-        for post in get_user_posts(self.username):
-            post['id'] = str(post['id'])
+        user_data = await get_user(self.app.user['username'])
+        for post in await get_user_posts(self.username):
+            print(post)
             post['height'] = 300
-            post['liked'] = f"{post['username']}-{post['id']}" in user_data['liked']
-            post['saved'] = f"{post['username']}-{post['id']}" in user_data['saved']
+            post['liked'] = post['key'] in user_data['liked']
+            post['saved'] = post['key'] in user_data['saved']
             self.ids._pa.rv.data.append(post)
         self.loaded_posts[self.username] = self.ids._pa.rv.data
-        self.dialog.dismiss()
+        self.ids._spinner.active = False
     
     def open_zap(self):
         if len(self.tel) < 10:
             return self.unregistered_dialog.open()
-        webbrowser.open('https://wa.me/55' + self.tel)
+        webbrowser.open('https://wa.me/55' + "".join(filter(lambda x: x.isdigit(), self.tel)))
 
 class PostsArea(MDRelativeLayout):
     up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.5)

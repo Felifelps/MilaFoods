@@ -1,8 +1,8 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.metrics import dp
-from control.control import list_users
-import asyncio
+from control.control import list_users, user_image_was_loaded
+import asyncio, os
 
 Builder.load_string('''
 #:import BasicLabel views.utils
@@ -92,7 +92,7 @@ class SearchPage(MDScreen):
         for user in await list_users(True):
             if user['username'] == self.app.username or not user['can_post']: continue
             user.update({
-                'image': str(user['image']),
+                'image': os.path.join('views', 'data', 'user_images', user_image_was_loaded(user['username'])),
                 'image_code': str(user['image_code']),
                 'size_hint': (1, None),
                 'height': dp(60)

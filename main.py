@@ -5,7 +5,7 @@ import asyncio
 from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
 from kivy.properties import StringProperty, DictProperty
-from control.control import get_username, get_user, get_theme, post,list_users, update_user
+from control.control import get_username, get_user, get_theme, list_users, update_user
 
 class MilaFoods(MDApp):
     username = StringProperty(get_username())
@@ -24,7 +24,7 @@ class MilaFoods(MDApp):
 
     def on_start(self):
         self.root.load_screens()
-        asyncio.ensure_future(self.test_post())
+        #asyncio.ensure_future(self.test_post())
         return super().on_start()
     
     async def test_post(self):

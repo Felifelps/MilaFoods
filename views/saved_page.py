@@ -33,7 +33,6 @@ Builder.load_string('''
         BasicLabel:
             id: number
             text: f'Você tem {len(_rv.data)} posts salvos'
-            #font_size: '30sp'
             pos_hint: {'center_x': .375, 'center_y': .73}
         RecycleView:
             id: _rv

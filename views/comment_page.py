@@ -1,10 +1,10 @@
 from kivymd.uix.screen import MDScreen
 from kivy.lang import Builder
 from kivy.properties import StringProperty, ListProperty, BooleanProperty, NumericProperty
-from control.control import user_like, user_un_like, user_comment, save_post, un_save_post
+from control.control import user_like, user_un_like, user_comment, save_post, un_save_post, user_image_was_loaded
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.snackbar import Snackbar
-import asyncio
+import asyncio, os
 
 Builder.load_string('''
 #:import TopImageAndStarBar views.utils
@@ -30,12 +30,12 @@ Builder.load_string('''
     username: 'username'
     code: 1
     spacing: dp(3)
-    MDIconButton:
-        icon_size: '35sp'
-        size_hint_y: 1 
-        icon: 'account-circle' #if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
-        theme_icon_color: "Custom"
-        icon_color: 'black'
+    image: ''
+    DynamicSourceImage:
+        size_hint: None, None
+        size: sp(40), sp(40)
+        pattern: '@'
+        key: root.image
         on_press:
             app.root.load_profile_page(root.username)
     Label:
@@ -199,7 +199,7 @@ class CommentPage(MDScreen):
         asyncio.ensure_future(self._save_post())
         
     def on_comments(self, a, b):
-        self.rv.data = [{'username': x.split('-')[0], 'code': x.split('-')[1], 'size_hint_x': 1} for x in self.comments]
+        self.rv.data = [{'username': x.split('-')[0], 'code': x.split('-')[1], 'size_hint_x': 1, 'image': os.path.join('views', 'data', 'user_images', user_image_was_loaded(x.split('-')[0]))} for x in self.comments]
     
     def like_or_un_like(self):
         self.ids._spinner.active = True

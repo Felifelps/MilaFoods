@@ -20,6 +20,7 @@ import os, asyncio
 Builder.load_string('''
 #:import join os.path.join
 #:import colors kivymd.color_definitions.colors
+#:import user_image_was_loaded firebase.utils.user_image_was_loaded
 
 <BasicSpinner@MDSpinner>:
     size_hint: None, None
@@ -50,13 +51,12 @@ Builder.load_string('''
     spacing: 2
     following: False
     app: app
-    MDIconButton:
-        icon_size: '35sp'
+    DynamicSourceImage:
         pos_hint: {'x': 0, 'center_y': .5}
-        size_hint: .2, 1
-        icon: 'account-circle' 
-        theme_icon_color: "Custom"
-        icon_color: 'black'
+        size_hint: None, None
+        size: dp(35), dp(35)
+        pattern: '@'
+        key: root.image
     MDLabel:
         id: _label
         text: root.username
@@ -367,7 +367,7 @@ Builder.load_string('''
     size_hint: 1, .1
     md_bg_color: app.theme_cls.primary_dark
     DynamicSourceImage:
-        pos_hint: {'x': .025, 'center_y': .5}
+        pos_hint: {'x': .035, 'center_y': .5}
         size_hint: None, None
         size: sp(40), sp(40)
         pattern: '@'

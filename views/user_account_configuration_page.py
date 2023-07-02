@@ -61,7 +61,7 @@ Builder.load_string('''
             size_hint_y: .16 + (.15 if _screen.client else 0)
             text: 'Sou novo no app!'
             hint_text: 'Crie uma bio'
-            multiline: _screen.client
+            multiline: _True
         BasicLabel:
             text: 'Número'
             pos_hint: {'center_x': .5 if not _screen.client else 10, 'center_y': .32}
