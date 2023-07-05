@@ -22,16 +22,20 @@ from .image_selection_page import ImageSelectionPage
 class ScreenManager(MDScreenManager):
     login_pages = False
     user_pages = False
+    edit_pages = False
     logged_user_is_client = False
     def __init__(self, app, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.app = app
         
     def load_edit_pages(self):
-        if 'user_account_configuration_page' not in self.screen_names:
-            self.add_widget(UserAccountConfigurationPage())
-        if 'image_selection_page' not in self.screen_names:
-            self.add_widget(ImageSelectionPage())
+        if not self.edit_pages:
+            for i in [
+                UserAccountConfigurationPage(),
+                ImageSelectionPage()
+            ]: 
+                self.add_widget(i)
+            self.user_pages = True
         
     def logout(self):
         logout()
@@ -49,8 +53,8 @@ class ScreenManager(MDScreenManager):
                 EstabProfilePage(),
             ]: 
                 self.add_widget(i)
-            self.load_edit_pages()
             self.user_pages = True
+            self.load_edit_pages()
             self.current = 'posts_page'
     
     def load_login_pages(self): 
@@ -65,8 +69,8 @@ class ScreenManager(MDScreenManager):
                 FollowEstabsPage(),
             ]: 
                 self.add_widget(i)
-            self.load_edit_pages()
             self.login_pages = True
+            self.load_edit_pages()
             self.current = 'client_or_estab_page'
     
     def load_screens(self):

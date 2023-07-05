@@ -15,7 +15,8 @@ from kivy.properties import StringProperty, ListProperty, BooleanProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.clock import Clock
-import os, asyncio
+from PIL import Image as PILImage
+import os
 
 Builder.load_string('''
 #:import join os.path.join
@@ -707,6 +708,7 @@ class BasicTextInput(TextInput):
         return super().insert_text(substring, from_undo)
     
     def do_backspace(self, from_undo=False, mode='bkspc'):
+        if self.text == '': return False
         if self.type == 'number':
             if self.text[-1] == ' ':
                 self.text = self.text.replace('(', '').replace(') ', '')
@@ -784,12 +786,15 @@ class SelectImageButton(DynamicSourceImage):
         super().__init__(*args, **kwargs)
     
     def select_path(self, path):
-        for extension in ['png', 'jpg', 'jpeg']:
-            if extension in path: 
-                self.key = os.path.join(path)
-                self.change_source()
-                return self.file_manager.close()
-        Snackbar(text='Escolha uma imagem').open()
+        try:
+            a = PILImage.open(path)
+            print(a)
+            self.key = os.path.join(path)
+            self.change_source()
+            return self.file_manager.close()
+        except Exception as e:
+            print(e)
+            Snackbar(text='Escolha uma imagem').open()
     
     def exit_file_manager(self, *args): 
         self.file_manager.close()

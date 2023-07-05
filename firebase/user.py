@@ -88,7 +88,9 @@ async def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, 
 async def get_user_posts(username):
     posts = []
     async for i in DB.collection(f"users/{username}/posts").stream():
-        posts.append(i.to_dict())
+        post = await get_post(i.id)
+        print(post)
+        posts.append(post)
     return posts
 
 async def user_like(username, post_id):
