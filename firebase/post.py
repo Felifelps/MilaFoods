@@ -14,7 +14,6 @@ async def new_post(id, username, text, image=""):
         "likes": 0,
         "comments": []
     })
-    await DB.document(f"users/{username}/posts/{key}").set({"id": id})
     return True
 
 async def update_post(key, data):
@@ -23,6 +22,7 @@ async def update_post(key, data):
 async def get_post(key):
     post = await DB.document(f"posts/{key}").get()
     post = post.to_dict()
+    post.update({'id': str(post['id'])})
     if post['image'] != '':
         await download_image(post)
     return post

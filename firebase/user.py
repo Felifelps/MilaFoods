@@ -26,7 +26,6 @@ async def get_user(username):
         user.update({'image': f'{user["username"]}.{user["image"][0]}'})
     else:
         user.update({'image': 'account-circle.png'})
-    print(user)
     return user
 
 async def new_client_user(username, email, password, description):
@@ -86,10 +85,11 @@ async def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, 
     return await get_user(username)
 
 async def get_user_posts(username):
+    user = await get_user(username)
     posts = []
-    async for i in DB.collection(f"users/{username}/posts").stream():
-        post = await get_post(i.id)
-        print(post)
+    for post in user['posts']:
+        post = await get_post(post)
+        post.update({'id': post['id']})
         posts.append(post)
     return posts
 
@@ -123,8 +123,9 @@ async def post(username, text, image):
     if not user['can_post']: return False
     id = user['n_of_posts'] + 1
     await new_post(id, username, text, image)
-    print(f'Posted {username}-{id}')
     await update_user(username, {"n_of_posts": id})
+    await update_user(username, {'saved': firestore_async.ArrayUnion([f'{username}-{id}'])})
+    print(f'Posted {username}-{id}')
     
 async def update_user(username, data):
     """Updates a client object of the database"""

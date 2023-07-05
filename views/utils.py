@@ -686,7 +686,7 @@ class BasicTextInput(TextInput):
             return False
         elif self.type == 'cnpj' and (text_len > 14 or not substring.isdigit()): 
             return False
-        elif self.type == 'description' and (text_len > 100 or text.count('\n') > 4):
+        elif self.type == 'description' and (text_len > 300 or text.count('\n') > 7):
             return False
         elif self.type == 'code' and text_len > 5:
             return False

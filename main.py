@@ -5,7 +5,7 @@ import asyncio
 from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
 from kivy.properties import StringProperty, DictProperty
-from control.control import get_username, get_user, get_theme, list_users, update_user
+from control.control import get_username, get_user, get_theme, list_users, update_user, list_posts, get_user_posts
 
 class MilaFoods(MDApp):
     username = StringProperty(get_username())
@@ -32,7 +32,7 @@ class MilaFoods(MDApp):
             await update_user(
                 user['username'], 
                 {
-                    'tel': ''
+                    'posts': await list_posts() if user['username'] == 'MilaFoods' else [] 
                 }
             )
 
@@ -46,6 +46,7 @@ class MilaFoods(MDApp):
         if user != False:
             user.update({'tel': str(user['tel'])})
             self.user = user
+            self.posts = await get_user_posts(username)
             return 
         self.user = {}
 

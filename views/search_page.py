@@ -65,18 +65,25 @@ Builder.load_string('''
         SearchBar:
             id: _sb
             screen: _screen
-        RecycleView:
-            id: _rv
-            viewclass: 'FollowButton'
-            size_hint: .98, .8
+        MDScrollViewRefreshLayout:
+            id: _refresh_layout
             pos_hint: {'center_x': .5, 'top': .875}
-            RecycleBoxLayout:
-                orientation: 'vertical'
-                default_size: None, dp(56)
-                default_size_hint: 1, None
-                size_hint_y: None
-                height: self.minimum_height
-                spacing: dp(1)
+            size_hint: .98, .8
+            refresh_callback: lambda *args: _screen.set_users()
+            root_layout: root
+            RecycleView:
+                id: _rv
+                viewclass: 'FollowButton'
+                size_hint: .98, 1
+                pos_hint: {'center_x': .5, 'top': .875}
+                RecycleBoxLayout:
+                    orientation: 'vertical'
+                    default_size: None, dp(56)
+                    default_size_hint: 1, None
+                    size_hint_y: None
+                    height: self.minimum_height
+                    spacing: dp(1)
+        
         BottomBar:
 '''
 )
@@ -85,6 +92,10 @@ class SearchPage(MDScreen):
     name = 'search_page'
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.set_users()
+        
+    def set_users(self):
+        self.users = []
         asyncio.ensure_future(self._set_users())
         
     async def _set_users(self):

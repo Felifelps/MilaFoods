@@ -35,7 +35,7 @@ class ScreenManager(MDScreenManager):
                 ImageSelectionPage()
             ]: 
                 self.add_widget(i)
-            self.user_pages = True
+            self.edit_pages = True
         
     def logout(self):
         logout()
@@ -143,8 +143,6 @@ class ScreenManager(MDScreenManager):
         page.n_of_followers = data['n_of_followers']
         page.following = page.username in self.app.user['following']
         page.tel = str(data['tel'])
-        if self.current == 'estab_profile_page':
-            page.dialog.open()
         self.current = 'estab_profile_page'
         
     def load_user_edit_page(self, back_to):

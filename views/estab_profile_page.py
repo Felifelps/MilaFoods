@@ -105,12 +105,14 @@ Builder.load_string('''
     id: _screen
     username: app.user['username']
     description: app.user['description']
+    _description: self.description
     image: str(app.user['image'])
     n_of_followers: app.user['n_of_followers']
     n_of_posts: app.user['n_of_posts']
     tel: str(app.user['tel'])
     following: False
     app: app
+    on_description: self.configure_description()
     Background:
         id: _bg
     RelativeLayout:
@@ -132,14 +134,14 @@ Builder.load_string('''
                 size: self.texture_size
                 pos_hint: {'x': .05, 'center_y': .625}
             Label:
-                text: _screen.description
+                text: _screen._description
                 font_size: '14sp'
                 size_hint: None, None
                 size: self.texture_size
                 pos_hint: {'x': .05, 'top': .575}
             BasicButton:
                 size_hint_x: .275
-                pos_hint: {'center_x': .5, 'center_y': .7}
+                pos_hint: {'center_x': .5, 'center_y': .69 if _screen.username == app.user['username'] else .7}
                 text: 'Editar\\nperfil' if _screen.username == app.user['username'] else ('Seguindo' if _screen.following else 'Seguir')
                 md_bg_color: app.theme_cls.primary_dark
                 on_press:
@@ -169,6 +171,7 @@ Builder.load_string('''
                 pos_hint: {'center_x': .82, 'center_y': .775}
             PostsArea:
                 id: _pa
+                pos_hint: {'center_x': .5, 'top': 10 if len(self.rv.data) == 0 else .4}
         BottomBar:
         LateralMenu:
             id: _lm
@@ -184,9 +187,23 @@ class EstabProfilePage(MDScreen):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.unregistered_dialog = MDDialog(text='Esta conta não tem número cadastrado')
-        self.loaded_posts = {self.app.username: self.app.posts}
+        self.loaded_posts = {}
 
+    def configure_description(self):
+        d = []
+        sum = 0
+        for c in self.description.split(' '):
+            sum += len(c) + 1
+            if sum/45 > 1:
+                d.append('\n' + c)
+                sum = 0
+                continue 
+            d.append(c)
+        self._description = ' '.join(d)
+        
     def on_enter(self, *args):
+        if self.loaded_posts == {}:
+            self.loaded_posts[self.manager.app.username] = self.manager.app.posts
         if self.username not in self.loaded_posts.keys():
             self.load_posts()
         else:
@@ -221,13 +238,13 @@ class EstabProfilePage(MDScreen):
         asyncio.ensure_future(self._load_posts())
         
     async def _load_posts(self):
-        self.ids._pa.rv.data = []
         user_data = await get_user(self.app.user['username'])
+        self.ids._pa.rv.data = []
+        if user_data['posts'] == []: return
         for post in await get_user_posts(self.username):
-            print(post)
             post['height'] = 300
-            post['liked'] = post['key'] in user_data['liked']
-            post['saved'] = post['key'] in user_data['saved']
+            post['liked'] = f'{post["username"]}-{post["id"]}' in user_data['liked']
+            post['saved'] = f'{post["username"]}-{post["id"]}' in user_data['saved']
             self.ids._pa.rv.data.append(post)
         self.loaded_posts[self.username] = self.ids._pa.rv.data
         self.ids._spinner.active = False

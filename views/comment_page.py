@@ -189,7 +189,7 @@ class CommentPage(MDScreen):
         if self.saved: await un_save_post(self.code)
         else: await save_post(self.code) 
         self.saved = not self.saved
-        self.manager.get_screen('posts_page').user_like_or_save_update(self.code, self.likes)
+        self.manager.get_screen('posts_page').user_like_or_save_update(self.code, self.likes, self.liked, self.saved)
         self.snackbar.text = 'Post salvo'
         self.snackbar.open()
         self.ids._spinner.active = False
@@ -212,7 +212,7 @@ class CommentPage(MDScreen):
             await user_like(self.parent.app.user['username'], self.code)
         self.likes += -1 if self.liked else 1
         self.liked = not self.liked
-        self.manager.get_screen('posts_page').user_like_or_save_update(self.code, self.likes)
+        self.manager.get_screen('posts_page').user_like_or_save_update(self.code, self.likes, self.liked, self.saved)
         self.ids._spinner.active = False
     
     def comment(self, image_code):
