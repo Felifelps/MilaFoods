@@ -4,6 +4,8 @@ from kivy.animation import Animation
 from kivy.lang import Builder
 from control.control import get_user_posts, get_user, user_follow, user_un_follow
 from kivymd.uix.dialog import MDDialog
+from views.utils import DynamicSourceImage
+from kivy.metrics import dp
 import webbrowser, asyncio
 
 Builder.load_string('''
@@ -59,6 +61,7 @@ Builder.load_string('''
 
 <PostsArea>:
     rv: _rv
+    loading: _loading
     size_hint: 1, .4
     pos_hint: {'top': .4}
     scroll_view_blur: 0
@@ -79,6 +82,7 @@ Builder.load_string('''
         pos_hint: {'right': .975, 'top': .95}
         text: 'Cardápio'
         md_bg_color: app.theme_cls.primary_dark
+        elevation: 0
         on_press: 
             app.root.current = 'menu_page'
     RecycleView:
@@ -100,6 +104,12 @@ Builder.load_string('''
             size_hint_y: None
             height: self.minimum_height
             spacing: dp(10)
+    BasicLabel:
+        text: 'Esta conta não tem\\npublicações ainda :('
+        font_size: '15sp'
+        pos_hint: {'center_x': .5 if not _loading.active and _rv.data == [] else 10, 'center_y': .5} 
+    BasicSpinner:
+        id: _loading
 
 <EstabProfilePage>:
     id: _screen
@@ -112,7 +122,9 @@ Builder.load_string('''
     tel: str(app.user['tel'])
     following: False
     app: app
+    pa: _pa
     on_description: self.configure_description()
+    show: False
     Background:
         id: _bg
     RelativeLayout:
@@ -121,12 +133,7 @@ Builder.load_string('''
             np: _np
             new_post: _screen.username == app.user['username']
         MDFloatLayout:
-            DynamicSourceImage:
-                pos_hint: {'x': .04, 'center_y': .75}
-                size_hint: None, None
-                size: sp(85), sp(85)
-                pattern: '@'
-                key: root.image
+            pa: _pa
             Label:
                 text: _screen.username
                 font_size: '25sp'
@@ -169,9 +176,17 @@ Builder.load_string('''
                 size_hint: None, None
                 size: self.texture_size
                 pos_hint: {'center_x': .82, 'center_y': .775}
+            ShowImage:
+                id: _image
+                pos_hint: {'x': .04, 'center_y': .75}
+                size_hint: None, None
+                size: sp(85), sp(85)
+                pattern: '@'
+                key: root.image
+                screen: _screen
             PostsArea:
                 id: _pa
-                pos_hint: {'center_x': .5, 'top': 10 if len(self.rv.data) == 0 else .4}
+                pos_hint: {'center_x': .5, 'top': 10 if _screen.show else .4}
         BottomBar:
         LateralMenu:
             id: _lm
@@ -207,11 +222,12 @@ class EstabProfilePage(MDScreen):
         if self.username not in self.loaded_posts.keys():
             self.load_posts()
         else:
-            self.ids._pa.rv.data = self.loaded_posts[self.username]
+            self.pa.rv.data = self.loaded_posts[self.username]
         return super().on_pre_enter(*args)
 
     def on_leave(self, *args):
-        self.ids._pa.close()
+        self.pa.close()
+        self.ids._image.close()
         return super().on_leave(*args)
     
     def left_button_action(self):
@@ -234,28 +250,57 @@ class EstabProfilePage(MDScreen):
         self.ids._spinner.active = False
     
     def load_posts(self):
-        self.ids._spinner.active = True
+        self.pa.loading.active = True
         asyncio.ensure_future(self._load_posts())
         
     async def _load_posts(self):
         user_data = await get_user(self.app.user['username'])
-        self.ids._pa.rv.data = []
+        self.pa.rv.data = []
         if user_data['posts'] == []: return
+        self.show = False
         for post in await get_user_posts(self.username):
+            if not self.show: self.show = True
             post['height'] = 300
             post['liked'] = f'{post["username"]}-{post["id"]}' in user_data['liked']
             post['saved'] = f'{post["username"]}-{post["id"]}' in user_data['saved']
-            self.ids._pa.rv.data.append(post)
-        self.loaded_posts[self.username] = self.ids._pa.rv.data
-        self.ids._spinner.active = False
+            self.pa.rv.data.append(post)
+        self.loaded_posts[self.username] = self.pa.rv.data
+        self.pa.loading.active = False
+        print(self.username)
     
     def open_zap(self):
         if len(self.tel) < 10:
             return self.unregistered_dialog.open()
         webbrowser.open('https://wa.me/55' + "".join(filter(lambda x: x.isdigit(), self.tel)))
-
+        
+class ShowImage(DynamicSourceImage):
+    opened = False
+    def on_kv_post(self, base_widget):
+        self.parent_obj = self.parent
+        self.starter_size = self.size[0]
+        self.starter_hint = self.pos_hint
+        self.open_anim = Animation(size=(dp(310), dp(310)), pos_hint={'center_y': .5}, bg_opacity=0.75, duration=0.1)
+        self.close_anim = Animation(size=(self.starter_size, self.starter_size), pos_hint=self.starter_hint, bg_opacity=0, duration=0.1)
+    def open(self):
+        self.parent_obj.remove_widget(self)
+        self.parent_obj.add_widget(self)
+        self.open_anim.start(self)
+        self.opened = True
+    def close(self):
+        pa = self.parent_obj.pa
+        self.parent_obj.remove_widget(pa)
+        self.parent_obj.add_widget(pa)
+        self.close_anim.start(self)
+        self.opened = False
+    def on_touch_down(self, touch):
+        if not self.collide_point(touch.x, touch.y) or self.opened:
+            self.close()
+        else:
+            self.open()
+        return super().on_touch_down(touch)
+    
 class PostsArea(MDRelativeLayout):
-    up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.5)
+    up_anim = Animation(pos_hint={'top': .9}, duration=0.1, scroll_view_blur=0.75)
     down_anim =  Animation(pos_hint={'top': .4}, duration=0.1, scroll_view_blur=0)
     def open(self):
         self.up_anim.start(self)

@@ -4,6 +4,7 @@ Window.size = (340, 600)
 import asyncio
 from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
+from kivymd.uix.dialog import MDDialog
 from kivy.properties import StringProperty, DictProperty
 from control.control import get_username, get_user, get_theme, list_users, update_user, list_posts, get_user_posts
 
@@ -26,6 +27,10 @@ class MilaFoods(MDApp):
         self.root.load_screens()
         #asyncio.ensure_future(self.test_post())
         return super().on_start()
+
+    def on_resume(self):
+        MDDialog(text='Pause mode sucessfully attempted').open()
+        return super().on_resume()
     
     async def test_post(self):
         for user in await list_users(True):

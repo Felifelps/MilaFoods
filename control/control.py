@@ -133,7 +133,7 @@ async def update_posts(posts):
             'height': 300,
             'liked': f"{post['username']}-{post['id']}" in user['liked'],
             'saved': f"{post['username']}-{post['id']}" in user['saved'],
-            'user_image': user['image']
+            'user_image': user_image_was_loaded(post['username'])
         })
     return posts
 

@@ -15,6 +15,7 @@ from kivy.properties import StringProperty, ListProperty, BooleanProperty
 from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.clock import Clock
+from kivy.core.window import Window
 from PIL import Image as PILImage
 import os
 
@@ -183,6 +184,15 @@ Builder.load_string('''
         Rectangle:
             pos: 0, 0
             size: self.width, self.height*(10*self.base_height)
+
+<ShowImage>:
+    bg_opacity: 0
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, self.bg_opacity
+        Rectangle:
+            pos: 0, 0
+            size: app.root.size
 
 <CodeConfirmMenu@BottomMenu>:
     base_height: .5
