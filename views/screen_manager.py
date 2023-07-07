@@ -134,7 +134,7 @@ class ScreenManager(MDScreenManager):
         self.current = 'client_profile_page'
         
     async def load_estab_profile_page(self, data):
-        if isinstance(data, str): data = get_user(data)
+        if isinstance(data, str): data = await get_user(data)
         page = self.get_screen('estab_profile_page')
         page.username = data['username']
         page.image = os.path.join('views', 'data', 'user_images', user_image_was_loaded(page.username))

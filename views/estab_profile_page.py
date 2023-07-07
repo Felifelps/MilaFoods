@@ -65,6 +65,7 @@ Builder.load_string('''
     size_hint: 1, .4
     pos_hint: {'top': .4}
     scroll_view_blur: 0
+    username: ''
     BasicLabel:
         text: 'Publicações'
         font_size: '25sp'
@@ -85,27 +86,30 @@ Builder.load_string('''
         elevation: 0
         on_press: 
             app.root.current = 'menu_page'
-    RecycleView:
+    MDScrollViewRefreshLayout:
+        id: _refresh_layout
+        size_hint: 1, 2
+        pos_hint: {'top': .675}
+        refresh_callback: lambda *args: self.parent.refresh_user_posts()
+        root_layout: root
         canvas.before:
             Color:
                 rgba: 0, 0, 0, self.parent.scroll_view_blur
             Rectangle:
                 size: self.width, self.height*2
                 pos: self.x, self.y
-        id: _rv
-        viewclass: 'Post'
-        size_hint: 1, 2
-        pos_hint: {'top': .675}
-        RecycleBoxLayout:
-            id: _box
-            orientation: 'vertical'
-            default_size: None, dp(56)
-            default_size_hint: 1, None
-            size_hint_y: None
-            height: self.minimum_height
-            spacing: dp(10)
+        RecycleView:
+            id: _rv
+            viewclass: 'Post'
+            RecycleBoxLayout:
+                orientation: 'vertical'
+                default_size: None, dp(56)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                spacing: dp(10)
     BasicLabel:
-        text: 'Esta conta não tem\\npublicações ainda :('
+        text: f'{"Sua" if root.username == app.username else "Esta"} conta não tem publicações\\nainda :('
         font_size: '15sp'
         pos_hint: {'center_x': .5 if not _loading.active and _rv.data == [] else 10, 'center_y': .5} 
     BasicSpinner:
@@ -150,7 +154,8 @@ Builder.load_string('''
                 size_hint_x: .275
                 pos_hint: {'center_x': .5, 'center_y': .69 if _screen.username == app.user['username'] else .7}
                 text: 'Editar\\nperfil' if _screen.username == app.user['username'] else ('Seguindo' if _screen.following else 'Seguir')
-                md_bg_color: app.theme_cls.primary_dark
+                a: list(map(lambda x: x - 0.2 if x != 1 else 1, app.theme_cls.primary_dark))
+                md_bg_color: list(map(lambda x: x - 0.2 if x != 1 else 1, app.theme_cls.primary_dark)) if _screen.following else app.theme_cls.primary_dark
                 on_press:
                     _screen.left_button_action()
             BasicButton:
@@ -186,7 +191,7 @@ Builder.load_string('''
                 screen: _screen
             PostsArea:
                 id: _pa
-                pos_hint: {'center_x': .5, 'top': 10 if _screen.show else .4}
+                username: _screen.username
         BottomBar:
         LateralMenu:
             id: _lm
@@ -216,6 +221,12 @@ class EstabProfilePage(MDScreen):
             d.append(c)
         self._description = ' '.join(d)
         
+    def on_username(self, a, b):
+        self.pa.rv.data = []
+        
+    def refresh_user_posts(self):
+        pass
+        
     def on_enter(self, *args):
         if self.loaded_posts == {}:
             self.loaded_posts[self.manager.app.username] = self.manager.app.posts
@@ -223,6 +234,7 @@ class EstabProfilePage(MDScreen):
             self.load_posts()
         else:
             self.pa.rv.data = self.loaded_posts[self.username]
+        self.pa.loading.active = False
         return super().on_pre_enter(*args)
 
     def on_leave(self, *args):
@@ -250,23 +262,21 @@ class EstabProfilePage(MDScreen):
         self.ids._spinner.active = False
     
     def load_posts(self):
-        self.pa.loading.active = True
         asyncio.ensure_future(self._load_posts())
         
     async def _load_posts(self):
-        user_data = await get_user(self.app.user['username'])
-        self.pa.rv.data = []
+        self.pa.loading.active = True
+        if (self.username == self.manager.app.username and self.manager.app.user['posts'] == []) or self.n_of_posts == 0: return 
+        user_data = await get_user(self.username)
         if user_data['posts'] == []: return
-        self.show = False
         for post in await get_user_posts(self.username):
-            if not self.show: self.show = True
+            print('Loading', f'{post["username"]}-{post["id"]}')
             post['height'] = 300
             post['liked'] = f'{post["username"]}-{post["id"]}' in user_data['liked']
             post['saved'] = f'{post["username"]}-{post["id"]}' in user_data['saved']
             self.pa.rv.data.append(post)
+        self.show = not self.pa.rv.data == []
         self.loaded_posts[self.username] = self.pa.rv.data
-        self.pa.loading.active = False
-        print(self.username)
     
     def open_zap(self):
         if len(self.tel) < 10:

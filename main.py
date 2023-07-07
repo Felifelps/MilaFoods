@@ -33,13 +33,13 @@ class MilaFoods(MDApp):
         return super().on_resume()
     
     async def test_post(self):
-        for user in await list_users(True):
-            await update_user(
-                user['username'], 
-                {
-                    'posts': await list_posts() if user['username'] == 'MilaFoods' else [] 
-                }
-            )
+        user = await get_user('MilaFoods')
+        await update_user(
+            "MilaFoods", 
+            {
+                'n_of_posts': len(user['posts'])
+            }
+        )
 
     async def async_run(self, async_lib=None):
         await self.update_user(self.username)

@@ -106,9 +106,9 @@ Builder.load_string('''
                 size_hint: None, None
                 size: sp(35), sp(35)
                 pattern: '@'
-                key: join('views', 'data', 'user_images', app.user['image'])
+                key: join('views', 'data', 'user_images', _screen.user_image)
                 on_press:
-                    app.root.load_estab_profile_page(_screen.user_image)
+                    _screen.load_estab_profile_page()
             Label:
                 text: _screen.username
                 color: .1, .1, .1, 1
@@ -184,6 +184,9 @@ class CommentPage(MDScreen):
     def open_text(self, text):
         self.text_dialog.text = text
         self.text_dialog.open()
+    
+    def load_estab_profile_page(self):
+        asyncio.ensure_future(self.manager.load_estab_profile_page(self.username))
     
     async def _save_post(self):
         if self.saved: await un_save_post(self.code)

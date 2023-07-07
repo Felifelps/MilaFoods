@@ -44,11 +44,12 @@ async def new_client_user(username, email, password, description):
         "n_of_posts": None,
         "liked": [],
         "saved": [],
-        "following": ['MilaFoods'],
+        "following": [],
         "n_of_followers": None,
         "can_post": False,
         "validated": True
     })
+    user_follow(username, 'MilaFoods')
     await list_users()
     return await get_user(username)   
 
@@ -69,7 +70,7 @@ async def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, 
         "n_of_posts": 1,
         "liked": [],
         "saved": [],
-        "following": ['MilaFoods'],
+        "following": [],
         "n_of_followers": 0,
         "can_post": True,
         "validated": False
@@ -81,6 +82,7 @@ async def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, 
         username,
         f"Acabei de criar minha conta!!"
     )
+    user_follow(username, 'MilaFoods')
     await list_users()
     return await get_user(username)
 
