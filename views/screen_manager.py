@@ -1,10 +1,6 @@
 import asyncio, os
 from kivymd.uix.screenmanager import MDScreenManager
-from kivy.clock import Clock
-from control.control import logout, get_post, get_user, user_image_was_loaded
-from .posts_page import PostsPage
-from .search_page import SearchPage
-from .theme_config_page import ThemeConfigPage
+from control.control import logout, get_post, get_username, user_image_was_loaded, get_user
 from .client_profile_page import ClientProfilePage
 from .comment_page import CommentPage
 from .client_login_page import ClientLoginPage
@@ -18,6 +14,9 @@ from .image_selection_page import ImageSelectionPage
 from .saved_page import SavedPage
 from .estab_profile_page import EstabProfilePage
 from .image_selection_page import ImageSelectionPage
+from .posts_page import PostsPage
+from .search_page import SearchPage
+from .theme_config_page import ThemeConfigPage
 
 class ScreenManager(MDScreenManager):
     login_pages = False
@@ -55,7 +54,7 @@ class ScreenManager(MDScreenManager):
                 self.add_widget(i)
             self.user_pages = True
             self.load_edit_pages()
-            self.current = 'posts_page'
+        self.current = 'posts_page'
     
     def load_login_pages(self): 
         if not self.login_pages:
@@ -71,7 +70,7 @@ class ScreenManager(MDScreenManager):
                 self.add_widget(i)
             self.login_pages = True
             self.load_edit_pages()
-            self.current = 'client_or_estab_page'
+        self.current = 'client_or_estab_page'
     
     def load_screens(self):
         asyncio.ensure_future(self._load_screens())
@@ -98,15 +97,11 @@ class ScreenManager(MDScreenManager):
         post = await get_post(page.code)
         page.username = username
         page.image = image
-        if user_image == None:
-            user = await get_user(username)
-            page.user_image = user['image']
-        else:
-            page.user_image = user_image
+        user = await get_user(username)
+        page.user_image = user['image']
         page.text = text
         page.likes = post['likes']
         page.comments = post['comments']
-        user = await get_user(self.app.username)
         page.liked = page.code in user['liked']
         page.saved = page.code in user['saved']
         self.current = 'comment_page'
@@ -128,7 +123,7 @@ class ScreenManager(MDScreenManager):
     async def load_client_profile_page(self, data, saved=False):
         page = self.get_screen('client_profile_page')
         page.username = data['username']
-        page.image_code = str(data['image_code'])
+        page.image = data['image']
         page.description = data['description']
         page.saved = data['saved'] if saved == False else saved
         self.current = 'client_profile_page'
@@ -150,7 +145,7 @@ class ScreenManager(MDScreenManager):
         page.back_to = back_to
         page.client = not self.app.user['can_post']
         if page.client:
-            page.selected_image = str(self.app.user['image_code'])
+            page.selected_image = self.app.user['image']
         else:
             page.ids._image_button.key = os.path.join(os.getcwd(), 'views', 'data', 'user_images', user_image_was_loaded(self.app.username))
             page.ids._image_button.change_source()

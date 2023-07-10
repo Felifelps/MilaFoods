@@ -34,14 +34,15 @@ Builder.load_string('''
             id: _image_button
             pos_hint: {'center_x': .5 if not _screen.client else 10, 'center_y': .8}
             size_hint: None, None
-            size: sp(125), sp(125)
+            size: sp(100), sp(100)
+            pattern: '@'
             key: join(getcwd(), 'views', 'data', 'user_images', _screen.selected_image)
         DynamicSourceImage:
             pos_hint: {'center_x': .5 if _screen.client else 10, 'center_y': .8}
             size_hint: None, None
             size: sp(125), sp(125)
-            key: _screen.selected_image
-            pattern: join('views', 'data', 'profile_images', '@.png')
+            pattern: '@'
+            key: join(getcwd(), 'views', 'data', 'user_images', _screen.selected_image)
             on_press:
                 app.root.get_screen('image_selection_page').back_to = _screen.name
                 app.root.current = 'image_selection_page'
@@ -100,12 +101,12 @@ class UserAccountConfigurationPage(MDScreen):
             await update_user(
                 self.manager.app.user['username'], 
                 {
-                    'image_code': self.selected_image, 
+                    'image': self.selected_image, 
                     'description': self.ids._bio.text
                 }
             )
         else:
-            await upload_image(self.manager.app.user['username'], self.ids._image_button.key if 'account-circle' not in self.ids._image_button.key else '')
+            await upload_image(self.manager.app.user['username'], self.ids._image_button.key)
             await update_user(
                 self.manager.app.user['username'], 
                 {

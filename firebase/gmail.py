@@ -1,5 +1,5 @@
 from email.message import EmailMessage
-import ssl, smtplib, random, asyncio
+import ssl, smtplib, random
 from imap_tools import MailBox, AND
 
 class AuthenticationMail:

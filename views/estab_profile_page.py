@@ -270,10 +270,10 @@ class EstabProfilePage(MDScreen):
         user_data = await get_user(self.username)
         if user_data['posts'] == []: return
         for post in await get_user_posts(self.username):
-            print('Loading', f'{post["username"]}-{post["id"]}')
             post['height'] = 300
             post['liked'] = f'{post["username"]}-{post["id"]}' in user_data['liked']
             post['saved'] = f'{post["username"]}-{post["id"]}' in user_data['saved']
+            print('Loading', f'{post["username"]}-{post["id"]}', post)
             self.pa.rv.data.append(post)
         self.show = not self.pa.rv.data == []
         self.loaded_posts[self.username] = self.pa.rv.data

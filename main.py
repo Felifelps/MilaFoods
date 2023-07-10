@@ -6,7 +6,7 @@ from views.screen_manager import ScreenManager
 from kivymd.app import MDApp
 from kivymd.uix.dialog import MDDialog
 from kivy.properties import StringProperty, DictProperty
-from control.control import get_username, get_user, get_theme, list_users, update_user, list_posts, get_user_posts
+from control.control import get_username, list_users, get_theme, update_user, get_user_posts, get_user
 
 class MilaFoods(MDApp):
     username = StringProperty(get_username())
@@ -33,13 +33,13 @@ class MilaFoods(MDApp):
         return super().on_resume()
     
     async def test_post(self):
-        user = await get_user('MilaFoods')
-        await update_user(
-            "MilaFoods", 
-            {
-                'n_of_posts': len(user['posts'])
-            }
-        )
+        for user in await list_users():
+            await update_user(
+                user, 
+                {
+                    'image': 'account-circle.png'
+                }
+            )
 
     async def async_run(self, async_lib=None):
         await self.update_user(self.username)

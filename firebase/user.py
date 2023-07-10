@@ -1,5 +1,5 @@
 from .db import DB, firestore_async, os
-from .post import list_posts, new_post, get_post, update_post
+from .post import new_post, get_post, update_post
 from .utils import encode_image, decode_image, user_image_was_loaded
 try:
     USERS = DB.collection("users")
@@ -21,11 +21,9 @@ async def get_user(username):
         return False
     user = await USERS.document(username).get()
     user = user.to_dict()
-    if user['can_post'] and user['image'] != '':
+    if user['can_post'] and user['image'] not in ['account-circle.png']:
         await download_image(user)
         user.update({'image': f'{user["username"]}.{user["image"][0]}'})
-    else:
-        user.update({'image': 'account-circle.png'})
     return user
 
 async def new_client_user(username, email, password, description):
@@ -39,8 +37,7 @@ async def new_client_user(username, email, password, description):
         "cnpj": None,
         "tel": None,
         "description": description,
-        "image": "",
-        "image_code": 0,
+        "image": "account-circle.png",
         "n_of_posts": None,
         "liked": [],
         "saved": [],
@@ -65,8 +62,7 @@ async def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, 
         "cnpj": cnpj,
         "tel": tel,
         "description": description,
-        "image": "",
-        "image_code": None,
+        "image": "account-circle.png",
         "n_of_posts": 1,
         "liked": [],
         "saved": [],
@@ -154,4 +150,5 @@ async def download_image(user):
     return os.path.join("views", "data", "user_images", f"{user['username']}.{user['image'][0]}")
     
 async def upload_image(username, image_path):
-    await update_user(username, {"image": '' if image_path == '' else encode_image(image_path)})
+    print([f'{i}.png' for i in range(1, 16)])
+    await update_user(username, {"image": image_path if image_path in 'account-circle.png' else encode_image(image_path)})

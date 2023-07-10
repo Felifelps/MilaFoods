@@ -53,10 +53,6 @@ Builder.load_string('''
 <CommentBar@MDRelativeLayout>:
     md_bg_color: .3, .3, .3, 1
     screen: None
-    MDIconButton:
-        pos_hint: {'x': 20, 'center_y': .5}
-        icon: join('views', 'data', 'profile_images', '1.png')
-        a: print(self.icon_size)
     DynamicSourceImage:
         pos_hint: {'x': .02, 'center_y': .5}
         size_hint: None, None

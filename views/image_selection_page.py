@@ -7,11 +7,11 @@ Builder.load_string('''
 #:import join os.path.join
 
 <ProfileImageButton@MDIconButton>:
-    code: 1
+    code: '1'
     icon_size: '115sp'
-    icon: join('views', 'data', 'profile_images', f'{int(self.code)}.png')
+    icon: join('views', 'data', 'user_images', f'{self.code}.png')
     on_press:
-        self.parent.screen.back(str(self.code))
+        self.parent.screen.back(self.code)
 
 <ImageSelectionPage>:
     id: _screen
@@ -36,37 +36,37 @@ Builder.load_string('''
                 screen: _screen
                 ProfileImageButton:
                 ProfileImageButton:
-                    code: 2
+                    code: '2'
                 ProfileImageButton:
-                    code: 3
+                    code: '3'
                 ProfileImageButton:
-                    code: 4
+                    code: '4'
                 ProfileImageButton:
-                    code: 5
+                    code: '5'
                 ProfileImageButton:
-                    code: 6
+                    code: '6'
                 ProfileImageButton:
-                    code: 7
+                    code: '7'
                 ProfileImageButton:
-                    code: 8
+                    code: '8'
                 ProfileImageButton:
-                    code: 9
+                    code: '9'
                 ProfileImageButton:
-                    code: 10
+                    code: '10'
                 ProfileImageButton:
-                    code: 11
+                    code: '11'
                 ProfileImageButton:
-                    code: 12
+                    code: '12'
                 ProfileImageButton:
-                    code: 13
+                    code: '13'
                 ProfileImageButton:
-                    code: 14
+                    code: '14'
                 ProfileImageButton:
-                    code: 15
+                    code: '15'
 '''
 )
 class ImageSelectionPage(MDScreen):
     name = 'image_selection_page'  
     def back(self, icon='account-circle'):
-        self.manager.get_screen(self.back_to).selected_image = icon
+        self.manager.get_screen(self.back_to).selected_image = f'{icon}.png'
         self.manager.current = self.back_to
