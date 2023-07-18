@@ -1,12 +1,14 @@
-from kivy.core.window import Window
-Window.size = (340, 600)
+import asyncio, platform
 
-import asyncio
+if 'Windows' in platform.system():
+    from kivy.core.window import Window
+    Window.size = (340, 600)
+
 from views.screen_manager import ScreenManager
 from kivymd.app import MDApp 
 from kivymd.uix.dialog import MDDialog
 from kivy.properties import StringProperty, DictProperty
-from control.control import get_username, list_users, get_theme, update_user, get_user_posts, get_user, list_posts, update_post
+from control.control import get_username, list_users, get_theme, update_user, get_user_posts, get_user, list_posts, update_post, save_username
 
 class MilaFoods(MDApp):
     username = StringProperty(get_username())
@@ -25,7 +27,7 @@ class MilaFoods(MDApp):
 
     def on_start(self):
         self.root.load_screens()
-        #asyncio.ensure_future(self.test_post())
+        asyncio.ensure_future(self.test_post())
         return super().on_start()
 
     def on_resume(self):
@@ -33,11 +35,11 @@ class MilaFoods(MDApp):
         return super().on_resume()
     
     async def test_post(self):
-        for post in await list_posts():
-            await update_post(
-                post, 
+        for user in await list_users():
+            await update_user(
+                user, 
                 {
-                    'image': 'image.png'
+                    'image': 'account-circle.png'
                 }
             )
 
@@ -56,6 +58,7 @@ class MilaFoods(MDApp):
                 post.update({
                     'height': 300
                 })
+                print(post['image'])
             return 
         self.user = {}
 

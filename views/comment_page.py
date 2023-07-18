@@ -16,7 +16,6 @@ Builder.load_string('''
 #:import ProfileButton views.utils
 #:import BasicSpinner views.utils
 #:import DynamicSourceImage views.utils
-#:import ShowImage views.utils
 #:import join os.path.join
 
 <EmojiButton@MDIconButton>:
@@ -122,14 +121,15 @@ Builder.load_string('''
                 size: self.texture_size
                 font_size: '15sp'
                 pos_hint: {'x': .16, 'center_y': .95}
-            ShowImage:
+            DynamicSourceImage:
                 id: _image
                 pos_hint: {'top': .9}
-                size_hint: 1, .3
+                size_hint: 1, .35
+                background: True
                 pattern: join('views', 'data', 'post_images', '@')
                 key: root.image
             MDIconButton:
-                pos_hint: {'right': 1, 'top': .6}
+                pos_hint: {'right': 1, 'top': .55}
                 theme_icon_color: 'Custom'
                 icon: "heart"
                 icon_color: (.75, .75, .75, 1) if not _screen.liked else (1, 0, .2, 1)
@@ -141,7 +141,7 @@ Builder.load_string('''
                 size_hint: None, None
                 size: self.texture_size
                 font_size: '13sp'
-                pos_hint: {'right': .85, 'center_y': .555}
+                pos_hint: {'right': .85, 'center_y': .505}
             Label:
                 text: f"[ref='name']{_screen.text if len(_screen.text) < 22 else _screen.text[:20] + '...'}[/ref]"
                 color: .1, .1, .1, 1
@@ -149,13 +149,13 @@ Builder.load_string('''
                 size: self.texture_size
                 font_size: '14sp'
                 markup: True
-                pos_hint: {'x': .03, 'top': .575}
+                pos_hint: {'x': .03, 'top': .525}
                 on_ref_press:
                     _screen.open_text(_screen.text)
             RecycleView:
                 id: _rv
                 viewclass: 'Comment'
-                pos_hint: {'center_x': .5, 'top': .475}
+                pos_hint: {'center_x': .5, 'top': .455}
                 size_hint: .98, .35
                 RecycleBoxLayout:
                     orientation: 'vertical'
@@ -181,6 +181,10 @@ class CommentPage(MDScreen):
         self.text_dialog = MDDialog(text="")
         self.snackbar = Snackbar(text="")
     
+    def on_enter(self, *args):
+        self.update_comments()
+        return super().on_enter(*args)
+    
     def open_text(self, text):
         self.text_dialog.text = text
         self.text_dialog.open()
@@ -201,7 +205,7 @@ class CommentPage(MDScreen):
         self.ids._spinner.active = True
         asyncio.ensure_future(self._save_post())
         
-    def on_comments(self, a, b):
+    def update_comments(self):
         self.rv.data = [{'username': x.split('-')[0], 'code': x.split('-')[1], 'size_hint_x': 1, 'image': os.path.join('views', 'data', 'user_images', user_image_was_loaded(x.split('-')[0]))} for x in self.comments]
     
     def like_or_un_like(self):
@@ -224,7 +228,8 @@ class CommentPage(MDScreen):
         
     async def _comment(self, image_code):  
         await user_comment(self.parent.app.user['username'], self.code, image_code)
-        self.comments = self.comments + [f"{self.parent.app.user['username']}-{image_code}"]
+        self.comments.append(f"{self.parent.app.user['username']}-{image_code}")
+        self.update_comments()
         self.ids._spinner.active = False
         
         

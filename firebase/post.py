@@ -14,7 +14,7 @@ async def new_post(id, username, text, image=""):
         "likes": 0,
         "comments": []
     })
-    await upload_image(f'{username}-{id}', image)
+    await upload_post_image(f'{username}-{id}', image)
     return True
 
 async def update_post(key, data):
@@ -24,19 +24,19 @@ async def get_post(key):
     post = await DB.document(f"posts/{key}").get()
     post = post.to_dict()
     post.update({'id': str(post['id'])})
-    if post['image'] != '':
+    if post['image'] != 'image.png':
         await download_image(post)
+        post.update({'image': f'{key}.{post["image"][0]}'})
     return post
 
 async def download_image(post):
-    if post['image'] == 'image.png': return post['image']
     post_key = f"{post['username']}-{post['id']}"
     image_path = os.path.join("data", "post_images", f"{post_key}.{post['image'][0]}")
     if not os.path.exists(image_path): 
-        decode_image(post['image'][1], f"{post_key}.{post['image'][0]}")
+        decode_image(post['image'][1], f"{post_key}.{post['image'][0]}", 'post_images')
     return image_path
 
-async def upload_image(post, image_path):
+async def upload_post_image(post, image_path):
     await update_post(post, {"image": image_path if image_path in 'image.png' else encode_image(image_path)})
         
 async def list_posts(only_key=True, username=False):

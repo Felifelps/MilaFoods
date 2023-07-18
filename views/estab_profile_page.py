@@ -130,7 +130,6 @@ Builder.load_string('''
     id: _screen
     username: app.user['username']
     description: app.user['description']
-    _description: self.description
     image: str(app.user['image'])
     n_of_followers: app.user['n_of_followers']
     n_of_posts: app.user['n_of_posts']
@@ -139,7 +138,6 @@ Builder.load_string('''
     app: app
     pa: _pa
     np: _np
-    on_description: self.configure_description()
     show: False
     Background:
         id: _bg
@@ -158,7 +156,7 @@ Builder.load_string('''
                 size: self.texture_size
                 pos_hint: {'x': .05, 'center_y': .625}
             Label:
-                text: _screen._description
+                text: _screen.description
                 font_size: '14sp'
                 size_hint: None, None
                 size: self.texture_size
@@ -223,21 +221,23 @@ class EstabProfilePage(MDScreen):
         self.unregistered_dialog = MDDialog(text='Esta conta não tem número cadastrado')
         self.loaded_posts = {}
 
-    def configure_description(self):
-        
-        """        
-        d = []
-        sum = 0
-        for c in self.description.split(' '):
-            sum += len(c) + 1
-            if sum/45 > 1:
-                d.append('\n' + c)
-                sum = 0
-                continue 
-            d.append(c)
-        """
-        self._description = self.description.ljust(45)
-        #self._description = ' '.join(d)
+    def on_description(self, value, instance):
+        limit = 45
+        words = self.description.split(' ')
+        if len(words) == 1 and len(words[0]) > limit:
+            words = list(words[0])
+            for i in range(len(words)//limit): 
+                words.insert(i*limit, '\n')
+            print(''.join(words))
+            #self.description = ''.join(words)
+        else:
+            text = ''
+            for word in words:
+                if len(text + word) > limit:
+                    text += '\n'
+                text += word + ' '
+            print(text)
+            #self.description = text
         
     def on_username(self, a, b):
         self.pa.rv.data = []
@@ -311,6 +311,7 @@ class EstabProfilePage(MDScreen):
             self.np.ids._image_button.key = os.path.join('views', 'data', 'post_images', 'image.png')
             self.np.ids._image_button.change_source()
             self.np.close()
+            await self.manager.app.update_user(self.manager.app.user['username'])
         except:
             Snackbar(text='Um erro ocorreu! Tente novamente').open()
         self.ids._spinner.active = False

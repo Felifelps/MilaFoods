@@ -5,6 +5,7 @@ from firebase.gmail import AuthenticationMail
 import random, os
 
 Email = AuthenticationMail()
+POSTS = []
 
 async def send_email_code(email):
     for i in range(30): #300 seconds tiemout
@@ -122,8 +123,11 @@ async def server_saved_to_local(username):
         local_save_post(await get_post(saved))
 
 async def get_posts_from_server():
-    random_posts = await update_posts(await list_posts(False))
-    return random.sample(random_posts, 25) 
+    global POSTS
+    if POSTS == []:
+        POSTS = [await get_post(i) for i in await list_posts()]
+    POSTS = await update_posts(POSTS)
+    return random.sample(POSTS, 25)
 
 async def update_posts(posts):
     user = await get_user(get_username())

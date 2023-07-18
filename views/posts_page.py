@@ -71,7 +71,7 @@ Builder.load_string('''
             pos_hint: {'center_x': .5, 'top': .875}
             size_hint: .98, .8
             refresh_callback: lambda *args: _screen.get_posts_from_server()
-            root_layout: root
+            root_layout: _screen
             RecycleView:
                 id: _rv
                 viewclass: 'Post'

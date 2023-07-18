@@ -427,6 +427,15 @@ Builder.load_string('''
     BarMenuButton:
         lm: root.lm
 
+<DynamicSourceImage>:
+    background: False
+    canvas.before:
+        Color:
+            rgba: .5, .5, .5, 1 if self.background else 0
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
 <TopImageAndStarBar@MDRelativeLayout>:
     screen: None
     saved: False
@@ -526,6 +535,7 @@ Builder.load_string('''
         id: _img
         pos_hint: {'top': .85}
         size_hint: 1, .55
+        background: True
         pattern: join('views', 'data', 'post_images', '@')
         key: root.image
     MDIconButton:
@@ -568,7 +578,7 @@ Builder.load_string('''
         pos_hint: {"center_x": .14, "center_y": .075}
 
 <SavedPost>:
-    image: _img
+    image: "image.png"
     username: ''
     text: ''
     id: '0'
@@ -581,10 +591,14 @@ Builder.load_string('''
         Rectangle:
             size: self.width, self.height
             pos: 0, 0
-    Image:
+    DynamicSourceImage:
         id: _img
         pos_hint: {'top': 1}
         size_hint: 1, .75
+        background: True
+        pattern: join('views', 'data', 'post_images', '@')
+        key: root.image
+        a: self.change_source()
     Label:
         text: root.username
         color: .1, .1, .1, 1

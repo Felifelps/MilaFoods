@@ -22,6 +22,7 @@ async def get_user(username):
     user = await USERS.document(username).get()
     user = user.to_dict()
     if user['can_post'] and user['image'] not in ['account-circle.png']:
+        print(user['image'])
         await download_image(user)
         user.update({'image': f'{user["username"]}.{user["image"][0]}'})
     return user
@@ -122,7 +123,7 @@ async def post(username, text, image):
     id = user['n_of_posts'] + 1
     await new_post(id, username, text, image)
     await update_user(username, {"n_of_posts": id})
-    await update_user(username, {'saved': firestore_async.ArrayUnion([f'{username}-{id}'])})
+    await update_user(username, {'posts': firestore_async.ArrayUnion([f'{username}-{id}'])})
     print(f'Posted {username}-{id}')
     
 async def update_user(username, data):

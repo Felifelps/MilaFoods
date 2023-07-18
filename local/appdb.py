@@ -45,6 +45,7 @@ def get_local_saved_posts():
     for line in cursor.fetchall():
         post = {saved_cols[n] : line[n] for n in range(5)}
         posts[f'{line[4]}'] = post
+        print('==', post)
     return posts
 
 def erase_saved_data():

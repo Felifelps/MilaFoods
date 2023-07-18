@@ -118,8 +118,9 @@ class UserAccountConfigurationPage(MDScreen):
             await self.manager.app.update_user(self.manager.app.user['username'])
             Snackbar(text='Alterações salvas com sucesso').open()
             self.manager.current = self.back_to
-        except:
-            Snackbar(text='Um erro ocorreu! Tente novamente.').open()
+        except Exception as e:
+            print(e)
+            Snackbar(text='Um erro ocorreu! Tente novamente mais tarde.').open()
         self.ids._spinner.active = False
             
         

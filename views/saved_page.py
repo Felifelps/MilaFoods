@@ -70,8 +70,7 @@ class SavedPage(MDScreen):
                 'id': str(key.split('-')[1]),
                 'username': str(key.split('-')[0]),
                 'width': 130,
-                'height': 130,
-                'image': str(post['image'])
+                'height': 130
             })
             self.ids._rv.data.append(post)
         self.ids._spinner.active = False
