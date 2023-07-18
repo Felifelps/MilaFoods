@@ -16,6 +16,7 @@ Builder.load_string('''
 #:import ProfileButton views.utils
 #:import BasicSpinner views.utils
 #:import DynamicSourceImage views.utils
+#:import ShowImage views.utils
 #:import join os.path.join
 
 <EmojiButton@MDIconButton>:
@@ -83,6 +84,15 @@ Builder.load_string('''
 <CommentPage>:
     id: _screen
     rv: _rv
+    username: ''
+    user_image: 'account-circle.png'
+    image: 'image.png'
+    text: ''
+    code: '' 
+    comments: []
+    liked: False
+    saved: False
+    likes: 0
     Background:
     FloatLayout:
         TopImageAndStarBar:
@@ -112,10 +122,12 @@ Builder.load_string('''
                 size: self.texture_size
                 font_size: '15sp'
                 pos_hint: {'x': .16, 'center_y': .95}
-            Image:
+            ShowImage:
+                id: _image
                 pos_hint: {'top': .9}
                 size_hint: 1, .3
-                source: join('views', 'data', 'logo.png') 
+                pattern: join('views', 'data', 'post_images', '@')
+                key: root.image
             MDIconButton:
                 pos_hint: {'right': 1, 'top': .6}
                 theme_icon_color: 'Custom'
@@ -164,14 +176,6 @@ Builder.load_string('''
 
 class CommentPage(MDScreen):
     name = 'comment_page'
-    username = StringProperty('') 
-    user_image = StringProperty('') 
-    text = StringProperty('') 
-    code = StringProperty('') 
-    comments = ListProperty([])
-    liked = BooleanProperty()
-    saved = BooleanProperty()
-    likes = NumericProperty()
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.text_dialog = MDDialog(text="")

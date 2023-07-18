@@ -358,7 +358,7 @@ Builder.load_string('''
         self.lm.open()
 
 <SelectImageButton>:
-    on_press: self.file_manager.show('C://')
+    on_press: self.file_manager.show(os.path.expanduser('~'))
 
 <TopTitleBar@MDRelativeLayout>:
     title: ''
@@ -398,6 +398,7 @@ Builder.load_string('''
 <TopImageBar@MDRelativeLayout>:
     lm: None
     np: None
+    pa: None
     new_post: False
     canvas.before:
         Color: 
@@ -422,6 +423,7 @@ Builder.load_string('''
         icon: "plus"
         on_press:
             root.np.open()
+            root.pa.close()
     BarMenuButton:
         lm: root.lm
 
@@ -493,7 +495,7 @@ Builder.load_string('''
 <Post>:
     username: 'Username'
     text: 'description'
-    image: ''
+    image: 'image.png'
     user_image: 'account-circle.png'
     timestamp: ''
     liked: False
@@ -520,11 +522,12 @@ Builder.load_string('''
         size: self.texture_size
         font_size: '12sp'
         pos_hint: {'x': .16, 'center_y': .915}
-    Image:
+    DynamicSourceImage:
         id: _img
         pos_hint: {'top': .85}
         size_hint: 1, .55
-        source: join('views', 'data', 'logo.png') if root.image == 'None' else root.image
+        pattern: join('views', 'data', 'post_images', '@')
+        key: root.image
     MDIconButton:
         pos_hint: {'center_x': .08, 'center_y': .78}
         theme_icon_color: 'Custom'
@@ -774,7 +777,7 @@ class LateralMenuBase(MDBoxLayout):
 
 class BottomMenu(MDRelativeLayout):
     def on_kv_post(self, base_widget):
-        self.open_anim = Animation(pos_hint={'y': 0}, bg_opacity=0.5, duration=0.1)
+        self.open_anim = Animation(pos_hint={'y': 0}, bg_opacity=0.75, duration=0.1)
         self.close_anim = Animation(pos_hint={'y': -self.base_height}, bg_opacity=0, duration=0.1)
     def open(self):
         self.open_anim.start(self)
@@ -798,7 +801,6 @@ class SelectImageButton(DynamicSourceImage):
     def select_path(self, path):
         try:
             a = PILImage.open(path)
-            print(a)
             self.key = os.path.join(path)
             self.change_source()
             return self.file_manager.close()

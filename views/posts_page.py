@@ -92,11 +92,11 @@ class PostsPage(MDScreen):
     name = 'posts_page'
     posts = []
     loaded = False
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.get_posts_from_server()
-        
+    got_posts_from_server = False
     def on_enter(self, *args):
+        if not self.got_posts_from_server:
+            self.get_posts_from_server()
+            self.got_posts_from_server = True
         self.loaded = True
         return super().on_enter(*args)
 

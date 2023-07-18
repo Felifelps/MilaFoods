@@ -97,26 +97,30 @@ class UserAccountConfigurationPage(MDScreen):
         asyncio.ensure_future(self._save_definitions())
         
     async def _save_definitions(self):
-        if self.client:
-            await update_user(
-                self.manager.app.user['username'], 
-                {
-                    'image': self.selected_image, 
-                    'description': self.ids._bio.text
-                }
-            )
-        else:
-            await upload_image(self.manager.app.user['username'], self.ids._image_button.key)
-            await update_user(
-                self.manager.app.user['username'], 
-                {
-                    'tel': self.ids._number.text, 
-                    'description': self.ids._bio.text
-                }
-            )
-        await self.manager.app.update_user(self.manager.app.user['username'])
+        try:
+            if self.client:
+                await update_user(
+                    self.manager.app.user['username'], 
+                    {
+                        'image': self.selected_image, 
+                        'description': self.ids._bio.text
+                    }
+                )
+            else:
+                await upload_image(self.manager.app.user['username'], self.ids._image_button.key)
+                await update_user(
+                    self.manager.app.user['username'], 
+                    {
+                        'tel': self.ids._number.text, 
+                        'description': self.ids._bio.text
+                    }
+                )
+            await self.manager.app.update_user(self.manager.app.user['username'])
+            Snackbar(text='Alterações salvas com sucesso').open()
+            self.manager.current = self.back_to
+        except:
+            Snackbar(text='Um erro ocorreu! Tente novamente.').open()
         self.ids._spinner.active = False
-        Snackbar(text='Alterações salvas com sucesso').open()
-        self.manager.current = self.back_to
+            
         
             

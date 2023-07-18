@@ -150,5 +150,4 @@ async def download_image(user):
     return os.path.join("views", "data", "user_images", f"{user['username']}.{user['image'][0]}")
     
 async def upload_image(username, image_path):
-    print([f'{i}.png' for i in range(1, 16)])
     await update_user(username, {"image": image_path if image_path in 'account-circle.png' else encode_image(image_path)})

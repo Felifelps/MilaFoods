@@ -9,11 +9,12 @@ async def new_post(id, username, text, image=""):
         "id": id,
         "username": username,
         "text": text,
-        "image": image if image == "" else encode_image(image),
+        "image": "image.png",
         "timestamp": str(datetime.datetime.today()).split(".")[0],
         "likes": 0,
         "comments": []
     })
+    await upload_image(f'{username}-{id}', image)
     return True
 
 async def update_post(key, data):
@@ -28,11 +29,15 @@ async def get_post(key):
     return post
 
 async def download_image(post):
+    if post['image'] == 'image.png': return post['image']
     post_key = f"{post['username']}-{post['id']}"
     image_path = os.path.join("data", "post_images", f"{post_key}.{post['image'][0]}")
     if not os.path.exists(image_path): 
         decode_image(post['image'][1], f"{post_key}.{post['image'][0]}")
     return image_path
+
+async def upload_image(post, image_path):
+    await update_post(post, {"image": image_path if image_path in 'image.png' else encode_image(image_path)})
         
 async def list_posts(only_key=True, username=False):
     if not username:

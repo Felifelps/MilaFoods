@@ -1,0 +1,13 @@
+{
+    "debugger.watcher": [
+        {
+            "name": "Python: Module", 
+            "folder": "C:\\Users\\Felipe\\OneDrive\\Área de Trabalho\\Projects\\MilaFoods", 
+            "preLaunchCommand": "<< terminal command >>" 
+        },
+        {
+            "name": "Python: Module",
+            "folder": "C:\\Users\\Felipe\\OneDrive\\Área de Trabalho\\Projects\\MilaFoods"
+        }
+    ]
+}

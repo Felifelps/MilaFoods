@@ -2,17 +2,19 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivy.animation import Animation
 from kivy.lang import Builder
-from control.control import get_user_posts, get_user, user_follow, user_un_follow
+from control.control import get_user_posts, get_user, user_follow, user_un_follow, post
 from kivymd.uix.dialog import MDDialog
 from views.utils import DynamicSourceImage
+from kivymd.uix.snackbar import Snackbar
 from kivy.metrics import dp
-import webbrowser, asyncio
+import webbrowser, asyncio, os
 
 Builder.load_string('''
 #:import BasicLabel views.utils
 #:import Background views.utils
 #:import BasicButton views.utils
 #:import BasicTextField views.utils
+#:import BasicTextInput views.utils
 #:import TopImageBar views.utils
 #:import BottomBar views.utils
 #:import LateralMenu views.utils
@@ -23,6 +25,7 @@ Builder.load_string('''
 #:import join os.path.join
 
 <NewPost@BottomMenu>:
+    screen: None
     canvas:
         Color:
             rgba: app.theme_cls.primary_color
@@ -45,19 +48,27 @@ Builder.load_string('''
         halign: 'center'
         pos_hint: {'center_x': .5, 'top': .95}
     SelectImageButton:
+        id: _image_button
         size_hint: 1.5, .4
         pos_hint: {'center_x': .5, 'top': .85}
-        avatar: False
-    TextInput:
+        pattern: '@'
+        key: join('views', 'data', 'post_images', 'image.png')
+        a: self.change_source()
+    BasicTextInput:
+        id: _textinput
+        type: 'description'
         size_hint: 1, .2
         pos_hint: {'center_x': .5, 'top': .45}
         font_size: '18.25sp'
         hint_text: 'Escreva uma legenda'
     BasicButton:
-        size_hint: .4, .15
+        size_hint: .8, .2
         pos_hint: {'center_x': .5, 'center_y': .125}
         text: 'Publicar'
         font_size: '15sp'
+        on_press:
+            root.screen.check_new_post(_textinput.text, _image_button.source)
+
 
 <PostsArea>:
     rv: _rv
@@ -127,6 +138,7 @@ Builder.load_string('''
     following: False
     app: app
     pa: _pa
+    np: _np
     on_description: self.configure_description()
     show: False
     Background:
@@ -135,6 +147,7 @@ Builder.load_string('''
         TopImageBar:
             lm: _lm
             np: _np
+            pa: _pa
             new_post: _screen.username == app.user['username']
         MDFloatLayout:
             pa: _pa
@@ -197,6 +210,7 @@ Builder.load_string('''
             id: _lm
         NewPost:
             id: _np
+            screen: _screen
     BasicSpinner:
         id: _spinner
 '''
@@ -210,6 +224,8 @@ class EstabProfilePage(MDScreen):
         self.loaded_posts = {}
 
     def configure_description(self):
+        
+        """        
         d = []
         sum = 0
         for c in self.description.split(' '):
@@ -219,7 +235,9 @@ class EstabProfilePage(MDScreen):
                 sum = 0
                 continue 
             d.append(c)
-        self._description = ' '.join(d)
+        """
+        self._description = self.description.ljust(45)
+        #self._description = ' '.join(d)
         
     def on_username(self, a, b):
         self.pa.rv.data = []
@@ -239,6 +257,7 @@ class EstabProfilePage(MDScreen):
 
     def on_leave(self, *args):
         self.pa.close()
+        self.np.close()
         self.ids._image.close()
         return super().on_leave(*args)
     
@@ -265,18 +284,36 @@ class EstabProfilePage(MDScreen):
         asyncio.ensure_future(self._load_posts())
         
     async def _load_posts(self):
-        self.pa.loading.active = True
+        self.pa.loading.active = True  
         if (self.username == self.manager.app.username and self.manager.app.user['posts'] == []) or self.n_of_posts == 0: return 
         user_data = await get_user(self.username)
         if user_data['posts'] == []: return
         for post in await get_user_posts(self.username):
-            post['height'] = 300
-            post['liked'] = f'{post["username"]}-{post["id"]}' in user_data['liked']
-            post['saved'] = f'{post["username"]}-{post["id"]}' in user_data['saved']
+            post.update({
+                'height': 300,
+                'liked': f'{post["username"]}-{post["id"]}' in user_data['liked'],
+                'saved': f'{post["username"]}-{post["id"]}' in user_data['saved']
+            })
             print('Loading', f'{post["username"]}-{post["id"]}', post)
             self.pa.rv.data.append(post)
         self.show = not self.pa.rv.data == []
         self.loaded_posts[self.username] = self.pa.rv.data
+    
+    def check_new_post(self, text, image_path):
+        asyncio.ensure_future(self._check_new_post(text, image_path))
+        
+    async def _check_new_post(self, text, image_path):
+        self.ids._spinner.active = True
+        try:
+            await post(self.manager.app.username, text, image_path)
+            Snackbar(text='Post publicado com sucesso!').open()
+            self.np.ids._textinput.text = ''
+            self.np.ids._image_button.key = os.path.join('views', 'data', 'post_images', 'image.png')
+            self.np.ids._image_button.change_source()
+            self.np.close()
+        except:
+            Snackbar(text='Um erro ocorreu! Tente novamente').open()
+        self.ids._spinner.active = False
     
     def open_zap(self):
         if len(self.tel) < 10:

@@ -3,10 +3,10 @@ Window.size = (340, 600)
 
 import asyncio
 from views.screen_manager import ScreenManager
-from kivymd.app import MDApp
+from kivymd.app import MDApp 
 from kivymd.uix.dialog import MDDialog
 from kivy.properties import StringProperty, DictProperty
-from control.control import get_username, list_users, get_theme, update_user, get_user_posts, get_user
+from control.control import get_username, list_users, get_theme, update_user, get_user_posts, get_user, list_posts, update_post
 
 class MilaFoods(MDApp):
     username = StringProperty(get_username())
@@ -33,11 +33,11 @@ class MilaFoods(MDApp):
         return super().on_resume()
     
     async def test_post(self):
-        for user in await list_users():
-            await update_user(
-                user, 
+        for post in await list_posts():
+            await update_post(
+                post, 
                 {
-                    'image': 'account-circle.png'
+                    'image': 'image.png'
                 }
             )
 
@@ -52,6 +52,10 @@ class MilaFoods(MDApp):
             user.update({'tel': str(user['tel'])})
             self.user = user
             self.posts = await get_user_posts(username)
+            for post in self.posts:
+                post.update({
+                    'height': 300
+                })
             return 
         self.user = {}
 
