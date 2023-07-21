@@ -69,14 +69,6 @@ Builder.load_string('''
         text: 'Seguindo' if root.following else 'Seguir'
         pos_hint: {'right': .95, 'center_y': .5}
         size_hint: .1, None
-
-<ProfileButton@MDIconButton>:
-    image: 'None'
-    username: 'Username'
-    icon: 'account-circle' #if app.user['image_code'] == "0" else join('views', 'data', 'profile_images', f"{app.user['image_code']}.png")
-    icon_size: '50sp'
-    on_press:
-        app.root.current = 'client_profile_page'
         
 <MenuIconButton@MDIconButton>:
     editable: False
@@ -152,8 +144,8 @@ Builder.load_string('''
     src: root.source
 
 <BasicDropDownItem>:
-    items: ['Lanches','Salgados','Pizzaria']
-    text: "Escolha seu serviço"
+    items: []
+    text: ""
     font_size: "18sp"
     icon: 'menu-swap'
     theme_text_color: 'Custom'
@@ -291,7 +283,7 @@ Builder.load_string('''
             size_hint: None, None
             size: sp(75), sp(75)
             pattern: '@'
-            key: join('views', 'data', 'user_images', app.user['image'])
+            key: join('views', 'data', 'user_images', app.user_image)
             on_press:
                 app.root.load_profile_page()
         Label: 
@@ -382,7 +374,7 @@ Builder.load_string('''
         size_hint: None, None
         size: sp(40), sp(40)
         pattern: '@'
-        key: join('views', 'data', 'user_images', app.user['image'])
+        key: join('views', 'data', 'user_images', app.user_image)
         on_press:
             app.root.load_profile_page()
     Label:
@@ -815,6 +807,7 @@ class SelectImageButton(DynamicSourceImage):
     def select_path(self, path):
         try:
             a = PILImage.open(path)
+            print(PILImage.isImageType(path))
             self.key = os.path.join(path)
             self.change_source()
             return self.file_manager.close()

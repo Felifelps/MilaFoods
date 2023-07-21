@@ -13,6 +13,7 @@ Builder.load_string('''
 #:import LateralMenu views.utils
 #:import Post views.utils
 #:import exists os.path.exists
+#:import BasicSpinner views.utils
 
 <PostsBar@MDRelativeLayout>:
     lm: None
@@ -36,7 +37,7 @@ Builder.load_string('''
         size_hint: None, None
         size: sp(40), sp(40)
         pattern: '@'
-        key: join('views', 'data', 'user_images', app.user['image'])
+        key: join('views', 'data', 'user_images', app.user_image)
         on_press:
             app.root.load_profile_page()
     MDTextField:
@@ -85,6 +86,8 @@ Builder.load_string('''
         BottomBar:
         LateralMenu:
             id: _lm
+    BasicSpinner:
+        id: _spinner
 '''
 )
 
@@ -95,8 +98,10 @@ class PostsPage(MDScreen):
     got_posts_from_server = False
     def on_enter(self, *args):
         if not self.got_posts_from_server:
+            self.ids._spinner.active = True
             self.get_posts_from_server()
             self.got_posts_from_server = True
+            self.ids._spinner.active = False
         self.loaded = True
         return super().on_enter(*args)
 

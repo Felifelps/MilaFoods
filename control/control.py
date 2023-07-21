@@ -127,7 +127,7 @@ async def get_posts_from_server():
     if POSTS == []:
         POSTS = [await get_post(i) for i in await list_posts()]
     POSTS = await update_posts(POSTS)
-    return random.sample(POSTS, 25)
+    return random.sample(POSTS, 25 if len(POSTS) >= 25 else len(POSTS))
 
 async def update_posts(posts):
     user = await get_user(get_username())

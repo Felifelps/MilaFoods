@@ -8,6 +8,7 @@ from .client_or_estab_page import ClientOrEstabPage
 from .client_sign_up_page import ClientSignUpPage
 from .estab_login_page import EstabLoginPage
 from .estab_sign_up_page import EstabSignUpPage
+from .menu_page import MenuPage
 from .user_account_configuration_page import UserAccountConfigurationPage
 from .follow_estabs_page import FollowEstabsPage
 from .image_selection_page import ImageSelectionPage
@@ -50,6 +51,7 @@ class ScreenManager(MDScreenManager):
                 SavedPage(),
                 ClientProfilePage(),
                 EstabProfilePage(),
+                MenuPage()
             ]: 
                 self.add_widget(i)
             self.user_pages = True
@@ -88,10 +90,10 @@ class ScreenManager(MDScreenManager):
         page.username = self.app.username
         self.current = 'user_account_configuration_page' if self.app.user['description'] == '' else 'posts_page'
     
-    def load_comment_page(self, id, username, image, text, user_image):
-        asyncio.ensure_future(self._load_comment_page(id, username, image, text, user_image))
+    def load_comment_page(self, id, username, image, description, user_image):
+        asyncio.ensure_future(self._load_comment_page(id, username, image, description, user_image))
     
-    async def _load_comment_page(self, id, username, image, text, user_image):
+    async def _load_comment_page(self, id, username, image, description, user_image):
         page = self.get_screen('comment_page')
         page.code = f'{username}-{id}'
         post = await get_post(page.code)
@@ -99,7 +101,7 @@ class ScreenManager(MDScreenManager):
         page.image = image
         user = await get_user(username)
         page.user_image = user['image']
-        page.text = text
+        page.description = description
         page.likes = post['likes']
         page.comments = post['comments']
         page.liked = page.code in user['liked']

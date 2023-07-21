@@ -22,7 +22,6 @@ async def get_user(username):
     user = await USERS.document(username).get()
     user = user.to_dict()
     if user['can_post'] and user['image'] not in ['account-circle.png']:
-        print(user['image'])
         await download_image(user)
         user.update({'image': f'{user["username"]}.{user["image"][0]}'})
     return user

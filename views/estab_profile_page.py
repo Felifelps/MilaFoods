@@ -61,6 +61,7 @@ Builder.load_string('''
         pos_hint: {'center_x': .5, 'top': .45}
         font_size: '18.25sp'
         hint_text: 'Escreva uma legenda'
+        multiline: True
     BasicButton:
         size_hint: .8, .2
         pos_hint: {'center_x': .5, 'center_y': .125}
@@ -73,6 +74,7 @@ Builder.load_string('''
 <PostsArea>:
     rv: _rv
     loading: _loading
+    screen: None
     size_hint: 1, .4
     pos_hint: {'top': .4}
     scroll_view_blur: 0
@@ -101,11 +103,11 @@ Builder.load_string('''
         id: _refresh_layout
         size_hint: 1, 2
         pos_hint: {'top': .675}
-        refresh_callback: lambda *args: self.parent.refresh_user_posts()
+        refresh_callback: lambda *args: root.screen.refresh_user_posts()
         root_layout: root
         canvas.before:
             Color:
-                rgba: 0, 0, 0, self.parent.scroll_view_blur
+                rgba: 0, 0, 0, root.scroll_view_blur
             Rectangle:
                 size: self.width, self.height*2
                 pos: self.x, self.y
@@ -130,7 +132,7 @@ Builder.load_string('''
     id: _screen
     username: app.user['username']
     description: app.user['description']
-    image: str(app.user['image'])
+    image: app.user_image
     n_of_followers: app.user['n_of_followers']
     n_of_posts: app.user['n_of_posts']
     tel: str(app.user['tel'])
@@ -156,7 +158,7 @@ Builder.load_string('''
                 size: self.texture_size
                 pos_hint: {'x': .05, 'center_y': .625}
             Label:
-                text: _screen.description
+                text: _screen.format_description(_screen.description)
                 font_size: '14sp'
                 size_hint: None, None
                 size: self.texture_size
@@ -203,6 +205,7 @@ Builder.load_string('''
             PostsArea:
                 id: _pa
                 username: _screen.username
+                screen: _screen
         BottomBar:
         LateralMenu:
             id: _lm
@@ -221,29 +224,30 @@ class EstabProfilePage(MDScreen):
         self.unregistered_dialog = MDDialog(text='Esta conta não tem número cadastrado')
         self.loaded_posts = {}
 
-    def on_description(self, value, instance):
-        limit = 45
-        words = self.description.split(' ')
-        if len(words) == 1 and len(words[0]) > limit:
-            words = list(words[0])
-            for i in range(len(words)//limit): 
-                words.insert(i*limit, '\n')
-            print(''.join(words))
-            #self.description = ''.join(words)
-        else:
-            text = ''
-            for word in words:
-                if len(text + word) > limit:
-                    text += '\n'
-                text += word + ' '
-            print(text)
-            #self.description = text
+    def format_description(self, description):
+        text = description
+        lines = []
+        for i in range(len(description)//48):
+            if (i + 1)*48 < len(description):
+                lines.append(text[i*48: (i + 1)*48 ])
+            else:
+                lines.append(text[i*48:])
+        print(lines)
+        if len(description) > 48:
+            last_space_index = text[:48].rfind(' ')
+            if last_space_index == -1:
+                text = description[:48] + '\n' + description[48:]  
+            else:
+                text = text[:last_space_index] + '\n' + text[last_space_index + 1:]
+        return text
         
     def on_username(self, a, b):
         self.pa.rv.data = []
         
     def refresh_user_posts(self):
-        pass
+        self.loaded_posts.pop(self.username)
+        self.load_posts()
+        self.pa.ids._refresh_layout.refresh_done()
         
     def on_enter(self, *args):
         if self.loaded_posts == {}:
@@ -288,6 +292,7 @@ class EstabProfilePage(MDScreen):
         if (self.username == self.manager.app.username and self.manager.app.user['posts'] == []) or self.n_of_posts == 0: return 
         user_data = await get_user(self.username)
         if user_data['posts'] == []: return
+        data = []
         for post in await get_user_posts(self.username):
             post.update({
                 'height': 300,
@@ -295,9 +300,11 @@ class EstabProfilePage(MDScreen):
                 'saved': f'{post["username"]}-{post["id"]}' in user_data['saved']
             })
             print('Loading', f'{post["username"]}-{post["id"]}', post)
-            self.pa.rv.data.append(post)
+            data.append(post)
+        self.pa.rv.data = data
         self.show = not self.pa.rv.data == []
         self.loaded_posts[self.username] = self.pa.rv.data
+        self.pa.loading.active = False
     
     def check_new_post(self, text, image_path):
         asyncio.ensure_future(self._check_new_post(text, image_path))
@@ -312,6 +319,7 @@ class EstabProfilePage(MDScreen):
             self.np.ids._image_button.change_source()
             self.np.close()
             await self.manager.app.update_user(self.manager.app.user['username'])
+            self.loaded_posts[self.manager.app.username] = self.manager.app.posts
         except:
             Snackbar(text='Um erro ocorreu! Tente novamente').open()
         self.ids._spinner.active = False

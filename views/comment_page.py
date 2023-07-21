@@ -86,7 +86,7 @@ Builder.load_string('''
     username: ''
     user_image: 'account-circle.png'
     image: 'image.png'
-    text: ''
+    description: ''
     code: '' 
     comments: []
     liked: False
@@ -110,8 +110,8 @@ Builder.load_string('''
                 pos_hint: {'x': .03, 'center_y': .95}
                 size_hint: None, None
                 size: sp(35), sp(35)
-                pattern: '@'
-                key: join('views', 'data', 'user_images', _screen.user_image)
+                pattern: join('views', 'data', 'user_images', '@')
+                key: _screen.user_image
                 on_press:
                     _screen.load_estab_profile_page()
             Label:
@@ -143,15 +143,15 @@ Builder.load_string('''
                 font_size: '13sp'
                 pos_hint: {'right': .85, 'center_y': .505}
             Label:
-                text: f"[ref='name']{_screen.text if len(_screen.text) < 22 else _screen.text[:20] + '...'}[/ref]"
+                text: f"[ref='name']{_screen.format_description(_screen.description)}[/ref]"
                 color: .1, .1, .1, 1
                 size_hint: None, None
                 size: self.texture_size
                 font_size: '14sp'
                 markup: True
-                pos_hint: {'x': .03, 'top': .525}
+                pos_hint: {'x': .03, 'top': .53}
                 on_ref_press:
-                    _screen.open_text(_screen.text)
+                    _screen.open_text(_screen.description)
             RecycleView:
                 id: _rv
                 viewclass: 'Comment'
@@ -188,6 +188,18 @@ class CommentPage(MDScreen):
     def open_text(self, text):
         self.text_dialog.text = text
         self.text_dialog.open()
+        
+    def format_description(self, description):
+        text = description
+        if len(description) > 40:
+            last_space_index = text[:40].rfind(' ')
+            if last_space_index == -1:
+                text = description[:40] + '\n' + description[40:]  
+            else:
+                text = text[:last_space_index] + '\n' + text[last_space_index + 1:]
+            if len(text.split('\n')[-1]) > 80:
+                text = text[:70] + '...[u][color=#0000ff] Ver mais[/color][/u]'
+        return text
     
     def load_estab_profile_page(self):
         asyncio.ensure_future(self.manager.load_estab_profile_page(self.username))
