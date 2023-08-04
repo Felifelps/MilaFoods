@@ -87,7 +87,10 @@ async def get_user_posts(username):
     posts = []
     for post in user['posts']:
         post = await get_post(post)
-        post.update({'id': post['id']})
+        post.update({
+            'id': post['id'],
+            'user_image': user_image_was_loaded(username)
+        })
         posts.append(post)
     return posts
 

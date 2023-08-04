@@ -236,7 +236,7 @@ class EstabProfilePage(MDScreen):
         if len(description) > 48:
             last_space_index = text[:48].rfind(' ')
             if last_space_index == -1:
-                text = description[:48] + '\n' + description[48:]  
+                text = description[:48] + '\n' + description[48:]
             else:
                 text = text[:last_space_index] + '\n' + text[last_space_index + 1:]
         return text
@@ -288,7 +288,7 @@ class EstabProfilePage(MDScreen):
         asyncio.ensure_future(self._load_posts())
         
     async def _load_posts(self):
-        self.pa.loading.active = True  
+        self.pa.loading.active = True
         if (self.username == self.manager.app.username and self.manager.app.user['posts'] == []) or self.n_of_posts == 0: return 
         user_data = await get_user(self.username)
         if user_data['posts'] == []: return
@@ -299,7 +299,8 @@ class EstabProfilePage(MDScreen):
                 'liked': f'{post["username"]}-{post["id"]}' in user_data['liked'],
                 'saved': f'{post["username"]}-{post["id"]}' in user_data['saved']
             })
-            print('Loading', f'{post["username"]}-{post["id"]}', post)
+            print(post)
+            #print('Loading', f'{post["username"]}-{post["id"]}', post)
             data.append(post)
         self.pa.rv.data = data
         self.show = not self.pa.rv.data == []

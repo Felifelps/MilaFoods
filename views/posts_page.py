@@ -3,6 +3,7 @@ from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import ListProperty
 from kivymd.uix.dialog import MDDialog
+from kivy.animation import Animation
 from control.control import get_posts_from_server, get_user
 import asyncio
 
@@ -55,9 +56,9 @@ Builder.load_string('''
             if root.screen.loaded: app.root.current = 'search_page'
     MDIconButton:
         pos_hint: {'x': .7, 'center_y': .5}
-        icon: "magnify" 
+        icon: "magnify"
     BarMenuButton:
-        lm: root.lm    
+        lm: root.lm
 
 <PostsPage>:
     id: _screen
@@ -83,6 +84,11 @@ Builder.load_string('''
                     size_hint_y: None
                     height: self.minimum_height
                     spacing: dp(10)
+        MDFloatingActionButton:
+            icon: "arrow-up"
+            pos_hint: {'center_y': .175, 'center_x': .85 if _rv.scroll_y < .975 else 2}
+            on_press:
+                _screen.to_first_post()
         BottomBar:
         LateralMenu:
             id: _lm
@@ -96,6 +102,7 @@ class PostsPage(MDScreen):
     posts = []
     loaded = False
     got_posts_from_server = False
+    up_anim = None
     def on_enter(self, *args):
         if not self.got_posts_from_server:
             self.ids._spinner.active = True
@@ -115,7 +122,7 @@ class PostsPage(MDScreen):
     def get_posts_from_server(self):
         asyncio.ensure_future(self._get_posts_from_server())
         
-    async def _get_posts_from_server(self): 
+    async def _get_posts_from_server(self):
         self.ids._rv.data = await get_posts_from_server()
         self.posts = self.ids._rv.data
         self.ids._refresh_layout.refresh_done()
@@ -132,4 +139,9 @@ class PostsPage(MDScreen):
                 })
                 self.ids._rv.data.insert(*insert)
         await self.manager.app.update_user(self.manager.app.username)
+
+    def to_first_post(self):
+        if self.up_anim == None: self.up_anim = Animation(scroll_y=1, duration=.75)
+        self.up_anim.start(self.ids._rv)
+
         

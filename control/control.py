@@ -4,10 +4,11 @@ from local.appdb import *
 from firebase.gmail import AuthenticationMail
 import random, os
 
-Email = AuthenticationMail()
+Email = None
 POSTS = []
 
 async def send_email_code(email):
+    if Email == None: Email = AuthenticationMail()
     for i in range(30): #300 seconds tiemout
         try:
             return await Email.send_code_email(email)
@@ -16,6 +17,7 @@ async def send_email_code(email):
     return False
 
 async def send_validate_cpf_or_cnpj_email(cnpj, cpf, birth_date):
+    if Email == None: Email = AuthenticationMail()
     for i in range(30): #300 seconds tiemout
         try:
             await Email.send_cpf_or_cnpj_email(cnpj, cpf, birth_date)
@@ -25,6 +27,7 @@ async def send_validate_cpf_or_cnpj_email(cnpj, cpf, birth_date):
     return False
 
 async def check_if_a_account_was_validated(cpf_or_cnpj):
+    if Email == None: Email = AuthenticationMail()
     for i in range(30): #300 seconds tiemout
         try:
             return await Email.check_cpf_or_cnpj_confirmation(cpf_or_cnpj)
