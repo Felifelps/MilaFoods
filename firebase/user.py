@@ -48,7 +48,7 @@ async def new_client_user(username, email, password, description):
     })
     user_follow(username, 'MilaFoods')
     await list_users()
-    return await get_user(username)   
+    return await get_user(username)
 
 async def new_estab_user(username, email, cpf, birth_date, cnpj, tel, password, description):
     if username in await list_users(): return False
