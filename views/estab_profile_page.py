@@ -101,7 +101,7 @@ Builder.load_string('''
         id: _refresh_layout
         size_hint: 1, 2
         pos_hint: {'top': .675}
-        refresh_callback: lambda *args: root.screen.refresh_user_posts()
+        refresh_callback: lambda *args: root.screen.refresh_user_posts() == self.refresh_done()
         root_layout: root
         canvas.before:
             Color:

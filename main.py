@@ -8,7 +8,7 @@ from views.screen_manager import ScreenManager
 from kivymd.app import MDApp 
 from kivymd.uix.dialog import MDDialog
 from kivy.properties import StringProperty, DictProperty
-from control.control import get_username, list_users, get_theme, update_user, get_user_posts, get_user, get_post, user_image_was_loaded, delete_post
+from control.control import get_username, list_users, get_theme, update_user, get_user_posts, get_user, get_post, user_image_was_loaded, delete_post, firestore_async
 
 class MilaFoods(MDApp):
     username = StringProperty(get_username())
@@ -30,14 +30,13 @@ class MilaFoods(MDApp):
     
     async def test_post(self):
         for user in await list_users(True):
-            if user['can_post']:
-                update_user(
-                    user,
-                    {
-                        'n_of_posts': 0
-                    }
-                )
-                print(user['username'])
+            await update_user(
+                user['username'],
+                {
+                    'n_of_followers': 0
+                }
+            )
+            print(user['username'])
         #print(json.dumps(a, indent=4))
 
     async def async_run(self, async_lib=None):

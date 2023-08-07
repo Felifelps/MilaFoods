@@ -86,6 +86,8 @@ Builder.load_string('''
                     spacing: dp(10)
         MDFloatingActionButton:
             icon: "arrow-up"
+            icon_color: 1, 1, 1, 1
+            md_bg_color: app.theme_cls.primary_color
             pos_hint: {'center_y': .175, 'center_x': .85 if _rv.scroll_y < .975 else 2}
             on_press:
                 _screen.to_first_post()
