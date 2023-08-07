@@ -51,7 +51,7 @@ Builder.load_string('''
     image_code: ''
     image: ''
     spacing: 2
-    following: False
+    followed: False
     app: app
     DynamicSourceImage:
         pos_hint: {'x': 0, 'center_y': .5}
@@ -62,11 +62,11 @@ Builder.load_string('''
     MDLabel:
         id: _label
         text: root.username
-        size_hint: .32 if root.following else .38, 1
+        size_hint: .32 if root.followed else .38, 1
         color: 0, 0, 0, 1
         halign: 'left'
     BasicButton:
-        text: 'Seguindo' if root.following else 'Seguir'
+        text: 'Seguindo' if root.followed else 'Seguir'
         pos_hint: {'right': .95, 'center_y': .5}
         size_hint: .1, None
         

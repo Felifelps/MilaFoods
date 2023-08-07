@@ -7,7 +7,7 @@ from kivymd.uix.dialog import MDDialog
 from views.utils import DynamicSourceImage
 from kivymd.uix.snackbar import Snackbar
 from kivy.metrics import dp
-import webbrowser, asyncio, os
+import webbrowser, asyncio, os, json
 
 Builder.load_string('''
 #:import BasicLabel views.utils
@@ -70,7 +70,6 @@ Builder.load_string('''
         on_press:
             root.screen.check_new_post(_textinput.text, _image_button.source)
 
-
 <PostsArea>:
     rv: _rv
     loading: _loading
@@ -89,7 +88,6 @@ Builder.load_string('''
                 rgba: 1, 1, 1, 1
             Line:
                 points: 0, self.y - dp(10), root.width, self.y - dp(10)
-            
     BasicButton:
         id: menu_button
         size_hint: .275, .15
@@ -124,7 +122,7 @@ Builder.load_string('''
     BasicLabel:
         text: f'{"Sua" if root.username == app.username else "Esta"} conta não tem publicações\\nainda :('
         font_size: '15sp'
-        pos_hint: {'center_x': .5 if not _loading.active and _rv.data == [] else 10, 'center_y': .5} 
+        pos_hint: {'center_x': .5 if _loading.active == False and _rv.data == [] else 10, 'center_y': .5} 
     BasicSpinner:
         id: _loading
 
@@ -141,6 +139,8 @@ Builder.load_string('''
     pa: _pa
     np: _np
     show: False
+    on_username:
+        self.get_loaded_posts()
     Background:
         id: _bg
     RelativeLayout:
@@ -232,7 +232,6 @@ class EstabProfilePage(MDScreen):
                 lines.append(text[i*48: (i + 1)*48 ])
             else:
                 lines.append(text[i*48:])
-        print(lines)
         if len(description) > 48:
             last_space_index = text[:48].rfind(' ')
             if last_space_index == -1:
@@ -241,21 +240,23 @@ class EstabProfilePage(MDScreen):
                 text = text[:last_space_index] + '\n' + text[last_space_index + 1:]
         return text
         
-    def on_username(self, a, b):
-        self.pa.rv.data = []
-        
     def refresh_user_posts(self):
         self.loaded_posts.pop(self.username)
         self.load_posts()
         self.pa.ids._refresh_layout.refresh_done()
         
-    def on_enter(self, *args):
-        if self.loaded_posts == {}:
-            self.loaded_posts[self.manager.app.username] = self.manager.app.posts
+    def get_loaded_posts(self):
+        self.pa.ids._loading.active = True
         if self.username not in self.loaded_posts.keys():
             self.load_posts()
         else:
             self.pa.rv.data = self.loaded_posts[self.username]
+        self.pa.ids._loading.active = False
+        
+    def on_enter(self, *args):
+        if self.loaded_posts == {}:
+            self.loaded_posts[self.manager.app.username] = self.manager.app.posts
+        self.get_loaded_posts()
         self.pa.loading.active = False
         return super().on_pre_enter(*args)
 
@@ -285,12 +286,13 @@ class EstabProfilePage(MDScreen):
         self.ids._spinner.active = False
     
     def load_posts(self):
+        self.pa.loading.active = True
         asyncio.ensure_future(self._load_posts())
+        self.pa.loading.active = False
         
     async def _load_posts(self):
-        self.pa.loading.active = True
-        if (self.username == self.manager.app.username and self.manager.app.user['posts'] == []) or self.n_of_posts == 0: return 
         user_data = await get_user(self.username)
+        self.pa.rv.data = []
         if user_data['posts'] == []: return
         data = []
         for post in await get_user_posts(self.username):
@@ -299,13 +301,10 @@ class EstabProfilePage(MDScreen):
                 'liked': f'{post["username"]}-{post["id"]}' in user_data['liked'],
                 'saved': f'{post["username"]}-{post["id"]}' in user_data['saved']
             })
-            print(post)
-            #print('Loading', f'{post["username"]}-{post["id"]}', post)
             data.append(post)
         self.pa.rv.data = data
         self.show = not self.pa.rv.data == []
         self.loaded_posts[self.username] = self.pa.rv.data
-        self.pa.loading.active = False
     
     def check_new_post(self, text, image_path):
         asyncio.ensure_future(self._check_new_post(text, image_path))

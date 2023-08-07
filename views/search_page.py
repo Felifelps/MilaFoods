@@ -90,13 +90,11 @@ Builder.load_string('''
 
 class SearchPage(MDScreen):
     name = 'search_page'
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.set_users()
-        
+    users = []
     def set_users(self):
         self.users = []
         asyncio.ensure_future(self._set_users())
+        self.ids._refresh_layout.refresh_done()
         
     async def _set_users(self):
         data = []
@@ -106,17 +104,17 @@ class SearchPage(MDScreen):
                 'image': os.path.join('views', 'data', 'user_images', user_image_was_loaded(user['username'])),
                 'image_code': str(user['image_code']),
                 'size_hint': (1, None),
-                'height': dp(60)
+                'height': dp(60),
+                'followed': user['username'] in self.app.user['following']
             })
             data.append(user)
         self.rv.data = data
         self.users = data
     
     def on_pre_enter(self):
-        for user in self.users:
-            user['following'] = user['username'] in self.app.user['following']
-        self.rv.data = self.users
         self.sb.search_box.text = ''
+        if self.users == []:
+            self.set_users()
             
     def search(self, text):
         data = []
