@@ -1,4 +1,4 @@
-import asyncio, platform, json
+import asyncio, platform
 
 if 'Windows' in platform.system():
     from kivy.core.window import Window
@@ -8,7 +8,7 @@ from views.screen_manager import ScreenManager
 from kivymd.app import MDApp 
 from kivymd.uix.dialog import MDDialog
 from kivy.properties import StringProperty, DictProperty
-from control.control import get_username, list_users, get_theme, update_user, get_user_posts, get_user, get_post, user_image_was_loaded, delete_post, firestore_async
+from control.control import get_username, list_users, get_theme, update_user, get_user_posts, get_user, user_image_was_loaded
 
 class MilaFoods(MDApp):
     username = StringProperty(get_username())
@@ -57,7 +57,11 @@ class MilaFoods(MDApp):
             return 
         self.user = {}
 
-if __name__ == '__main__':
-    asyncio.run(MilaFoods().async_run())
+try:
+    if __name__ == '__main__':
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(MilaFoods().async_run())
+except Exception as e:
+    print(e)
 
 
