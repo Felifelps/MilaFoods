@@ -62,6 +62,6 @@ try:
         loop = asyncio.new_event_loop()
         loop.run_until_complete(MilaFoods().async_run())
 except Exception as e:
-    print(e)
+    input(e)
 
 
