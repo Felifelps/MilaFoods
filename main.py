@@ -12,15 +12,14 @@ from control.control import get_username, list_users, get_theme, update_user, ge
 
 class MilaFoods(MDApp):
     username = StringProperty(get_username())
-    theme = StringProperty(get_theme())
     user_image = StringProperty('account-circle.png')
+    theme = 'Red'
     user = DictProperty()
     following = []
     lateral_menu_is_active = False
     posts = []
     def build(self):
         self.theme_cls.theme_style = 'Dark'
-        self.theme_cls.primary_palette = self.theme
         return ScreenManager(self)
 
     def on_start(self):
@@ -40,6 +39,8 @@ class MilaFoods(MDApp):
         #print(json.dumps(a, indent=4))
 
     async def async_run(self, async_lib=None):
+        self.theme = await get_theme()
+        self.theme_cls.primary_palette = self.theme
         await self.update_user(self.username)
         return await super().async_run(async_lib)
     
@@ -57,11 +58,9 @@ class MilaFoods(MDApp):
             return 
         self.user = {}
 
-try:
-    if __name__ == '__main__':
-        loop = asyncio.new_event_loop()
-        loop.run_until_complete(MilaFoods().async_run())
-except Exception as e:
-    input(e)
+
+if __name__ == '__main__':
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(MilaFoods().async_run())
 
 

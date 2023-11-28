@@ -65,7 +65,7 @@ class SavedPage(MDScreen):
     async def _load_data(self):
         self.ids._spinner.active = True
         self.ids._rv.data = []
-        for key, post in get_local_saved_posts().items():
+        for key, post in (await get_local_saved_posts()).items():
             post.update({
                 'id': str(key.split('-')[1]),
                 'username': str(key.split('-')[0]),

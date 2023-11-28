@@ -1,55 +1,75 @@
-import sqlite3
+from asyncio import sleep
+import json
 
-conn = sqlite3.connect('database.db')
-cursor = conn.cursor()
+class Data:
+    DATABASE = 'database.json'
+    def __init__(self):
+        with open(self.DATABASE, 'r') as file:
+            self.__data = json.load(file)
+        self.__open = False
+        
+    async def connect(self):
+        while self.__open:
+            await sleep(0.001)
+        self.__open = True
+        with open(self.DATABASE, 'r') as file:
+            self.__data = json.load(file)
+    
+    async def commit_and_close(self):
+        with open(self.DATABASE, 'w') as file:
+            file.write(json.dumps(self.__data, indent=4))
+        self.__open = False
+    
+    def __getitem__(self, key):
+        return self.__data.get(key, None)
+    
+    @property
+    def data(self):
+        return self.__data
+        
+    def __setitem__(self, key, value):
+        self.__data[key] = value
+
+DATA = Data()
+
 saved_cols = ['image', 'text', 'likes', 'timestamp', 'key']
 
-def save_username(username):
-    cursor.execute(f'update user set username = "{username}"')
-    conn.commit()
+async def save_username(username):
+    await DATA.connect()
+    DATA['user'].update({'username': username})
+    await DATA.commit_and_close()
 
 def get_username():
-    cursor.execute(f'select * from user')
-    return list(cursor.fetchall())[0][0]
+    return DATA.data['user']['username']
 
-def get_theme():
-    cursor.execute(f'select * from user')
-    return list(cursor.fetchall())[0][1]
+async def get_theme():
+    return DATA.data['user']['theme']
 
-def alter_theme(theme):
-    cursor.execute(f'''update user set theme = "{theme}" where rowid = 1;''')
-    conn.commit()
+async def alter_theme(theme):
+    await DATA.connect()
+    DATA['user'].update({'theme': theme})
+    await DATA.commit_and_close()
 
-def back_to_default_user():
-    cursor.execute(f'update user set username = "===NoUser==="')
-    conn.commit()
+async def back_to_default_user():
+    await DATA.connect()
+    DATA['user'].update({'username': '===NoUser==='})
+    await DATA.commit_and_close()
 
-def local_save_post(post):
-    cursor.execute(f'''insert into saved values (
-       '{post['image']}',
-       '{post['text']}',
-       {post['likes']},
-       '{post['timestamp']}',
-       '{post['username']}-{post['id']}'
-    );           
-    ''')
-    conn.commit()
+async def local_save_post(post):
+    await DATA.connect()
+    DATA['posts'].update({f"{post['username']}-{post['id']}": post})
+    await DATA.commit_and_close()
     
-def local_un_save_post(post_key):
-    cursor.execute(f'''delete from saved where key = '{post_key}';''')
-    conn.commit()
+async def local_un_save_post(post_key):
+    await DATA.connect()
+    DATA['posts'].pop(post_key)
+    await DATA.commit_and_close()
 
-def get_local_saved_posts():
-    posts = {}
-    cursor.execute(f'select * from saved')
-    for line in cursor.fetchall():
-        post = {saved_cols[n] : line[n] for n in range(5)}
-        posts[f'{line[4]}'] = post
-        print('==', post)
-    return posts
+async def get_local_saved_posts():
+    return DATA.data['posts']
 
-def erase_saved_data():
-    cursor.execute('delete from saved;')
-    print(get_local_saved_posts())
-    conn.commit()
+async def erase_saved_data():
+    await DATA.connect()
+    DATA['posts'] = {}
+    await DATA.commit_and_close()
 

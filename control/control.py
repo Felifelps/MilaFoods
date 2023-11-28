@@ -48,7 +48,7 @@ async def login_client(username, password):
     user = await get_user(username)
     if not user: return 'Crendenciais inválidas'
     if user['password'] == password:
-        save_username(username)
+        await save_username(username)
         await server_saved_to_local(username)
     return f'Logged:{username}'
 
@@ -71,8 +71,8 @@ async def check_client_sign_up_inputs(username, email, password):
 async def sign_up_and_login_client(username, email, password):
     user = await new_client_user(username, email, password, '')
     if not user: return False
-    save_username(username)
-    server_saved_to_local(user['username'])
+    await save_username(username)
+    await server_saved_to_local(user['username'])
     return user
 
 async def login_estab(cpf_or_cnpj, password):
@@ -88,7 +88,7 @@ async def login_estab(cpf_or_cnpj, password):
                     return 'Seus dados não são válidos. Tente recriar a conta.'
                 elif validated:
                     await update_user(user['username'], {'validated': True})
-            save_username(user['username'])
+            await save_username(user['username'])
             await server_saved_to_local(user['username'])
             return user
     return 'Usuário não encontrado'
@@ -121,9 +121,9 @@ async def sign_up_estab(username, email, password, cnpj, cpf, birth_date):
 
 async def server_saved_to_local(username):
     user = await get_user(username)
-    erase_saved_data()
+    await erase_saved_data()
     for saved in user['saved']:
-        local_save_post(await get_post(saved))
+        await local_save_post(await get_post(saved))
 
 async def get_posts_from_server():
     global POSTS
@@ -142,17 +142,17 @@ async def update_posts(posts):
         })
     return posts
 
-def logout():
-    back_to_default_user()
+async def logout():
+    await back_to_default_user()
 
-def save_theme(theme):
-    alter_theme(theme)
+async def save_theme(theme):
+    await alter_theme(theme)
 
 async def save_post(post_id):
     await user_save(get_username(), post_id)
-    local_save_post(await get_post(post_id))
+    await local_save_post(await get_post(post_id))
 
 async def un_save_post(post_id):
     await user_un_save(get_username(), post_id)
-    local_un_save_post(post_id)
+    await local_un_save_post(post_id)
     

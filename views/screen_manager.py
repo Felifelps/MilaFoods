@@ -113,7 +113,7 @@ class ScreenManager(MDScreenManager):
     
     async def _load_profile_page(self, username):
         if username == False:
-            if self.app.user['can_post']:
+            if self.app.user.get('can_post'):
                 return await self.load_estab_profile_page(self.app.user)
             else:
                 return await self.load_client_profile_page(self.app.user, self.app.user['saved'])
