@@ -1,21 +1,8 @@
 {
     "user": {
-        "username": "Felifelps",
+        "username": "===NoUser===",
         "theme": "Red",
         "can_post": false
     },
-    "posts": {
-        "MilaFoods-3": {
-            "text": "Sivirino, o gato, est\u00e1 com fome!\nMostre que sua comida pode sacia-lo!\nDivulgue-a aqui!",
-            "image": "MilaFoods-3.png",
-            "id": "3",
-            "comments": [
-                "MilaFoods-3",
-                "MilaFoods-7"
-            ],
-            "timestamp": "2023-08-07 08:13:20",
-            "username": "MilaFoods",
-            "likes": 1
-        }
-    }
+    "posts": {}
 }

@@ -38,7 +38,7 @@ class ScreenManager(MDScreenManager):
             self.edit_pages = True
         
     def logout(self):
-        logout()
+        asyncio.ensure_future(logout())
         self.load_login_pages()
         
     def load_user_pages(self):
