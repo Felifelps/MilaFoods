@@ -30,8 +30,7 @@ O projeto foi descontinuado após a conclusão da disciplina.
   ```shell
   pip install -r requirements.txt
   ```
-6. Coloque suas [credenciais do Firestore](https://console.firebase.google.com) no arquivo `/firebase/crendetials.json`;
-7. Rode o aplicativo:
+6. Rode o aplicativo:
   ```shell
   python main.py
   ```
