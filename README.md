@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/Felifelps/MilaFoods/blob/async/views/data/logo.png" alt="Logo MilaFoods"/>
+  <img src="https://github.com/Felifelps/MilaFoods/blob/async/views/data/logo.png" alt="Logo MilaFoods" width="300" height="300"/>
 </p>
 
 # MilaFoods
