@@ -1,10 +1,14 @@
+<p align="center">
+  <img src="https://github.com/Felifelps/MilaFoods/blob/async/views/data/logo.png" alt="Logo MilaFoods"/>
+</p>
+
 # MilaFoods
 
-O MilaFoods é um aplicativo cujo objetivo é criar uma rede social de restaurantes, conectando as empresas aos seus clientes.
+O MilaFoods é um aplicativo cujo objetivo é criar uma rede social de restaurantes, conectando as empresas de Milagres-CE aos seus clientes.
 
-Foi desenvolvido como trabalho de conclusão da disciplina de Laboratório de Software do curso técnico em informática da EEEP Irmã Ana Zélia da Fonseca, Milagres-CE.
+Foi desenvolvido como trabalho de conclusão da disciplina de Laboratório de Software do [curso técnico em informática](https://www.instagram.com/inforanazeliaoficial/) da [EEEP Irmã Ana Zélia da Fonseca](https://eeep-irma-ana-zelia.netlify.app), Milagres-CE.
 
-Desenvolvido com o framework python Kivy (e KivyMD), utiliza Firebase como banco de dados remoto e SQlite3 localmente.
+Desenvolvido com o framework python [Kivy](https://kivy.org) (e [KivyMD](https://kivymd.readthedocs.io/en/latest/)), utiliza [Firebase](https://firebase.google.com/) como banco de dados remoto e SQlite3 localmente.
 
 O projeto foi descontinuado após a conclusão da disciplina.
 
@@ -20,17 +24,20 @@ O projeto foi descontinuado após a conclusão da disciplina.
   python -m venv .venv
   ```
 4. Ative o ambiente virtual:
-  - No WIndows: `.venv\Scripts\Activate`;
+  - No Windows: `.venv\Scripts\Activate`;
   - No Linux: `$ source .venv/bin/activate`;
 5. No diretório do projeto, instale as dependências do projeto:
   ```shell
   pip install -r requirements.txt
   ```
 6. Coloque suas [credenciais do Firestore](https://console.firebase.google.com) no arquivo `/firebase/crendetials.json`;
-7. Rode o projeto:
+7. Rode o aplicativo:
   ```shell
-  python app.py
+  python main.py
   ```
+
+
+
 
 
 
