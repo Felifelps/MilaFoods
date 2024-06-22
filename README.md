@@ -4,39 +4,41 @@
 
 # MilaFoods
 
-O MilaFoods é um aplicativo cujo objetivo é criar uma rede social de restaurantes, conectando as empresas de Milagres-CE aos seus clientes.
+MilaFoods is a social media app focused on restaurants in Milagres-CE and their clients.
 
-Foi desenvolvido como trabalho de conclusão da disciplina de Laboratório de Software do [curso técnico em informática](https://www.instagram.com/inforanazeliaoficial/) da [EEEP Irmã Ana Zélia da Fonseca](https://eeep-irma-ana-zelia.netlify.app), Milagres-CE.
+It was developed as the final project for the Software Lab subject of the [technical IT course](https://www.instagram.com/inforanazeliaoficial/) at [EEEP Irmã Ana Zélia da Fonseca](https://eeep-irma-ana-zelia.netlify.app), Milagres-CE.
 
-Desenvolvido com o framework python [Kivy](https://kivy.org) (e [KivyMD](https://kivymd.readthedocs.io/en/latest/)), utiliza [Firebase](https://firebase.google.com/) como banco de dados remoto e SQlite3 localmente.
+The app was developed using Kivy and KivyMD, and it uses Firebase for online data storage and SQLite3 for local data storage.
 
-O projeto foi descontinuado após a conclusão da disciplina.
+The project was discontinued after the completion of the subject.
 
-# Instalação
+## Installation
 
-1. Primeiro, instale o python em sua máquina, a partir [desse link.](https://www.python.org/downloads/)
-2. Clone o repositório com o código:
-  ```shell
-  git clone https://github.com/Felifelps/MilaFoods
-  ```
-3. Crie um ambiente virtual:
-  ```shell
-  python -m venv .venv
-  ```
-4. Ative o ambiente virtual:
-  - No Windows: `.venv\Scripts\Activate`;
-  - No Linux: `$ source .venv/bin/activate`;
-5. No diretório do projeto, instale as dependências do projeto:
-  ```shell
-  pip install -r requirements.txt
-  ```
-6. Rode o aplicativo:
-  ```shell
-  python main.py
-  ```
+1. First, install Python on your machine from [this link](https://www.python.org/downloads/).
+2. Clone this repository with:
 
+    ```shell
+    git clone https://github.com/Felifelps/MilaFoods
+    ```
 
+3. Create a virtual environment:
 
+    ```shell
+    python -m venv .venv
+    ```
 
+4. Activate the virtual environment:
+   - On Windows: `.venv\Scripts\Activate`
+   - On Linux/MacOS: `$ source .venv/bin/activate`
 
+5. In the project directory, install the project requirements:
 
+    ```shell
+    pip install -r requirements.txt
+    ```
+
+6. Run the app with:
+
+    ```shell
+    python main.py
+    ```
